@@ -1,0 +1,83 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+
+}
+nav.menu ul li{
+	display: block;
+        font-size: x-large;
+   	color: #DC5B21;				/*Orange*/
+	text-align: center;
+
+}
+
+
+nav.menu div:hover,
+nav.menu div:active,
+div.content .item:hover
+{
+        background:url(http://i44.tinypic.com/207nsr9.jpg);	/*When an item is hovered, a personal background is shown.*/
+}
+.menu div{
+        text-align: center;
+        border:groove #383127 1px; 	
+    	border-radius:6px 6px 6px 6px;
+        background: #eae3cd;
+        margin-right: 25px;
+   	padding-top:20px;
+  	padding-bottom: 20px;
+        padding-right: 20px;
+        padding-left:20px;
+
+}
+
+div.content .item:hover{
+          border:1px solid #70AB8F;	/*Greenish border*/
+}
+
+div#content{      
+         margin-left:0px;
+         margin-right: 0px;
+}
+div.item{
+         border-bottom:solid #383127 1px;
+         margin-left: 0px;
+	 text-align: center;
+	 padding-top: 10px;
+         padding-bottom: 10px;
+         color: #383127;
+         background: #eae3cd;
+}
+
+div.item:first-child{
+	border-top:solid #383127 1px;
+}
+a,span.small,div#contentTitle,hr{
+     	color: #383127;
+}
+
+span.small{
+     	font-size: x-small;
+}
+div.hidden{
+
+	visibility: hidden;
+}
+
+div.shown{
+	visibility: block;
+}
+
+div.title{
+    	font-size: x-large;
+    	text-align: center;
+   	font-weight: bold;
+  	padding-bottom: 20px;
+}
+
+hr{
+    width: 20%;
+
+}
