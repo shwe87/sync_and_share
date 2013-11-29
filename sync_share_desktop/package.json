@@ -1,0 +1,48 @@
+{
+  "name": "sync-share-desktop",
+  "title": "Sync & Share",
+  "id": "jid1-Yvw9LU0J6vLQkA",
+  "description": "Syncing and sharing between devices and friends.",
+  "author": "Shweta",
+  "license": "MPL 2.0",
+  "version": "0.1",
+  "fullName": "sync and share",
+  "icon64":"skin/myLogo64.png",
+  "permissions":{
+  	"private-browsing":"false"
+  
+  },
+  "preferences": [{       
+	    "name": "server",
+	    "type": "radio",
+	    "title": "Default server",
+	    "value": "dropbox",
+	    "description": "The chosen server will be used to save your datas.",
+	    "options": [
+		{
+		    "value": "dropbox",
+		    "label": "Dropbox"
+		},
+		{
+		    "value": "gapi",
+		    "label": "Google Drive"
+		},
+		{
+		    "value":"both",
+		    "label":"Both"
+		}
+	    ]
+
+  	},
+  	{
+	    "type": "control",
+	    "label": "Save changes",
+	    "name": "saveChanges",
+	    "title": "Save Changes"	
+  	}	
+  
+  
+  
+  ]
+}
+

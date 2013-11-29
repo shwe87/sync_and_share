@@ -1,0 +1,179 @@
+table{
+    border-spacing: 0; 
+    border-collapse:separate;
+    width:90%; 
+    border:0; 
+    background: url(http://i39.tinypic.com/hwe4qe.jpg); 
+}
+table,body{
+    height:100%;
+
+}
+
+table{
+   font-family: Palatino,Georgia,Times;
+   background: -moz-linear-gradient(to right, #e2e2d2, #ecece1, #d8d8c2); /*Fx 3.6-15*/
+   background: linear-gradient( to right, #e2e2d2, #ecece1, #d8d8c2);
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+}
+
+
+ul{
+	overflow:hidden;
+	list-style:none;
+	padding-top:20px;
+	padding-bottom:20px;
+	
+}
+span,p{
+	margin-left: 20px;
+}
+
+.liLine{
+	width:95%;
+}
+
+.bCell{
+	border-bottom: solid gray 1px;
+	border-right:none;
+}
+
+.bSelected{
+	border:solid gray 1px; 	
+    	border-radius:6px 6px 0 0;
+    	-moz-border-radius:6px 6px 0 0;
+    	border-collapse:collapse;
+    	border-bottom:0;
+}
+
+
+th.cell{	
+	width:30%;
+	border-right:solid gray 1px;
+	-webkit-tranform: translate(1px,0);
+	-moz-transform: translate(1px,0);	
+	
+}
+
+th.selected{
+    	border:solid gray 1px; 	
+    	border-radius:6px 0 0 6px;
+    	-moz-border-radius:6px 0 0 6px;
+    	border-collapse:collapse;
+    	border-right:0;
+    	
+}
+
+td,th{
+	padding:25px;
+
+}
+
+td.bCell{
+	text-align:center;
+}
+
+td.cell{
+	text-align: left;
+}
+
+.content{
+	background-color:#ece9e1;
+	height:200px;
+	width:70%;
+	color: #2e2e2e;
+	text-shadow: 0px 1px 0px #ebebeb;
+	border:solid gray 1px;
+	border-radius:0 6px 6px 0;
+    	-moz-border-radius:0 6px 6px 0;
+    	border-collapse:collapse;
+	border-left:0;
+}
+
+.bContent{
+	border-top:0;
+	border-radius:0 0 6px 0;
+    	-moz-border-radius:0 0 6px 0;
+}
+
+/*
+#bookmarksTable,#tabsTable,#historyTable{
+	width:100%;
+	background-color: #ece9e1;
+	color: #2e2e2e;
+	text-shadow: 0px 1px 0px #ebebeb;
+	border:0;
+	text-align: left;
+}
+*/
+hr{
+	border: groove gray 1px;
+}
+.invisible{
+	border-left:none;
+	border-top:none;
+	border-right:none;
+}
+
+
+
+
+/*
+#tabsTitle,#tabsURL,#bookmarksContent{
+	margin: 0cm 0cm 0cm 0.25cm;
+}
+*/
+.url{
+	font-size: small;
+	color:#2e2e2e; 
+}
+
+
+.hidden{
+	
+	display: none;
+}
+
+
+li.showLi{
+	display: list-item;	
+}
+
+span.show{
+	display: inline;
+}
+
+#tabsCellDiv,#bookmarksCellDiv,#historyCellDiv{
+	padding: 0px 0px 0px 30px;	/*Just the space between them*/
+	margin-left: 20px;
+	text-align: left;
+
+}
+#tabsCellDiv{
+	background: url(http://i39.tinypic.com/mry2i9.jpg) no-repeat left;
+	background-size: 20px 20px;
+	
+}
+
+#bookmarksCellDiv{
+	background: url(http://i39.tinypic.com/2lmvqdl.jpg) no-repeat left;
+	background-size: 20px 20px;
+	
+
+
+}
+
+#historyCellDiv{
+	background: url(http://i40.tinypic.com/b5jyqa.jpg) no-repeat left;
+	background-size: 20px 20px;
+	
+	
+
+}
+
+
+
+
+
+

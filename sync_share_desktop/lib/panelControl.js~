@@ -1,0 +1,54 @@
+var { Class } = require("sdk/core/heritage");
+
+var panel = require("sdk/panel");
+var data = require("sdk/self").data;
+var widget = require("sdk/widget");
+const timer = require('sdk/timers');
+
+var { emit, on, once, off } = require("sdk/event/core");
+exports.on = on.bind(null, exports);
+exports.once = once.bind(null, exports);
+exports.removeListener = function removeListener(type, listener) {
+  off(exports, type, listener);
+};
+
+
+
+var Panel = Class({
+  initialize: function initialize() {
+  	this.panelWithMessage = panel.Panel({
+  		width: 400,
+  		height: 102,
+  		focus: true,
+    		contentURL: data.url('panel.html'),
+    		contentScriptFile: data.url('panelScript.js')
+    	});
+    	
+  },
+  type: 'Panel',
+  write: function write(message) {
+  	this.panelWithMessage.port.emit('write',message);
+  	//this.panelWithMessage.show();
+  },
+  hide: function hide(){
+  	if (this.panelWithMessage.isShowing){
+  		this.panelWithMessage.hide();
+  	}
+  },
+  show: function show(){
+        if (!this.panelWithMessage.isShowing){
+	  	var showOptions = {'position':{'top':150}};
+	  	this.panelWithMessage.show(showOptions);
+	 }
+	 else{
+	 	timer.setTimeout(this._show, 3000);
+	 }
+  }
+  
+});
+
+exports.Panel = Panel;
+
+
+
+
