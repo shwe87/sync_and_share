@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} Share with {% endblock %}
+{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% block content %}
+	<div class="form">
+
+    	<form action="/share/" method="post">
+
+        {% csrf_token %}
+        
+	<!--{{ form.errors }}-->
+	
+	<div class="error">
+		{% if form.non_field_errors %}
+			Share with options: {{ form.non_field_errors }}
+		{% endif %}
+	
+		{% if form.toShare.errors %}
+			What to share: {{ form.toShare.errors }}
+		{% endif %}
+	
+	
+	</div>
+	
+	
+	<div class="mainTitle">Choose what to share:</div>
+	<div class="sync">
+			
+		{% for m in synced %}
+			<div class="item">
+			       <label>
+			       		<input name="toShare" type="checkbox" value="{{ m.unique }}" /> 
+			       			<a href="{{ m.url }}" title="{{ m.url }}">{{ m.title }}</a>
+			       			<span><img src="/static/images/{{ m.typeOf }}.png" height="15px" ></span>
+			       	</label>
+			</div>
+			       		
+		{% endfor %}		
+	</div>
+	
+	
+	<div class="mainTitle">Share with options:</div>
+	<div class="share">
+			
+	<center>
+		{% for choice in form.selectFrom %}
+			{{ choice }}
+		{% endfor %}
+	</center>
+	
+	<div id="existingGroup" class="hidden">
+		Share with existing groups:
+		{% if not groups %}
+			<div class="error">
+				Groups not created yet.
+			</div>
+		{% else %}
+			{% for m in groups %}
+				<div class="item">
+				 	<label>
+				 		<input name="existingGroups" type="checkbox" value="{{ m.unique }}"/>	
+				 			<span class="groupName">{{ m.groupName }}</span>
+				 	</label>
+				 </div>
+			{% endfor %}
+		{% endif %}
+	 </div>
+	
+	<div class="textInput shown" id="friendsEmail">
+		<div class="helpText">{{ form.friends_email.help_text }}</div>
+		Friends' email: {{ form.friends_email }}
+	</div>
+			 
+			 
+			 
+	<div class="textInput hidden" id="createGroup">
+		<div class="helpText">{{ form.group_name.help_text }}</div>
+		Group's name: {{ form.group_name }}
+		</div>	
+	</div>
+
+        <center><input class="button" type="submit" value="Share" ></center>
+    	</form>
+	</div>
+{% endblock %}
+
+{% block script %}
+<script src={% static "javascript/sharescript.js" %}></script>
+{% endblock %}
+
+

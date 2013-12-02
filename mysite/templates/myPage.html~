@@ -1,0 +1,31 @@
+{% load browserid %}
+{% load staticfiles %}
+<html>
+  <head>
+    <link href={% static "css/pageStyle.css" %} rel="stylesheet" type="text/css">
+    {% browserid_css %}
+    {% block head %} {% endblock %}
+  </head>
+  <body>
+  <center> 
+    {% browserid_info %}
+    {% block info %} {% endblock %}
+    
+    <header>
+    <!--link href="/css/persona-buttons.css" rel="stylesheet" type="text/css"-->
+      <div class="logo">
+  	<center><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/><br>
+  	<span class="small">Sync & Share</span><br><br></center>
+      </div>
+      {% block content %}
+      
+      
+      {% endblock %}
+
+    </header>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    {% browserid_js %}
+    {% block script %} {% endblock %}
+    
+  </body>
+</html>

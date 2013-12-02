@@ -1,0 +1,16 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+
+
+}
+
+div.logo{
+	margin-top: 100px;
+	margin-bottom: 10px;
+}
+span.small{
+     	font-size: x-small;
+}

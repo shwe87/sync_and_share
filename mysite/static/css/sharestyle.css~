@@ -1,0 +1,91 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+        color: #383127;
+}
+
+div.mainTitle{
+    	font-size: x-large;
+    	text-align: center;
+   	font-weight: bold;
+  	padding-bottom: 10px;
+  	padding-top: 10px;
+}
+
+div.form{
+	text-align: left;
+	margin: 0px 150px 20px 150px; /*top right bottom left*/
+       	border:groove #383127 0px; 	
+    	border-radius:10px 10px 10px 10px;
+        padding: 40px 20px 40px 20px;	
+}
+
+
+div.textInput{
+	text-align: center;
+	border-bottom:solid #383127 1px;
+        border:solid #383127 1px;
+        border-radius:6px 6px 6px 6px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+}
+
+div.item,div.share,div.sync{
+         border:solid #383127 1px;
+         border-radius:6px 6px 6px 6px;
+         margin-left: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+	 padding-top: 10px;
+         padding-bottom: 10px;
+         padding-left: 20px;
+         color: #383127;       
+}
+
+div.item:hover,div.textInput:hover{
+          border:1px solid #70AB8F;	/*Greenish border*/
+          background: #eae3cd;		/*Lighter background*/
+}
+
+a,span.small{
+     	color: #383127;
+}
+span.small, div.helpText{
+     	font-size: x-small;
+}
+
+ul{
+	visibility: hidden;
+}
+
+
+
+
+
+.button,select#selectTypeWhom{
+        border:1px groove #383127;
+        border-radius:6px 6px 6px 6px;
+        background: #70AB8F;
+        padding: 10px 20px 10px 20px;	/*top right bottom left*/
+	margin-top: 30px;
+	font-size: large;
+}
+
+.hidden{
+	visibility: hidden;
+}
+
+.shown{
+	visibility: visible;
+}
+
+
+
+
+
+
+
+
+

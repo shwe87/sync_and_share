@@ -1,0 +1,44 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+        color: #383127;
+
+
+}
+
+div.logo{
+	margin-top: 50px;
+	margin-bottom: 50px;
+	
+}
+
+div.authentication{
+	border: groove #383127 1px;
+	border-radius:10px 10px 10px 10px;
+	width:45%;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	
+}
+ 
+div.authentication div.message{
+	padding-bottom: 20px; 
+ 
+}
+
+div.error,ul.errorlist li{
+	color: red;
+	padding-bottom: 30px;
+	margin-top: 50px;
+	
+}
+
+ul,li{
+	list-style-type: none;
+}
+
+span.small{
+     	font-size: x-small;
+}

@@ -1,0 +1,13 @@
+from django.contrib import admin
+#from syncShare.models import Tab
+#from syncShare.models import UsersData
+from syncShare.models import Sync
+from syncShare.models import Share
+
+
+
+admin.site.register(Sync)
+admin.site.register(Share)
+#admin.site.register(UsersData)
+#admin.site.register(Bookmark)
+#admin.site.register(History)
