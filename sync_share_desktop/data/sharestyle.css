@@ -1,0 +1,83 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+        color: #383127;
+}
+
+div.mainTitle{
+    	font-size: x-large;
+    	text-align: center;
+   	font-weight: bold;
+  	padding-bottom: 20px;
+  	padding-top: 20px;
+}
+
+div.form{
+	text-align: left;
+	margin: 0px 150px 20px 150px; /*top right bottom left*/
+        border:groove #383127 1px; 	
+    	border-radius:10px 10px 10px 10px;
+        padding: 40px 20px 40px 20px;	
+}
+
+div#shareWith{
+	padding: 20px;
+	text-align: center;
+}
+
+
+div.hidden{
+
+	visibility: hidden;
+}
+
+div.shown{
+	visibility: block;
+}
+
+div.title{
+    	font-size: large;
+    	text-align: center;
+   	font-weight: bold;
+  	padding-bottom: 20px;
+  	padding-top: 20px;
+}
+
+
+
+hr{
+    width: 10%;
+    /*border:groove #383127 1px;*/ 
+
+}
+
+div.item{
+         border-bottom:solid #383127 1px;
+         border-top:solid #383127 1px;
+         margin-left: 0px;
+	 text-align: center;
+	 padding-top: 10px;
+         padding-bottom: 10px;
+         color: #383127;       
+}
+
+div.item:hover{
+          border:1px solid #70AB8F;	/*Greenish border*/
+          background: #eae3cd;		/*Lighter background*/
+}
+a,span.small,hr{
+     	color: #383127;
+}
+span.small{
+     	font-size: x-small;
+}
+
+
+
+
+
+
+
+

@@ -20,6 +20,7 @@ const SS_MENU = myId+'syncShareMenu';
 const SS_MENU_POPUP = myId+'syncShareMenuPopUp';
 const SS_MENU_SEPARATOR = myId+'menuSeparator';
 const SS_TAB_SEPARTOR = myId+'tabMenuSeparator';
+const SHARE_MENU = myId+'shareMenu';
 
 
 
@@ -57,7 +58,6 @@ function addTabMenu() {
 					console.log(currentTab.title);
 					console.log(currentTab.url);
 					if (currentTab.title == 'Connecting…' && currentTab.url == 'about:blank'){
-						
 						currentTab.on('ready',function(thisTab){
 							console.log("READY!");
 							emit(exports,'tabContextClicked',[thisTab]);
@@ -132,6 +132,16 @@ function addSettingsMenu(){
 	});
 	
 	return settingsMenuItem;
+
+
+}
+
+function addShareMenu(){
+	var shareMenuItem = createMenuItem(SHARE_MENU,'Share');
+	
+	shareMenuItem.addEventListener('command', function(event){
+		emit(exports,'shareClicked',null);
+	});
 
 
 }

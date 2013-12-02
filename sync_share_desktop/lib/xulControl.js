@@ -20,6 +20,7 @@ const SS_MENU = myId+'syncShareMenu';
 const SS_MENU_POPUP = myId+'syncShareMenuPopUp';
 const SS_MENU_SEPARATOR = myId+'menuSeparator';
 const SS_TAB_SEPARTOR = myId+'tabMenuSeparator';
+const SHARE_MENU = myId+'shareMenu';
 
 
 
@@ -135,6 +136,18 @@ function addSettingsMenu(){
 
 }
 
+function addShareMenu(){
+	var shareMenuItem = createMenuItem(SHARE_MENU,'Share');
+	
+	shareMenuItem.addEventListener('command', function(event){
+		emit(exports,'shareClicked',null);
+	});
+	
+	return shareMenuItem;
+
+
+}
+
 exports.addAllOptions = function(){
 
 	//Add the options in the tool menu:
@@ -150,6 +163,8 @@ exports.addAllOptions = function(){
 	menuPopUp.setAttribute('id',SS_MENU_POPUP);
 	//Add the Save all Tabs option.
 	menuPopUp.appendChild(addSaveAllTabsMenu());
+	//Add the Share option.
+	menuPopUp.appendChild(addShareMenu());
 	//Add the Open... menu option:
 	menuPopUp.appendChild(addOpenMenu());
 	/*************A Separator***********************/

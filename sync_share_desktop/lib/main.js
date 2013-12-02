@@ -303,6 +303,64 @@ function openMenu(msg){
 
 }
 
+function reDirectAuth(){
+	tabs.open('http://127.0.0.1:8000/login/');
+}
+var sharePageModify;
+var shareMenuTabWorker;
+function openShare(listOfElements){
+	console.log(JSON.stringify(listOfElements));
+	tabs.open({
+		url: data.url('share.html')
+	});
+	console.log("Opened!!!!");
+	
+	
+	sharePageModify = pageMod.PageMod({
+		include: data.url('share.html'),
+		contentStyleFile: data.url('sharestyle.css'),
+		contentScriptWhen: 'ready',
+		contentScriptFile: data.url('sharescript.js'),
+		onAttach: function onAttach(worker) {
+			shareMenuTabWorker = worker;
+			console.log(shareMenuTabWorker.tab.title);
+			//openMenuTabWorker.port.emit('start','Bookmarks');
+			//openMenuTabWorker.port.on('cellClicked',function(clickedElement){
+			shareMenuTabWorker.port.emit('readyForm', listOfElements);
+		}	
+	});
+	
+
+}
+
+var Request = require("sdk/request").Request;
+//Open the tab with the menu:
+function sendShare(msg){
+
+	//First send the share option:
+	var share = Request({
+		url: 'http://127.0.0.1:8000/share/',
+		onComplete: function(response){
+			//console.log("Response text = " + response.text);
+		    	console.log("Response Status = " + response.status);
+		    	//console.log("Response headers = " + JSON.stringify(response.headers));
+		    	console.log('Response status text = ' + response.statusText);
+		    	console.log('Response JSON = ' + response.json);
+		    	if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		reDirectAuth();
+		    	}
+		    	else if (response.status == '200'){
+		    		console.log(response.json[0].url);
+		    		openShare(response.json);
+		    	
+		    	}
+		}
+		
+	
+	});
+	share.get();
+	
+}
 
 //Handle the context menu:
 function handleContextMenu(clickedDetails){
@@ -350,6 +408,8 @@ exports.main = function(options, callbacks) {
     xulControl.on('saveAllTabsClicked',saveTabs);
     //The module xulControl informs us when the open menu item is clicked.
     xulControl.on('openMenuClicked',openMenu);
+    //The module xulControl informs us when the share menu is clicked.
+    xulControl.on('shareClicked', sendShare);
     
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save this');
