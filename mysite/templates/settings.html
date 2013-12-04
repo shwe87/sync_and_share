@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %} Share with {% endblock %}
-{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% block title %} Settings {% endblock %}
 {% block content %}
-	
-	
-	<div class="mainTitle">Choose what to share:</div>
-	<div class="syncError">	
+
+	<div class="mainTitle">Your saved contents:</div>
+	<div class="sync">	
 		<div class="error">
 			Nothing synced yet!
 		</div>	
@@ -14,12 +12,9 @@
 	
 	
 	<div class="mainTitle">Share with options:</div>
-	<div class="shareError">
+	<div class="share">
 		<div class="error">
 			Save something before trying to share anything!
 		</div>	
 	</div>
 {% endblock %}
-
-
-

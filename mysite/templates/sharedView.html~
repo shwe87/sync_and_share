@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} My shared items {% endblock %}
+{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+<!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
+{% block content %}
+	<div class="shareView">
+	{% if sharedFrom %}
+	<div class="mainTitle" id="shareFromTitle">Items you are sharing with other users:</div>
+	<div id="sharedFrom" class="shared">
+		{% for s in sharedFrom %}
+			{% for h in s.shared.all %}
+				<div class="item">
+					<ul onclick="showOrHide(event)" class="hiding" id="{{ h.unique }}">
+					You are sharing 
+						<a href="{{ h.url }}" >{{ h.title }}</a> 
+					with:
+						<span clas="imageContainer"><img onclick="delSharedFromContent(event,'{{ s.unique }}', '{{ h.unique }}')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
+						</span>
+						{% if s.typeOf_share == "email" %}
+							{% for w in s.shared_with_emails.all %}
+								<li class="hidden" >
+								<span class="small sharedWithEmail"> {{ w.email }} </span>
+								<!--span clas="imageContainer" >
+									<img class="image" src={% static "images/cross.png" %} title="Stop sharing this with this user" height="15px" onclick="delShareFromUser(event ,'{{ s.unique }}','{{ w.email }}','{{ h.unique }}')"-->
+								</span>
+								</li>
+							{% endfor %}
+						{% endif %}
+						{% if s.typeOf_share == "group" %}
+							{% for w in s.shared_with_group.all %}
+								<li class="hidden">
+								<span class="small sharedWithGroup"> {{ w.groupName }}</span>
+								</li>
+							{% endfor %}
+						{% endif %}
+						
+					</ul>
+				</div>
+			{% endfor %}
+			
+			
+		{% endfor %}
+	
+	</div>
+	{% endif %}
+	
+	{% if sharedWith %}
+	<div class="mainTitle">Items shared with you by others:</div>
+	<div id="sharedWith" class="shared">
+		{% for s in sharedWith %}
+			<div class="item">
+			<ul onclick="showOrHide(event)" class="hiding" value="{{ s.unique }}">The user <span class="highlight">{{ s.shared_from.email }}</span> is sharing with you: <br> 
+			{% for h in s.shared.all %}
+					<li class="hidden"><a href="{{ h.url }}">{{ h.title }}</a></li>	
+			{% endfor %}
+
+			</ul>
+			</div>
+		{% endfor %}
+	
+	</div>
+	{% endif %}
+	
+	{% if sharedGroup %}
+	<div class="mainTitle">Items shared with you by groups:</div>
+	<div id="sharedGroup" class="shared">
+		{% for s in sharedGroup %}
+			<div class="item">
+			
+			You belong to the following groups:
+			<ul onclick="showOrHide(event)" class="hiding" id="{{ s.unique }}">
+			<span class="highlight">{{ s.groupName }}</span>
+			
+				<span clas="imageContainer"><img onclick="delFromGroup(event,'{{ s.unique }}')" class="image" src={% static "images/cross.png" %} title="Delete from this group" height="15px"></span>
+			
+			{% for sh in s.share_set.all %}
+				{% if sh.shared.all %}
+					{% for t in sh.shared.all %}
+					<li class="hidden"><a href="{{ t.url }}">	{{ t.title }} </a></li>
+				
+					{% endfor %}
+				{% else %}
+					<li class="hidden"><div class="error">Nothing is being shared with this group right now.</div></li>
+				{% endif %}
+			
+			{% endfor %}
+			</ul>
+			</div>	
+		{% endfor %}
+	</div>
+	{% endif %}
+	</div>
+{% endblock %}
+
+{% block script %}
+<script src={% static "javascript/sharescript.js" %}></script>
+
+{% endblock %}
+
+

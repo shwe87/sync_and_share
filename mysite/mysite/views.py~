@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from syncShare.models import validate_type
 import json
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
+#from django.contrib.auth.models import Group
 from forms import ShareForm
 import uuid
 #from friends.views import friendship_request
@@ -24,8 +24,8 @@ import uuid
 
 
 
-# @function parseData: Given a query_set, parse it to a list of dict objects.
-# @param datasList {query_set}: contains a list of query_set objects.
+# @function parseData: Given a query_set (from Sync model), parse it to a list of dict objects.
+# @param datasList {query_set}: contains a list of query_set objects of type Sync.
 # @return thisList {list}: A list of the parsed query_set to dict object.
 def parseData(datasList):
 	thisList = []
@@ -47,37 +47,6 @@ def main(request):
 	return render(request, 'login.html')
 
 
-"""
-# @function ifDataExists: This function determines if the data that is going to be saved already exists or not
-# @param aData {dict}:
-#	--@title {string}: the title of the data to save.
-#	--@url {URL}: the url of the data to save.
-#	--@typeOf {"bookmarks","tabs" or "history"}: type of the data to save.
-#	--@create {boolean}: create if it doesn't exist.
-# @return datas {dict}:
-#	--@exists {boolean}: if this data already exists in the Data table.
-#	--@savedData {query_set}: set ofrom contact.forms import ContactFormnly if the data exists or if created.
-def ifDataExists(aData):
-	
-
-
-def ifUserExists(aData):
-	user = aData['user']
-	create = aData['create']
-	datas = {}
-	try:
-		savedUser = UsersData.objects.get(user=user)
-		datas['exists'] = True
-		datas['user'] = savedUser
-	except UsersData.DoesNotExist:
-		datas['exists'] = False
-		if (create):
-			savedUser = UsersData(user=user)
-			savedUser.save()
-			datas['user'] = savedUser
-	return datas
-
-"""
 def saveData(aData):
 	#givenData = aData['data']
 	title = aData['title']
@@ -115,7 +84,7 @@ def saveData(aData):
 		datas['savedData'] = savedData
 	return datas
 
-def saveShareData(aData):
+"""def saveShareData(aData):
 	#givenData = aData['data']
 	title = aData['title']
 	url = aData['url']
@@ -150,7 +119,7 @@ def saveShareData(aData):
 		datas['error'] = 'Such data does not exist'
 	return datas
 		
-	
+"""	
 
 @login_required()
 def welcome(request):
@@ -164,6 +133,27 @@ def welcome(request):
 	c = t.render(Context({'email':request.user.email}))
 	#t.render(c)
 	response.write(c)"""
+	print request.user.email
+	emails = []
+	emails.append('shweta87.work@gmail.com')
+	emails.append('parihu@gmail.com')
+	emails.append('parihu@gmail.com')
+	emails = sorted(set(emails))
+	print "EMAILS"
+	"""thisUser = User.objects.get(email=request.user.email)
+	shared = Share.objects.filter(shared_from=thisUser)
+	if shared:
+		print ("SI")
+		for s in shared:
+			s.shared_with_emails.remove("asdfkdskf")
+	"""	
+	try:
+		toRemove = str(request.user.email)
+		emails.remove(toRemove)
+		
+	except ValueError:
+		pass
+	print emails
 	return render(request, 'welcome.html',{'email':request.user.email})
 
 
@@ -249,88 +239,204 @@ def save_group(user, groupName, members ):
 		ug = UserGroup(user=user)		#Create one
 		ug.save()				#Save it.
 	uid = uuid.uuid4()
-	s = MyGroup(creator=user, groupName=groupName,unique=uid)
-	s.save()
+	uid = str(uid)
+	mg = MyGroup(creator=user, groupName=groupName,unique=uid)
+	mg.save()
 	for m in members:	#Add the members of this group
 		u = User.objects.get(email=m)
-		s.members.add(u)
-	ug.groups.add(s)
+		mg.members.add(u)
+		# For each member add them as the part of the group in ther user's group table.
+		try:# Has to be symmetrical
+			memgr = UserGroup.objects.get(user=u)
+			memgr.groups.add(mg)
+		except UserGroup.DoesNotExist:
+			memgr = UserGroup(user=u)
+			memgr.save()
+			memgr.groups.add(mg)
+	ug.groups.add(mg)
+	return mg	#Return the saved group
+
+@csrf_exempt
+def deleteSync(request):
+	print request.user
+	print request.body
+	print request.POST
+	if request.method == 'POST':
+		uniqueId = request.POST['unique']
+		print uniqueId
+		try:
+			s = Sync.objects.get(unique=uniqueId)
+			s.delete()
+			response = HttpResponse()
+			response.write("OK");
+		except Sync.DoesNotExist:
+			response = HttpResponseNotFound()
+			response.write("Not Found");
+	else:
+		response = HttpResponseNotAllowed("Only POST Allowed")
+	return response	
+
+@csrf_exempt
+def deleteShareFromContent(request):
+	print request.user
+	print request.body
+	print request.POST
+	if request.method == 'POST':
+		#typeOf = request.POST['typeOf']
+		shareId = request.POST['shareId']
+		toDeleteId = request.POST['toDeleteId']
+		#uniqueId = request.POST['unique']
+		#print uniqueId
+		
+		#Delete an item that the user was sharing with other users.
+		try:
+			shared_content = Share.objects.get(unique=shareId)
+			shared_from = shared_content.shared_from
+			if (shared_from.email == request.user.email):	#If the user is the owner
+				sync = Sync.objects.get(unique=toDeleteId)
+				print "sync deleted"
+				shared_content.shared.remove(sync)
+				t = shared_content.shared.all()
+				print "Length of shared.all()"
+				print len(t)
+				if (len(t) is 0):
+					print "deleted"
+					#If it is 0, it means, there is nothing to share:
+					shared_content.delete()
+				#for h in t:
+				#	print h.title
+				print "sync deleted 2"
+				response = HttpResponse()
+				response.write("OK")
+			else:
+				response = HttpResponseNotAllowed('You are not the owner')						
+		except Share.DoesNotExist:
+			response = HttpResponseNotFound()
+			response.write("Not Found")			
+	else:
+		response = HttpResponseNotAllowed("Only POST allowed")
 	
+	#response= HttpResponse()
+	return response
 	
+
+
+# @function share: This function is called when the url is /share/. It displays a form so that the user can
+#		   choose what to share, with whom to share, what to do with the synced elements, etc.
+# @param request {Request object}: contains the request object.
+# @return a rendered template depending on:
+#	-- if the user has nothing synced yet then the noShare.html template will be rendered.
+#	-- if the user has something synced then the share.html template will be rendered.	
 @csrf_exempt
 def share(request):
 	response = HttpResponse()
 	try:
+		#first of all, try to fetch the user's synced elements.
 		synced = Sync.objects.filter(user=request.user)
-	except Sync.DoesNotExist:	#If this user hasn't synced anything yet.
+		if not synced:					#If it doesn't filter anything
+			synced = None
+	except Sync.DoesNotExist:				#If this user hasn't synced anything yet.
 		synced = None
-		pass
 	try:
-		ug = UserGroup.objects.get(user=request.user)
-		groups = ug.groups.all()
-		for g in groups:
+		#Now just try to see if this user belongs to any group.
+		ug = UserGroup.objects.get(user=request.user)	
+		groups = ug.groups.all()			#ManyToManyField groups.
+		#print groups
+		for g in groups:				#Iterate every group
+			#sharedObjects = g.share_set.all()	#See what this group has shared.
+			#print sharedObjects			
 			title = ""
 			thisGroupsMembers = g.members.all()
 			for m in thisGroupsMembers:
 				title = title + m.email + "\r\n"
-			print title
-	except UserGroup.DoesNotExist:
+			#print title
+	except UserGroup.DoesNotExist:				#If this user hasn't created any group yet
 		groups = None
-	if (request.method == 'POST'):#render the form
-		form = ShareForm(request.POST)
-		if form.is_valid():
-			cd = form.cleaned_data
+	if (request.method == 'POST'):				#User has sent the form
+		form = ShareForm(request.POST, request=request)	#The request object is passed to validate the form
+		if form.is_valid():				#If the form is valid or not
+			cd = form.cleaned_data			#Cleaned data
 			print cd
-			toShare = cd['toShare']
-			print toShare
-			shareWith = cd['friends_email']
-			print shareWith
-			#Try to save it:
-			#saveShared = Share(shared_from=request.user)
-			saveShared = Share(shared_from=request.user)
+			toShare = cd['toShare']			#These are the objects that are going to be shared 
+			uid = uuid.uuid4()
+			uid = str(uid)
+			saveShared = Share(shared_from=request.user,unique=uid)#Create a new entry for the share
 			saveShared.save()
-			for checked in toShare:
+			for checked in toShare:			#Save all the checked objects
 				print checked
-				shared = Sync.objects.get(unique=checked)
+				shared = Sync.objects.get(unique=checked)	#Get it from the synced object and add it
 				#check_if_exist(shared,request.user)
 				saveShared.shared.add(shared)
-				for u in shareWith:
+			selectFrom = cd['selectFrom']		#What type of sharing with was selected
+			if (selectFrom == '1'):		
+				#Share by email address:
+				byEmail = cd['friends_email']	#Friends email
+				saveShared.typeOf_share = 'email'#Share is by email
+				saveShared.save()		
+				for u in byEmail:		#Add all those with whom to share
 					shareWithUser = User.objects.get(email=u)
-					saveShared.shared_with.add(shareWithUser)
+					saveShared.shared_with_emails.add(shareWithUser)
+			elif (selectFrom == '2'):		
+				#Create a group and share:
+				byEmail = cd['friends_email']
+				group_name = cd['group_name']	
+				saveShared.typeOf_share = 'group'
+				saveShared.save()
+				#Create the group:
+				savedGroup = save_group(request.user,group_name,byEmail)	#create the group with the povided friends email addresses
+				saveShared.shared_with_group.add(savedGroup)				
+			elif (selectFrom == '3'):
+				#Share with existing group:
+				existingGroups = cd['existingGroups']
+				saveShared.typeOf_share = 'group'
+				saveShared.save()
+				for checked in existingGroups:
+					savedGroup = MyGroup.objects.get(unique=checked)
+					saveShared.shared_with_group.add(savedGroup)	
 			response.write("OK")
 			return response
 	else:
 		# What has this user shared:
-		thisShare = Share.objects.filter(shared_from=request.user)
-		for l in thisShare:
-			print l.shared_with.all()
-			print l.shared.all()
+		#thisShare = Share.objects.filter(shared_from=request.user)
 		form = ShareForm()
 		for field in form:
 			if (field.name == 'toShare'):
 				try:
-					for s in synced:
-						aux = (s.unique,s.title)
-						field.field.widget.choices.append(aux)
-					#print field.field.widget.choices
+					if not (synced == None):
+						for s in synced:
+							aux = (s.unique,s.title)
+							field.field.widget.choices.append(aux)
+						#print field.field.widget.choices
 				except AttributeError:
 					pass
 			elif (field.name == 'existingGroups'):
 				try:
-					for e in groups:
-						aux = (e.unique,e.groupName)
-						field.field.widget.choices.append(aux)
+					if not (groups == None):
+						for e in groups:
+							aux = (e.unique,e.groupName)
+							field.field.widget.choices.append(aux)
 				except AttributeError:
 					pass
 		
-	print form
+	#print form
+	if synced:
+		for sy in synced:
+			ifShared = sy.share_set.all()
+			if (ifShared):
+				for i in ifShared:
+					print i.typeOf_share
 	if (synced == None):
-		return render(request, 'noShare.html')			
-	return render(request, 'share.html', {'form': form,'synced':synced,'groups':groups})
-		
-
+		rendered = render(request, 'noShare.html')
+	else:
+		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups})			
+	return rendered
 
 """
+@csrf_exempt		
+def settings(request):
+	
+
+
 @csrf_exempt 	
 def share(request):
 	#print (somebody)
@@ -402,13 +508,96 @@ def add(request):
 	
 	
 	
+def viewShared(request):
+	user = request.user
+	thisUser = User.objects.get(email=user.email)
+	#First get all the things this user has shared
+	try:
+		ifNone = True
+		shared_from_user = Share.objects.filter(shared_from=user)	#Share object list
+		if shared_from_user:						#If this user has shared anything with anyone
+			print "Yes shared!"
+			for s in shared_from_user:
+				t = s.shared.all()
+				if (len(t) > 0):
+					print "NOT NONE!!!"
+					ifNone = False
+					break			
+				#print "ID = " + s.title
+				"""s.delete()
+				sh = s.shared.all()
+				for h in sh:					
+					print h.title"""
+		if ifNone:
+			print "NONE!"
+			shared_from_user = None
+				
+		#for each shared object:
+	except Share.DoesNotExist:
+		shared_from_user = None
+	#print "Share FRom USER"
+	#print shared_from_user
+	#Now try to get all the things others has shared with this user:
+	try:
+		shared_with_user = thisUser.shared_with_emails_set.all()	#Share object
+		if shared_with_user:
+			print "YES"
+			print shared_with_user
+			for su in shared_with_user:
+				print "UNIQUE = " + su.unique
+				#su.shared_with_emails.remove(thisUser)	
+				sh = su.shared.all()
+				#for h in sh:
+					#print "Share with = " + str(h.title)
+					
+	except Share.DoesNotExist:
+		shared_with_user = None
 	
+	#Now try to get all the groups of this user and their sharing things:
+	try:
+		user_group = UserGroup.objects.get(user=user)
+		groups = user_group.groups.all()
+		for g in groups:
+			for sh in g.share_set.all():
+				for t in sh.shared.all():
+					print t.title
+		
+	except UserGroup.DoesNotExist:
+		#This user does't belong to any group
+		groups = None
+	return render(request, 'sharedView.html', {'sharedFrom':shared_from_user,'sharedWith':shared_with_user,'sharedGroup':groups})
 
 
 
+@csrf_exempt
+def deleteFromGroup(request):
+	#print request.body
+	if (request.method == 'POST'):
+		print request.POST
+		groupId = request.POST['groupId']
+		#Delete oneself from a group:
+		try:
+			response = HttpResponse()
+			group = MyGroup.objects.get(unique=groupId)		#Get the group with the ID
+			thisUser = User.objects.get(email=request.user.email)	#Get the user
+			userGroup = UserGroup.objects.get(user=thisUser)	#Get all the groups the user is in
+			userGroup.groups.remove(group)				#Remove this group from the user's table
+			thisUserGroups = userGroup.groups.all()			#Now check if this user belongs to more groups
+			if not thisUserGroups:	#Is this was the only group to which this user belonged to then delete the user's group record.
+				print "No groups"
+				userGroup.delete()
+				group.members.remove(thisUser)
+			#Lets see if there are any members in this group. If not then delete the record of this group:
+			membersOfGroup = group.members.all()
+			if not membersOfGroup:
+				print "No memebers"
+				group.delete()
+		except MyGroup.DoesNotExist:
+			response = HttpResponseNotFound()
+	else:
+		response = HttpResponseNotAllowed("ONLY POST ALLOWED")			
 
-
-
+	return response
 
 
 

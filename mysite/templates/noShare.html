@@ -4,9 +4,9 @@
 {% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
 {% block content %}
 	
-	
+	<div class="noShare">
 	<div class="mainTitle">Choose what to share:</div>
-	<div class="sync">	
+	<div class="syncError">	
 		<div class="error">
 			Nothing synced yet!
 		</div>	
@@ -14,10 +14,11 @@
 	
 	
 	<div class="mainTitle">Share with options:</div>
-	<div class="share">
+	<div class="shareError">
 		<div class="error">
 			Save something before trying to share anything!
 		</div>	
+	</div>
 	</div>
 {% endblock %}
 

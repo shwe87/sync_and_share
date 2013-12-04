@@ -28,7 +28,7 @@ class MultiEmailField(forms.Field):
 	emails = re.compile(r'[^\w\.\-\+@_]+').split(value)
 	
         for email in emails:
-            if value:
+            	if value:
 		    try:
 		    	validate_email(email)
 		    	validate_user(email)
@@ -36,6 +36,9 @@ class MultiEmailField(forms.Field):
 		    	raise forms.ValidationError('%s is not a valid e-mail address.' % email)
 		    except User.DoesNotExist:
 		    	raise forms.ValidationError('%s is not a registered user.' %email)
+		else:
+			emails = None
+		
 
         # Always return the cleaned data.
         return emails	
@@ -73,15 +76,48 @@ class ShareForm(forms.Form):
 	group_name = forms.CharField(max_length=100,label='Group Name', help_text='Maximum 100 characters', required=False)
 	existingGroups = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=GROUP_OPTIONS,required=False)
 	
+	
+	def __init__(self, *args, **kwargs):
+		self.request = kwargs.pop('request', None)
+		super(ShareForm, self).__init__(*args, **kwargs)
 	#choose = forms.ModelMultipleChoiceField()
 	def clean(self):
         	cleaned_data = super(ShareForm, self).clean()
         	friends_email = cleaned_data.get("friends_email")
         	group_name = cleaned_data.get("group_name")
         	existingGroups = cleaned_data.get("existingGroups")
-        	
-        	if not (friends_email and group_name and existingGroups):
-        		raise forms.ValidationError("Must choose one of the sharing options.")
+        	selectFrom = cleaned_data.get("selectFrom")
+		
+		if friends_email:
+			# Clear the duplicate emails:
+			friends_email = sorted(set(friends_email))
+			#print "Multiemail = " + self.request.user.email
+			try: #Remove the user who requested this
+				friends_email.remove(self.request.user.email)
+			except ValueError:
+				pass
+            	#self._errors["subject"] = self.error_class([msg])
+            	"""if not friends_email:
+        			raise forms.ValidationError(u"Friends email can't be empty.")
+        	if not(group_name and friends_email):
+        			raise forms.ValidationError(u"The group name field and the friends' emails should be filled.")
+        	if not existingGroups:
+        			raise forms.ValidationError(u"At least one group should be checked.")"""
+        	if (selectFrom == '1'):
+        		#print ("1111111111111111111111111111111111111111")
+        		#print len(friends_email)
+        		if not friends_email or friends_email == None:
+        			#print ("2222222222")
+        			raise forms.ValidationError(u"Friends email can't be empty. Or you are trying to share to yourself.")
+        	elif (selectFrom == '2'):
+        		if not(group_name and friends_email):
+        			raise forms.ValidationError(u"The group name field and the friends' emails should be filled.")
+        	elif (selectFrom == '3'):
+        		if not existingGroups:
+        			raise forms.ValidationError(u"At least one group should be checked.")
+        	"""if not (friends_email and group_name and existingGroups):
+        		raise forms.ValidationError("Must choose one of the sharing options.")"""
+            	
             	return cleaned_data
 
 

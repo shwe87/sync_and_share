@@ -3,7 +3,8 @@ from django.contrib import auth
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 import syncShare
-
+from django.contrib.staticfiles.views import serve as serve_static
+from django.views.decorators.cache import never_cache
 
 admin.autodiscover()
 
@@ -12,11 +13,17 @@ urlpatterns = patterns('',
 	(r'^browserid/', include('django_browserid.urls')),
 	(r'^save/(?P<element>[\w]+)/$','mysite.views.save'),
 	(r'^read/(?P<element>[\w]+)/$','mysite.views.read'),
-	#(r'^add/$','mysite.views.add'),
+	(r'^add/$','mysite.views.add'),
+	(r'^delete/sync/$','mysite.views.deleteSync'),
+	(r'^delete/share/from/content/$','mysite.views.deleteShareFromContent'),
+	(r'^delete/share/from/user/$','mysite.views.deleteShareFromUser'),
+	(r'^delete/from/group/$','mysite.views.deleteFromGroup'),
 	(r'^share/$','mysite.views.share'),
+	(r'^view/share/$','mysite.views.viewShared'),
 	#(r'^save/bookmarks/','browseridTest.views.saveBookmarks'),
 	#(r'^save/history','browseridTest.views.saveHistory'),
 	(r'^$', 'mysite.views.welcome'),
+	(r'^static/(?P<path>.*)$', never_cache(serve_static)),
 	
 	
     # Examples:

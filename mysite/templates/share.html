@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% block title %} Share with {% endblock %}
 {% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+<!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
 {% block content %}
 	<div class="form">
 
@@ -19,6 +20,20 @@
 		{% if form.toShare.errors %}
 			What to share: {{ form.toShare.errors }}
 		{% endif %}
+		
+		{% if form.friends_email.errors %}
+			What to share: {{ form.friends_email.errors }}
+		{% endif %}
+		
+		{% if form.group_name.errors %}
+			What to share: {{ form.group_name.errors }}
+		{% endif %}
+		
+		{% if form.existingGroups.errors %}
+			What to share: {{ form.existingGroups.errors }}
+		{% endif %}
+		
+		
 	
 	
 	</div>
@@ -28,12 +43,15 @@
 	<div class="sync">
 			
 		{% for m in synced %}
-			<div class="item">
+			<div class="item" id="{{ m.unique }}">
 			       <label>
 			       		<input name="toShare" type="checkbox" value="{{ m.unique }}" /> 
 			       			<a href="{{ m.url }}" title="{{ m.url }}">{{ m.title }}</a>
-			       			<span><img src="/static/images/{{ m.typeOf }}.png" height="15px" ></span>
+			       			<span class="imageContainer"><img src="/static/images/{{ m.typeOf }}.png" height="15px" title="{{ m.typeOf }}"></span>
 			       	</label>
+			       	<span class="imageContainer" >   
+			       		<img onclick="del(event)" class="image" src={% static "images/cross.png" %} title="Click to delete" height="15px">
+			       	</span>
 			</div>
 			       		
 		{% endfor %}		
@@ -56,11 +74,18 @@
 				Groups not created yet.
 			</div>
 		{% else %}
-			{% for m in groups %}
+			{% for g in groups %}
 				<div class="item">
 				 	<label>
-				 		<input name="existingGroups" type="checkbox" value="{{ m.unique }}"/>	
-				 			<span class="groupName">{{ m.groupName }}</span>
+				 		<ul ><input class="groupName" name="existingGroups" type="checkbox" value="{{ g.unique }}"/>
+				 		<span >{{ g.groupName }}</span>
+				 			<li class="small hidden" title="Member of {{ g.groupName }}">{{ g.creator.email }} (creator)</li>
+				 			{% for mem in g.members.all %}
+				 			<li class="small hidden" title="Member of {{ g.groupName }}">{{ mem.email }}</li>
+				 			
+				 			{% endfor %}
+				 			
+				 			</ul>
 				 	</label>
 				 </div>
 			{% endfor %}

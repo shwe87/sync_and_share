@@ -76,20 +76,9 @@ class Sync(models.Model):
         	 	'typeOf': (self.typeOf),
         	 	'title': (self.title),
         	 }
+        
+        
 
-# @class Share {model}: This table contains the shared items between two users.
-#	-- @shared {Sync model}: is the reference to the sync model, it is the shared item.
-#	-- @shared_with {User}: With whom it is shared with
-class Share(models.Model):
-	shared = models.ManyToManyField(Sync)
-	shared_from = models.ForeignKey(User,related_name='shared_from_set')
-	#friend = models.ForeignKey(User, related_name='friends')
-	shared_with = models.ManyToManyField(User, related_name='shared_with_set')
-	
-	def __unicode__(self):
-		return (u'%(owner)s is sharing') %{
-        	 	'owner': (self.shared_from.email),
-        	 }
 
 class MyGroup(models.Model):
 	creator = models.ForeignKey(User, related_name='creator_set')
@@ -99,6 +88,26 @@ class MyGroup(models.Model):
 	
 	def __unicode__ (self):
 		return (u'%s' %(self.groupName))
+	
+
+
+
+# @class Share {model}: This table contains the shared items between two users.
+#	-- @shared {Sync model}: is the reference to the sync model, it is the shared item.
+#	-- @shared_with {User}: With whom it is shared with
+class Share(models.Model):
+	shared = models.ManyToManyField(Sync)
+	shared_from = models.ForeignKey(User,related_name='shared_from_set')
+	typeOf_share = models.CharField(max_length=5)
+	#friend = models.ForeignKey(User, related_name='friends')
+	shared_with_group = models.ManyToManyField(MyGroup)
+	shared_with_emails = models.ManyToManyField(User, related_name='shared_with_emails_set')
+	unique = models.CharField(max_length=100, null=True, blank=True, unique=True)
+	
+	def __unicode__(self):
+		return (u'%(owner)s is sharing') %{
+        	 	'owner': (self.shared_from.email),
+        	 }
 	
 
 class UserGroup(models.Model):
