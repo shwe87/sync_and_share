@@ -11,6 +11,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
         (r'^login/$','mysite.views.main'),
 	(r'^browserid/', include('django_browserid.urls')),
+	(r'^add/all/bookmarks/$','mysite.views.addNewBookmarks'),
+	(r'view/all/bookmarks/$','mysite.views.viewAllBookmarks'),
 	(r'^save/(?P<element>[\w]+)/$','mysite.views.save'),
 	(r'^read/(?P<element>[\w]+)/$','mysite.views.read'),
 	(r'^add/$','mysite.views.add'),

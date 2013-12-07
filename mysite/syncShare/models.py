@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from mptt.models import MPTTModel, TreeForeignKey
+import json
+import time
+import datetime
 
 
 # @class validate_type: This is to validate the typeOf field in the user's table.
@@ -57,6 +61,89 @@ class History(models.Model):
 	def __unicode__(self):
         	return self.title
 """
+"""class Bookmark(models.Model):
+	
+	 childNode.title = child.title;
+                childNode.itemId = child.itemId;
+                childNode.type = child.type;
+                childNode.dateAdded = child.dateAdded;
+                childNode.lastModified = child.lastModified;
+                childNode.parentId = child.parent.itemId;
+                childNode.time =child.time;
+                childNode.url = child.uri;
+	
+	
+	itemId = models.IntegerField()
+	owner = models.ForeignKey(User)
+	deviceId = models.TextField()
+	title = models.TextField()
+	url = models.URLField()
+	parentId = models.IntegerField()
+	ifFolder = models.BooleanField()
+	children = models.ForeignKey('self')
+	dateAdded = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	lastModified = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	time = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	
+	def __unicode__(self):
+		return (u'%s' %(self.title))
+"""
+def get_time_in_ms(date):
+	date_time_milis = time.mktime(date.timetuple()) * 1000 + date.microsecond / 1000
+	return date_time_milis
+
+class Bookmark(MPTTModel):
+    	itemId = models.IntegerField()
+	owner = models.ForeignKey(User)
+	deviceId = models.TextField()
+	title = models.TextField()
+	url = models.URLField()
+	parentId = models.IntegerField()
+	ifFolder = models.BooleanField()
+	dateAdded = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	lastModified = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	time = models.DateField(auto_now=False,auto_now_add=False,null=True)
+	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+
+	class MPTTMeta:
+        	order_insertion_by = ['title']
+        	
+        def __unicode__(self):
+		return (u'%s' %(self.title))
+		
+	def serialize_to_json(self):
+		return json.dumps(self.serializable_object())
+		
+	def serializable_object(self):
+		obj = {'itemId':self.itemId,'title':self.title,'parentId':self.parentId,'ifFolder':self.ifFolder,'deviceId':self.deviceId}
+		if self.ifFolder:
+			print self.title + "is not a leaf"
+			obj['children'] = []
+			if self.parentId != 0:
+				obj['url'] = self.url
+				#obj['dateAdded'] = get_time_in_ms(self.dateAdded)
+				#obj['lastModified'] = get_time_in_ms(self.lastModified)
+				#obj['time'] = get_time_in_ms(self.time)
+			for child in self.get_children():
+				obj['children'].append(child.serializable_object())
+		return obj
+			
+
+class Tab(models.Model):
+	url = models.URLField()
+	title = models.TextField()
+	deviceId = models.TextField()
+	owner = models.ForeignKey(User)
+
+
+class History(models.Model):
+	url = models.URLField() 
+	title = models.TextField()
+	time = models.DateField()
+	deviceId = models.TextField()
+	owner = models.ForeignKey(User)
+	
+			
 
 # @class Sync: This table contains all saved/synced items by a user.
 #	-- @user {User}: is the user who saved a item, it's a reference to the auth_user table.

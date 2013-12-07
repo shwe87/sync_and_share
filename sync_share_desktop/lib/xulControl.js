@@ -19,8 +19,10 @@ const SETTINGS_MENU = myId+'settingsMenu';
 const SS_MENU = myId+'syncShareMenu';
 const SS_MENU_POPUP = myId+'syncShareMenuPopUp';
 const SS_MENU_SEPARATOR = myId+'menuSeparator';
+//const SS_ANOTHER_MENU_SEPARATOR = myId+'anotherMenuSeparator';
 const SS_TAB_SEPARTOR = myId+'tabMenuSeparator';
 const SHARE_MENU = myId+'shareMenu';
+const VIEW_SHARE_MENU = myId+'viewShareMenu';
 
 
 
@@ -148,6 +150,18 @@ function addShareMenu(){
 
 }
 
+function addViewShareMenu(){
+	var viewShareMenuItem = createMenuItem(VIEW_SHARE_MENU,'My Shared Items');
+	
+	viewShareMenuItem.addEventListener('command', function(event){
+		emit(exports,'viewShareClicked',null);
+	});
+	
+	return viewShareMenuItem;
+
+
+}
+
 exports.addAllOptions = function(){
 
 	//Add the options in the tool menu:
@@ -163,10 +177,15 @@ exports.addAllOptions = function(){
 	menuPopUp.setAttribute('id',SS_MENU_POPUP);
 	//Add the Save all Tabs option.
 	menuPopUp.appendChild(addSaveAllTabsMenu());
-	//Add the Share option.
-	menuPopUp.appendChild(addShareMenu());
 	//Add the Open... menu option:
 	menuPopUp.appendChild(addOpenMenu());
+	/*************A Separator***********************/
+	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
+	menuPopUp.appendChild(separator);
+	//Add the Share option.
+	menuPopUp.appendChild(addShareMenu());
+	//Add the view Share items
+	menuPopUp.appendChild(addViewShareMenu());
 	/*************A Separator***********************/
 	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
 	menuPopUp.appendChild(separator);

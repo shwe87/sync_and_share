@@ -11,6 +11,8 @@ const xulControl = require('./xulControl.js');	//Get all the XUL (browser) contr
 const contextMenu = require('./contextMenu.js');//Create and handle the context menu placed in this addon's html page.
 const server = require('./serverControl.js');	//Controls the server where the datas will be saved.
 const panel = require("./panelControl.js");	//Control the panel used to show messages to the user.
+const share = require("./share.js");
+const myServer = require("./myServer.js");
 /****************************************Global Variables**************************************************************/
 var openMenuTabWorker;				//This worker will be attached to the addon html page.
 var myContextMenu;				//This is the context menu that will be displayed when a user right clicks a bookmark or a history in this addon html page.
@@ -21,8 +23,8 @@ const TABS_FILE = 'tabs.json';			//The file with all the saved tabs will be name
 const BOOKMARKS_FILE = 'bookmarks.json';	//The file with the saved bookmarks will be named this way in the server.
 const HISTORY_FILE = 'history.json';		//The file with the saved history will be named this way in the server.
 
-
-
+var ss = require("sdk/simple-storage");
+var {Cc, Ci, Cu} = require("chrome");
 /*
 tabs.open('www.urjc.es');
 tabs.open('www.gmail.com');
@@ -303,64 +305,7 @@ function openMenu(msg){
 
 }
 
-function reDirectAuth(){
-	tabs.open('http://127.0.0.1:8000/login/');
-}
-var sharePageModify;
-var shareMenuTabWorker;
-function openShare(listOfElements){
-	console.log(JSON.stringify(listOfElements));
-	tabs.open({
-		url: data.url('share.html')
-	});
-	console.log("Opened!!!!");
-	
-	
-	sharePageModify = pageMod.PageMod({
-		include: data.url('share.html'),
-		//contentStyleFile: data.url('myPageStyle.css'),
-		contentScriptWhen: 'ready',
-		contentScriptFile: data.url('sharescript.js'),
-		onAttach: function onAttach(worker) {
-			shareMenuTabWorker = worker;
-			console.log(shareMenuTabWorker.tab.title);
-			//openMenuTabWorker.port.emit('start','Bookmarks');
-			//openMenuTabWorker.port.on('cellClicked',function(clickedElement){
-			shareMenuTabWorker.port.emit('readyForm', listOfElements);
-		}	
-	});
-	
 
-}
-
-var Request = require("sdk/request").Request;
-//Open the tab with the menu:
-function sendShare(msg){
-
-	//First send the share option:
-	var share = Request({
-		url: 'http://127.0.0.1:8000/share/',
-		onComplete: function(response){
-			//console.log("Response text = " + response.text);
-		    	console.log("Response Status = " + response.status);
-		    	//console.log("Response headers = " + JSON.stringify(response.headers));
-		    	console.log('Response status text = ' + response.statusText);
-		    	console.log('Response JSON = ' + response.json);
-		    	if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
-		    	}
-		    	else if (response.status == '200'){
-		    		console.log(response.json[0].url);
-		    		openShare(response.json);
-		    	
-		    	}
-		}
-		
-	
-	});
-	share.get();
-	
-}
 
 //Handle the context menu:
 function handleContextMenu(clickedDetails){
@@ -391,7 +336,27 @@ function handleContextMenu(clickedDetails){
 var windows = require("sdk/window/utils");
 
 exports.main = function(options, callbacks) {
-    windows.getMostRecentBrowserWindow().alert(options.loadReason);
+    //windows.getMostRecentBrowserWindow().alert(options.loadReason);
+    if (!ss.storage.id){
+		var uuidGenerator = Cc['@mozilla.org/uuid-generator;1'].
+                          getService(Ci.nsIUUIDGenerator);
+                ss.storage.id = uuidGenerator.generateUUID().toString();
+		console.log("Added = " + ss.storage.id);
+	}
+	else{
+		console.log("Already saved = " + ss.storage.id);
+	
+	}
+	myServer.startUp(ss.storage.id);
+    //If the reason is download then:
+    var myWidget = require("sdk/widget").Widget({
+ 		 id: "myWidget",
+  		label: "Django test",
+  		width:60,
+ 		 content: "Bookmarks",
+  		contentScriptWhen: 'ready',
+  		onClick: myServer.getBookmarks
+  	});
     //Start the server control:
     server.start();
     //Create the panel:
@@ -409,7 +374,7 @@ exports.main = function(options, callbacks) {
     //The module xulControl informs us when the open menu item is clicked.
     xulControl.on('openMenuClicked',openMenu);
     //The module xulControl informs us when the share menu is clicked.
-    xulControl.on('shareClicked', sendShare);
+    xulControl.on('shareClicked', share.openShare);
     
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save this');

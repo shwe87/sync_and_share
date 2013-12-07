@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% block title %} View Bookmarks {% endblock %}
+{% block head %}<link href={% static "css/viewBookmarks.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% block content %}
+	<ul>
+    {% recursetree nodes %}
+        <li>
+            {% if not node.ifFolder %}
+            	<a href="{{ node.url }}">{{ node.title }}</a>
+            {% else %}
+            	{{ node.title }}
+            {% endif %}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+{% endblock %}
+
+
+
+

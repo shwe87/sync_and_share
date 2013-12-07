@@ -1,0 +1,30 @@
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+        font-family: Palatino,Georgia,Times;
+        color: #383127;
+}
+
+
+ul{
+	list-style:none;
+	text-align:left;
+}
+
+a{
+	color: #383127;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

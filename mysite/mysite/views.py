@@ -10,6 +10,7 @@ from syncShare.models import Sync
 from syncShare.models import Share
 from syncShare.models import MyGroup
 from syncShare.models import UserGroup
+from syncShare.models import Bookmark
 from django.core.exceptions import ValidationError
 from syncShare.models import validate_type
 import json
@@ -17,6 +18,7 @@ from django.contrib.auth.models import User
 #from django.contrib.auth.models import Group
 from forms import ShareForm
 import uuid
+import datetime
 #from friends.views import friendship_request
 #from friends.views import friendship_accept
 #from friends.models import FriendshipRequest
@@ -31,10 +33,13 @@ def parseData(datasList):
 	thisList = []
 	for d in datasList:
 		thisDict = {}
-		thisDict['title'] = d.title
+		try:
+			thisDict['title'] = d.title
+		except KeyError:
+			pass
 		thisDict['url'] = d.url
 		thisDict['typeOf'] = d.typeOf
-		thisDict['user'] = d.user.email
+		thisDict['user'] = d.user
 		thisList.append(thisDict)
 		#thisList['id'] = t.tabID
 	return thisList
@@ -166,7 +171,7 @@ def save(request, element):
 	response = HttpResponse()
 	print (element)
 	print (request.body)
-	print (request.META)
+	#print (request.META)
 	if (request.user.is_authenticated()):
 		try:
 			#Validate the element passed: Valid only tabs,bookmarks or history.
@@ -599,10 +604,176 @@ def deleteFromGroup(request):
 
 	return response
 
+def handle_children(node, deviceId, user):
+	print "Filter everything with the deviceId and owner"
+	savedBookmark = Bookmark.objects.filter(deviceId=deviceId,owner=user)
+	print savedBookmark
+	child = savedBookmark.filter(itemId=node['itemId'])
+	print "Try to get the child. " + str(node['itemId']) + " " + str(node['title'])
+	#child = None
+	if not child:
+		print "Not created"
+		title = node['title']
+		itemId = node['itemId']
+		url = node['url']
+		dateAdded = node['dateAdded']/1000
+		dateAdded = datetime.datetime.fromtimestamp(dateAdded/1000.0)
+		#print str(dateAdded)
+		lastModified = node['lastModified']/1000
+		lastModified = datetime.datetime.fromtimestamp(lastModified/1000.0)
+		#print str(lastModified)
+		parentId = node['parentId']
+		time = node['time']/1000
+		time = datetime.datetime.fromtimestamp(time/1000.0)
+		#print str(time)
+		ifFolder = node['ifFolder']
+		print "create child!"
+	parent = savedBookmark.filter(itemId=node['parentId'])
+	print "Try to get the parent " + str(node['parentId'])
+	print len(parent)
+	if parent:
+		print "Parent Found!"
+		for p in parent:
+			child = Bookmark.objects.create(title=title,url=url,itemId=itemId,parentId=parentId,ifFolder=ifFolder,owner=user,deviceId=deviceId,parent=p)
+			child.save()
+			child.time = time
+			child.dateAdded = dateAdded
+			child.lastModified = lastModified
+			child.save()
+	if node['ifFolder']:
+		if node['children']:
+			for child in node['children']:
+				handle_children(child,deviceId,user)
+		
+			
+@csrf_exempt
+def addNewBookmarks(request):
+	response = HttpResponse()
+	#print (element)
+	#print (request.body)
+	
+	print request.META['HTTP_MYID']
+	print request.META['HTTP_MYNAME']
+	device_id = request.META['HTTP_MYID']
+	device_name = request.META['HTTP_MYNAME']
+	#print (request['myName'])
+	#print (request['myId'])
+	#print (request.META)
+	#if (request.user.is_authenticated()):
+	try:
+		bookmarks = Bookmark.objects.filter(deviceId=device_id)
+		bookmarks.delete()	#Delete everything saved. To remove redundance.
+		parsedData = json.loads(request.body)
+		#print parsedData
+		owner = User.objects.get(email='shweta87.work@gmail.com')
+		for p in parsedData:
+			#Have to save each and every data:
+		        title = p['title']
+		        itemId = p['itemId']
+		        parentId = p['parentId']
+			#url = p['url']
+			#itemId = p['itemId']
+			#dateAdded = p['dateAdded']
+			#lastModified = p['lastModified']
+			#parentId = p['parentId']
+			#time = p['time']
+			#ifFolder = p['ifFolder']
+			p['ifFolder'] = True
+			print "*****Save this*****"
+			print title
+			savedBookmark = Bookmark(title=title,itemId=itemId,parentId=parentId,owner=owner,deviceId=device_id,ifFolder=True)
+			savedBookmark.save()
+			handle_children(p,device_id,owner)
+			print p
+		#for p in parsedData:
+		#	handle_children(p,device_id,owner)
+	except Bookmark.DoesNotExist:
+		pass				
+	return response
 
-
-
-
+def parse_child(children, saveHere, owner):
+	for child in children:
+		c={}
+		c['title'] = child.title
+		c['url'] = child.url
+		c['itemId'] = child.itemId
+		c['parentId'] = child.parentId
+		c['ifFolder'] = child.ifFolder
+		c['dateAdded'] = child.dateAdded
+		#print str(dateAdded)
+		c['lastModified'] = child.lastModified
+		#print str(lastModified)	
+		c['time'] = child.time
+		print "*********"
+		print c['title']
+		saveHere.append(c)
+		if (c['ifFolder']):
+			ch = Bookmark.objects.filter(owner=owner,itemId=c['itemId'])
+			print "Results = "
+			print len(ch)
+			for t in ch:
+				h = t.children.all()
+				c['children'] = []
+				if h:
+					#parse_child(h,c['children'],owner)
+					print h
+			#if ch:
+			#	print "*****"
+			#	print c['title']
+			#	c['children'] = []
+		#		parse_child(ch,c['children'])
+		#saveHere.append(child)
+		#t['children'] = children"""
+		
+	
+@csrf_exempt
+def viewAllBookmarks(request):
+	#Try to return all the bookmarks in a tuple
+	deviceId = "{121e1c91-f701-4ff9-a137-f9f13e630da1}"
+	owner = User.objects.get(email="shweta87.work@gmail.com")
+	bookmarks = Bookmark.objects.filter(owner=owner,deviceId=deviceId, parentId=0)
+	print len(bookmarks)
+	bookmarksList = []
+	for b in bookmarks:
+		bookmarksList.append(b.serialize_to_json())
+	print bookmarksList
+	"""owner = User.objects.get(email='shweta87.work@gmail.com')
+	#Have to put deviceId
+	bookmarks = Bookmark.objects.filter(owner=owner)
+	bookmarksList = []
+	for b in bookmarks:
+		if b.parentId is 0:
+			t = {}
+			t['title'] = b.title
+			t['itemId'] = b.itemId
+			t['parentId'] = b.parentId
+			children = b.children.all()
+			print "**************"
+			print t['title']
+			t['children'] = []
+			parse_child(children,t['children'],owner)
+			bookmarksList.append(t)
+		
+		else:
+			t={}
+			t['url'] = b.url
+			t['dateAdded'] = t.dateAdded
+			#print str(dateAdded)
+			t['lastModified'] = t.lastModified
+			#print str(lastModified)
+			t['parentId'] = t.parentId
+			t['time'] = t.time
+			#time = datetime.datetime.fromtimestamp(time/1000.0)
+			#print str(time)
+			t['ifFolder'] = t.ifFolder
+	print bookmarksList			
+	response = HttpResponse()
+	#response.write(children)"""
+	rendered = render(request, 'bookmarks.html', {'nodes':Bookmark.objects.all()})
+	return rendered
+		
+			
+	
 
 
 
