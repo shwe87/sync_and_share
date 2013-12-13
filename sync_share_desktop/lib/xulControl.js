@@ -2,7 +2,7 @@ const {Ci,Cc} = require("chrome");
 var { emit, on, once, off } = require("sdk/event/core");
 var tabs = require("sdk/tabs");
 var preferences = require("sdk/simple-prefs");
-var myId = preferences.prefs['id'];
+const { myId } = require("sdk/self");
 
 
 var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
@@ -56,18 +56,18 @@ function addTabMenu() {
 		//menuItem.setAttribute('disabled','true');
 		menuItem.addEventListener('command', function(event) {
 					currentTab = tabs.activeTab;
-					console.log(currentTab.id);
-					console.log(currentTab.title);
-					console.log(currentTab.url);
+					console.log('XUL:  '+currentTab.id);
+					console.log('XUL:  '+currentTab.title);
+					console.log('XUL:  '+currentTab.url);
 					if (currentTab.title == 'Connecting…' && currentTab.url == 'about:blank'){
 						currentTab.on('ready',function(thisTab){
-							console.log("READY!");
+							console.log('XUL:  '+"READY!");
 							emit(exports,'tabContextClicked',[thisTab]);
 						});
 					
 					}
 					else{
-						console.log("Already ready!!!");
+						console.log('XUL:  '+"Already ready!!!");
 						emit(exports,'tabContextClicked',[currentTab]);
 					}
 					

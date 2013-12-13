@@ -36,7 +36,7 @@ var Panel = Class({
   },
   hide: function hide(){
   	if (this.panelWithMessage.isShowing){
-  		//console.log("FRom hiding = " + this.showing);
+  		//console.log('PANEL:  '+"FRom hiding = " + this.showing);
   		this.panelWithMessage.port.emit('hidden',true);
   		this.panelWithMessage.hide();
   		//
@@ -45,7 +45,7 @@ var Panel = Class({
   	}
   },
   show: function show(){
-  	console.log(this.showing);
+  	console.log('PANEL:  '+this.showing);
 	/*
         this.showing = true;
         this.hidden = false;*/

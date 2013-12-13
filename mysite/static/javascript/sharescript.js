@@ -43,7 +43,9 @@ function hide(nodeToShow){
 function showOrHide(event){
 	var node = event.target;
 	var children = node.children;
+	//alert(children.length);
 	for (var i=0;i<children.length;i++){
+		//alert(children[i].innerHTML);
 		var thisClass = children[i].className;
 		if (thisClass == 'hidden'){
 			children[i].setAttribute('class','shown');
@@ -53,9 +55,52 @@ function showOrHide(event){
 			children[i].setAttribute('class','hidden');
 			node.setAttribute('class','hiding');
 		}
+		/*thisClass = thisClass.split(' ');
+		//alert(thisClass);
+		if (thisClass.length > 1){
+			if (thisClass[1] == 'hidden'){
+				children[i].setAttribute('class',thisClass[0]+' shown');
+			}
+			else if (thisClass[1] == 'shown'){
+				children[i].setAttribute('class', thisClass[0]+' shown' );
+			}
+		}*/
 	}
 
 }
+
+function showOrHideTree(event){
+	//alert(event.target.nodeName+" clicked");
+	var node = event.target;
+	var children = node.children;
+	
+	//alert(children.length);
+	//var thisOne = -1;
+	for (var i=0;i<children.length;i++){
+		//alert(children[i].innerHTML);
+		//alert(children[0].innerHTML);
+		var thisClass = children[i].className;
+		thisClass = thisClass.split(' ');
+		//alert(thisClass);
+		//alert(thisClass);
+		if (thisClass.length > 1){
+			if (thisClass[1] == 'hidden'){
+				children[i].setAttribute('class',thisClass[0]+' shown');
+				thisOne = i;
+			}
+			/*else if (thisClass[1] == 'shown'){
+				children[0].setAttribute('class', thisClass[0]+' hidden' );
+			}*/
+		}
+			
+	}
+
+	
+
+
+}
+
+
 
 
 const FRIENDS_EMAIL = 'friendsEmail';

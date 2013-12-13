@@ -156,6 +156,13 @@ hr{
 .url{
 	font-size: small;
 	color:#383127; 
+	text-overflow: ellipsis;
+   	display: inline-block;
+    	width: 275px;
+    	white-space: nowrap;
+    	overflow: hidden;
+    	vertical-align: top;
+	
 }
 
 
@@ -200,6 +207,34 @@ span.show{
 	
 
 }
+
+div.item{
+         border:solid #383127 1px;
+         border-radius:6px 6px 6px 6px;
+         margin-left: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+	 padding-top: 10px;
+         padding-bottom: 10px;
+         padding-left: 20px;
+         color: #383127;
+         box-shadow: 10px 10px 5px #888888;       
+}
+
+
+
+div.item:hover{
+          border:1px solid #70AB8F;	/*Greenish border*/
+          background: #eae3cd;		/*Lighter background*/
+          box-shadow: 20px 20px 15px #888888;
+          
+}
+
+ul.device{
+	margin-top: 10px;
+	margin-bottom:10px;
+}
+
 
 
 

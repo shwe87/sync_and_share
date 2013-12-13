@@ -88,60 +88,141 @@ class History(models.Model):
 	def __unicode__(self):
 		return (u'%s' %(self.title))
 """
-def get_time_in_ms(date):
-	date_time_milis = time.mktime(date.timetuple()) * 1000 + date.microsecond / 1000
-	return date_time_milis
+
+
+
+class UsersDevice(models.Model):
+	user = models.ForeignKey(User)
+	device_id = models.TextField()
+	device_name = models.TextField()
+	
+	def __unicode__(self):
+		return u'%(user)s has a device %(device)s' %{
+			'user': (self.user.email),
+			'device': (self.device_name)
+		}
+		
+	def serialize_to_json(self):
+		return json.dumps(self.serializable_object())
+		
+	def serializable_object(self):
+		obj = {'user':self.user.email,'device_id':self.device_id,'device_name':self.device_name}
+		return obj
+	
+def encode(text):
+    """
+    For printing unicode characters to the console.
+    """
+    return text.encode('utf-8')		
 
 class Bookmark(MPTTModel):
     	itemId = models.IntegerField()
-	owner = models.ForeignKey(User)
-	deviceId = models.TextField()
 	title = models.TextField()
-	url = models.URLField()
-	parentId = models.IntegerField()
-	ifFolder = models.BooleanField()
-	dateAdded = models.DateField(auto_now=False,auto_now_add=False,null=True)
-	lastModified = models.DateField(auto_now=False,auto_now_add=False,null=True)
-	time = models.DateField(auto_now=False,auto_now_add=False,null=True)
 	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+	parentId = models.IntegerField()
+	url = models.URLField()
+	dateAdded = models.DateTimeField(editable=True,null=True,blank=True)
+	lastModified = models.DateTimeField(editable=True,null=True,blank=True)
+	time = models.DateTimeField(editable=True,null=True,blank=True)
+	ifFolder = models.BooleanField()
+	unique = models.TextField()
+	owner = models.ForeignKey(User)
+	device = models.ForeignKey(UsersDevice)
+
 
 	class MPTTMeta:
         	order_insertion_by = ['title']
+        
+        def __init__(self, *args, **kwargs):
+        	super(Bookmark, self).__init__(*args, **kwargs)
+        	#print self.device.device_id
+        	#print self.itemId
+        	#print self.title
+        	#print self.parentId
+        	#print self.owner.email
+        	#Only itemId doesn't change, title may change,
+        	self.unique = str(str(self.device.device_id) + str(self.itemId) + str(self.owner.email))
+        	#print self.unique
         	
         def __unicode__(self):
 		return (u'%s' %(self.title))
 		
 	def serialize_to_json(self):
 		return json.dumps(self.serializable_object())
-		
+
 	def serializable_object(self):
-		obj = {'itemId':self.itemId,'title':self.title,'parentId':self.parentId,'ifFolder':self.ifFolder,'deviceId':self.deviceId}
-		if self.ifFolder:
-			print self.title + "is not a leaf"
+		obj = {'itemId':self.itemId,'title':self.title,'parentId':self.parentId}
+		#,'parentId':self.parentId,'ifFolder':self.ifFolder,'deviceId':self.device.device_id}
+		#if self.ifFolder:
+			#print self.title + "is not a leaf"
+			#if self.parentId != 0:
+		#print self.url
+		if self.url:
+			#print "Has url"
+			obj['url'] = self.url
+		if self.dateAdded:
+			obj['dateAdded'] = str(self.dateAdded)
+		if self.lastModified:
+			obj['lastModified'] = str(self.lastModified)
+		if self.time:	
+			obj['time'] = str(self.time)
+		obj['ifFolder'] = self.ifFolder
+		if (self.ifFolder):
 			obj['children'] = []
-			if self.parentId != 0:
-				obj['url'] = self.url
-				#obj['dateAdded'] = get_time_in_ms(self.dateAdded)
-				#obj['lastModified'] = get_time_in_ms(self.lastModified)
-				#obj['time'] = get_time_in_ms(self.time)
 			for child in self.get_children():
 				obj['children'].append(child.serializable_object())
+			#obj['children'] = []
+			#for child in self.get_children():
+			#	obj['children'].append(child.serializable_object())
 		return obj
 			
 
 class Tab(models.Model):
 	url = models.URLField()
 	title = models.TextField()
-	deviceId = models.TextField()
+	tabID = models.IntegerField()
+	device = models.ForeignKey(UsersDevice)
 	owner = models.ForeignKey(User)
+	unique = models.TextField()
+	
+	def __init__(self, *args, **kwargs):
+        	super(Tab, self).__init__(*args, **kwargs)
+        	self.unique = str(self.device.device_id + str(self.url)+str(self.owner.email))
+        
+        def serialize_to_json(self):
+		return json.dumps(self.serializable_object())
+		
+	def serializable_object(self):
+		obj = {'title':self.title,'url':self.url,'deviceId':self.device.device_id,'tabId':str(self.tabID)}
+		return obj
 
 
 class History(models.Model):
 	url = models.URLField() 
 	title = models.TextField()
-	time = models.DateField()
-	deviceId = models.TextField()
+	time = models.DateTimeField(editable=True,blank=True,null=True)
+	device = models.ForeignKey(UsersDevice)
 	owner = models.ForeignKey(User)
+	unique = models.TextField()
+	visited = models.IntegerField()
+	
+	class Meta:
+		ordering = ['time']
+	
+        def __init__(self, *args, **kwargs):
+        	super(History, self).__init__(*args, **kwargs)
+        	self.unique = str(self.device.device_id + str(self.url) +str(self.owner.email))
+        		
+	def __unicode__(self):
+		return (u'%s' %(self.title))
+	
+	def serialize_to_json(self):
+		return json.dumps(self.serializable_object())
+		
+	def serializable_object(self):
+		obj = {'title':self.title,'url':self.url,'deviceId':self.device.device_id,'time':str(self.time),'visited':self.visited}
+		return obj
+	
 	
 			
 
@@ -184,6 +265,9 @@ class MyGroup(models.Model):
 #	-- @shared_with {User}: With whom it is shared with
 class Share(models.Model):
 	shared = models.ManyToManyField(Sync)
+	shared_bookmarks = models.ManyToManyField(Bookmark)
+	shared_history = models.ManyToManyField(History)
+	shared_tabs = models.ManyToManyField(Tab)
 	shared_from = models.ForeignKey(User,related_name='shared_from_set')
 	typeOf_share = models.CharField(max_length=5)
 	#friend = models.ForeignKey(User, related_name='friends')
@@ -204,7 +288,6 @@ class UserGroup(models.Model):
 	def __unicode__ (self):
 		return (u'%s' %(self.user.email))
 
-	
   
 """
 # @class UsersData: This table contains all user's saved features

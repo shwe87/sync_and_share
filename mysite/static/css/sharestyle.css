@@ -30,9 +30,12 @@ div.textInput{
         border-radius:6px 6px 6px 6px;
         padding-top: 40px;
         padding-bottom: 40px;
+        margin-bottom:50px;
+        margin-top: 50px;
+        margin-right: 20px;
 }
 
-div.item,div.share,div.syncError,div.shareError{
+div.item,div.share,div.syncError,div.shareError,div.autoSync{
          border:solid #383127 1px;
          border-radius:6px 6px 6px 6px;
          margin-left: 0px;
@@ -46,6 +49,7 @@ div.item,div.share,div.syncError,div.shareError{
 
 div.item,div.share,div.textInput{
 	box-shadow: 10px 10px 5px #888888;
+	
 
 }
 
@@ -53,6 +57,7 @@ div.item:hover,div.textInput:hover{
           border:1px solid #70AB8F;	/*Greenish border*/
           background: #eae3cd;		/*Lighter background*/
           box-shadow: 20px 20px 15px #888888;
+          
 }
 span.highlight{
 
@@ -68,6 +73,7 @@ span.small, div.helpText,li.small{
 .button,select#selectTypeWhom{
         border:1px groove #383127;
         border-radius:6px 6px 6px 6px;
+        margin-bottom:10px;
         background: #70AB8F;
         padding: 10px 20px 10px 20px;	/*top right bottom left*/
 	margin-top: 30px;
@@ -112,6 +118,23 @@ ul.showing{
 	background-repeat:no-repeat;
 	/*position: absolute;*/
 }
+
+li.folder{
+	background-image:url(/static/images/folder.png);
+	background-size: 24px 24px;
+	background-repeat:no-repeat;
+	background-position:left center fixed; 
+	padding-left:45px;
+	list-style-type:none;
+
+}
+
+li.notFolder{
+
+	list-style-type: none;
+}
+
+
 
 
 

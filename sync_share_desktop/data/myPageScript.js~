@@ -37,17 +37,21 @@ self.port.on('start',function(clickedElement){
 //Get the table ready depending on which element is going to be shown:
 self.port.on('getTableReady',function(element){
 	//This is to decide if the hidden row is going to be shown or not
-	var createEffect = false;	//Create the hidden/shown row effect:
+	//var createEffect = false;	//Create the hidden/shown row effect:
+	var createEffect = true;
 	clean('mainContent');
 	//clean('loading');
 		
 	if (element == 'bookmarks'){
 		setOptions('Bookmarks','Saved Bookmarks');
-		createEffect = true;
+		//createEffect = true;
 	}
 	else if(element == 'history'){
 		setOptions('History','Saved History');
-		createEffect = true;
+		//createEffect = true;
+	}
+	else if(element == 'tabs'){
+		setOptions('Tabs','Saved Tabs');
 	}
 	
 	if (createEffect){
@@ -60,12 +64,12 @@ self.port.on('getTableReady',function(element){
 		UL.setAttribute('id',element+'List');
 		mainContent.appendChild(UL);
 	}
-	else{
+	/*else{
 		//putLoading();
 		hideHiddenRow();
 		/*var loading = document.getElementById('loading');
 		loading.innerHTML = 'Loading. Please wait.....'*/
-	}
+	//}
 	
 });
 self.port.on('clean',function(msg){
@@ -172,12 +176,86 @@ self.port.on('showhistory',function(elementsToShow){
 
 
 /*Synch foto = https://cdn3.iconfinder.com/data/icons/block/32/sync-512.png*/
+self.port.on('takeAllTabs',function(allTabs){
+	clean('loading');
+	console.log("TAbs " + allTabs.length);
+	//console.log(allHistory);
+	var tabsList = document.getElementById('tabsList');
+	//console.log("History length = " +  allHistory.length);
+	if (allTabs.length == 0){
+		var tabsP = document.createElement('p');
+		tabsP.innerHTML = "No history to show.";
+		tabsList.appendChild(tabsP);
+	}
+	else{
+		for (var j=0;j<allTabs.length;j++){
+			var anItem = document.createElement('DIV');
+			anItem.setAttribute('class','item');
+			var aTab = allTabs[j]
+			console.log(aTab.device);
+			try{
+				var device = JSON.parse(aTab.device);
+			
+			}
+			catch(e){
+				var device = aTab.device;
+			}
+			var device_name = device.device_name;
+			console.log(device_name);
+			var tabs = aTab.tabs;
+			var aDeviceUL = document.createElement('UL');
+			aDeviceUL.setAttribute('class','device');
+			aDeviceUL.addEventListener('click',function(event){
+				var node = event.target;
+				var children = node.children;
+				if (children.length == 0){
+					var text = document.createTextNode('Nothing to show');
+					node.appendChild(text);
+				}
+				for (var k=0;k<children.length;k++){
+					var child = children[k];
+					var childClass = child.className;
+					if (childClass == 'hidden'){
+						child.setAttribute('class','shown');
+					}
+					else{
+						child.setAttribute('class','hidden');
+					}
+				}
+			});
 
+			var text = document.createTextNode(device_name);
+			aDeviceUL.appendChild(text);
+			for (var i=0;i<tabs.length;i++){
+				var aTabLI = document.createElement('li');
+				aTabLI.setAttribute('class','hidden');
+				//aHistoryLI.setAttribute('class','history');
+				var favQuery = "http://www.google.com/s2/favicons?domain="+tabs[i].url;
+				aTabLI.style.background = "url('"+favQuery+"') no-repeat left top";
+				aTabLI.style.margin = '0px';
+				/*Padding = Top, Right, Left, Bottom.*/
+				aTabLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
+				var liDiv = makeLiContent(tabs[i].title, tabs[i].url);
+				liDiv.setAttribute('class','tab');
+				aTabLI.appendChild(liDiv);
+				aDeviceUL.appendChild(aTabLI);
+			}
+			
+			anItem.appendChild(aDeviceUL);
+			tabsList.appendChild(anItem);
+		
+		}
+	}
+
+
+});
 
 
 
 self.port.on('takeAllHistory',function(allHistory){
 	clean('loading');
+	console.log("HISTORY " + allHistory.length);
+	//console.log(allHistory);
 	var historyList = document.getElementById('historyList');
 	//console.log("History length = " +  allHistory.length);
 	if (allHistory.length == 0){
@@ -186,18 +264,57 @@ self.port.on('takeAllHistory',function(allHistory){
 		historyList.appendChild(historyP);
 	}
 	else{
-		for each(var aHistory in allHistory){
-			var aHistoryLI = document.createElement('li');
-			//aHistoryLI.setAttribute('class','history');
-			var favQuery = "http://www.google.com/s2/favicons?domain="+aHistory.url;
-			aHistoryLI.style.background = "url('"+favQuery+"') no-repeat left top";
-			aHistoryLI.style.margin = '0px';
-			/*Padding = Top, Right, Left, Bottom.*/
-			aHistoryLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
-			var liDiv = makeLiContent(aHistory.title, aHistory.url);
-			liDiv.setAttribute('class','history');
-			aHistoryLI.appendChild(liDiv);
-			historyList.appendChild(aHistoryLI);
+		for (var j=0;j<allHistory.length;j++){
+			var anItem = document.createElement('DIV');
+			anItem.setAttribute('class','item');
+			var aHistory = allHistory[j]
+			console.log(aHistory.device);
+			try{
+				var device = JSON.parse(aHistory.device);
+			
+			}
+			catch(e){
+				var device = aHistory.device;
+			}
+			var device_name = device.device_name;
+			console.log(device_name);
+			var history = aHistory.history;
+			var aDeviceUL = document.createElement('UL');
+			aDeviceUL.setAttribute('class','device');
+			aDeviceUL.addEventListener('click',function(event){
+				var node = event.target;
+				var children = node.children;
+				for (var k=0;k<children.length;k++){
+					var child = children[k];
+					var childClass = child.className;
+					if (childClass == 'hidden'){
+						child.setAttribute('class','shown');
+					}
+					else{
+						child.setAttribute('class','hidden');
+					}
+				}
+			});
+
+			var text = document.createTextNode(device_name);
+			aDeviceUL.appendChild(text);
+			for (var i=0;i<history.length;i++){
+				var aHistoryLI = document.createElement('li');
+				aHistoryLI.setAttribute('class','hidden');
+				//aHistoryLI.setAttribute('class','history');
+				var favQuery = "http://www.google.com/s2/favicons?domain="+history[i].url;
+				aHistoryLI.style.background = "url('"+favQuery+"') no-repeat left top";
+				aHistoryLI.style.margin = '0px';
+				/*Padding = Top, Right, Left, Bottom.*/
+				aHistoryLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
+				var liDiv = makeLiContent(history[i].title, history[i].url);
+				liDiv.setAttribute('class','history');
+				aHistoryLI.appendChild(liDiv);
+				aDeviceUL.appendChild(aHistoryLI);
+			}
+			
+			anItem.appendChild(aDeviceUL);
+			historyList.appendChild(anItem);
 		
 		}
 	}
@@ -209,69 +326,63 @@ self.port.on('takeAllHistory',function(allHistory){
 
 
 
-self.port.on('takeABookmark',function(bookmarkToShow){
+self.port.on('takeAllBookmarks',function(bookmarksToShow){
 	/*https://cdn3.iconfinder.com/data/icons/block/32/sync-512.png*/
-	
-	var ifFolder = bookmarkToShow[1];
-	var aBookmark = bookmarkToShow[0];
-	var parentId = aBookmark.parentId;
-	//console.log('takeABookmark received : ' + aBookmark.title);
-	var parent = document.getElementById(parentId);
-	if (ifFolder){
-		//var aDiv = document.createElement('div');
-		var bookmarkUL = document.createElement('ul');
-		bookmarkUL.setAttribute('id',aBookmark.itemId);
-		//bookmarkUL.setAttribute('class','title');
-		var bookmarkText = document.createTextNode(aBookmark.title);
-		bookmarkUL.appendChild(bookmarkText);
-		var line = document.createElement('hr');
-		bookmarkUL.appendChild(line);
-		var favQuery = "http://www.gettyicons.com/free-icons/103/pretty-office-2/png/256/folder_256.png";
-		bookmarkUL.style.background = "url('"+favQuery+"') no-repeat left top";
-		bookmarkUL.style.backgroundSize = "15px 15px";
-		bookmarkUL.style.margin = '0px';
-		bookmarkUL.style.padding = '0px 0px 0px 20px';	//Modify only the space between the icon and the title.
-		bookmarkUL.addEventListener('click',function(event){
-			//console.log("I was clicked!!  " + event.target.nodeName);
-			var whatWasClicked = event.target;
-			if (whatWasClicked.nodeName == 'UL'){ //Only when a folder is clicked
-				var ULChildren = bookmarkUL.children;	//The third child is the LI elements
-				if (ULChildren != undefined){
-					for (var i=0;i<ULChildren.length;i++){
-						//console.log(i+" ULChildren = " + ULChildren[i].innerHTML);
-						if (ULChildren[i].className == 'hidden'){
-							ULChildren[i].setAttribute('class','showLi');
-						}
-						else if(ULChildren[i].className == 'showLi'){
-							ULChildren[i].setAttribute('class','hidden');
-						}
-					}
+	console.log("Show all bookmarks");
+	//console.log(bookmarksToShow);
+	for (var i=0;i<bookmarksToShow.length;i++){
+		var anItem = document.createElement('DIV');
+		anItem.setAttribute('class','item');
+		var aBookmark = bookmarksToShow[i];
+		console.log(aBookmark.device);
+		var bookmarks = aBookmark.bookmarks;
+		try{
+			var device = JSON.parse(aBookmark.device);	
+		}
+		catch(e){
+			var device = aBookmark.device;
+		}
+		var device_name = device.device_name;
+		var device_id = device.device_id;
+		console.log("********"+device_name+"********");
+		var aDeviceUL = document.createElement('UL');
+		aDeviceUL.setAttribute('class','device');
+		var text = document.createTextNode(device_name);
+		aDeviceUL.appendChild(text);
+		var bookmarksList = document.getElementById('bookmarksList');
+		anItem.appendChild(aDeviceUL);
+		bookmarksList.appendChild(anItem);
+		aDeviceUL.addEventListener('click',function(event){
+			var node = event.target;
+			var children = node.children;
+			for (var k=0;k<children.length;k++){
+				var child = children[k];
+				var childClass = child.className;
+				if (childClass == 'hidden'){
+					child.setAttribute('class','shown');
+				}
+				else{
+					child.setAttribute('class','hidden');
 				}
 			}
 		});
-		parent.appendChild(bookmarkUL);
-	}
-	else{
-		var bookmarkLI = document.createElement('LI');	
-		var ifMain = (parentId == 2 || parentId == 3 || parentId == 5);
-		//console.log("IS FROM PARENT ID = " + ifMain);
-		if(ifMain == false){
-			bookmarkLI.setAttribute('class','hidden');
+		
+		for (var j=0;j<bookmarks.length;j++){
+			var ifFolder = bookmarks[j].ifFolder;
+			var aBookmark = bookmarks[j];
+			var parentId = bookmarks[j].parentId;
+			console.log(device_name + " " + parentId + "  " + aBookmark.title)
+			//console.log('takeABookmark received : ' + bookmarks[j].title);
+			if (parentId == 0){
+				console.log(device_name + " " + parentId + "  " + aBookmark.title)
+				handle_children(aBookmark,aDeviceUL,device_id);
+			}
 		}
-
-		var liDiv = makeLiContent(aBookmark.title,aBookmark.url);
-		bookmarkLI.appendChild(liDiv);
-		liDiv.setAttribute('class','bookmark');
-		
-		var favQuery = "http://www.google.com/s2/favicons?domain="+aBookmark.url;
-		bookmarkLI.style.background = "url('"+favQuery+"') no-repeat left top";
-		bookmarkLI.style.margin = '0px';
-		/*Padding = Top, Right, Left, Bottom.*/
-		bookmarkLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
 		
 		
-		parent.appendChild(bookmarkLI);	
+		
 	}
+	clean('loading');
 
 	
 	
@@ -281,6 +392,126 @@ self.port.on('takeABookmark',function(bookmarkToShow){
 
 
 /*************FUNCTIONS****************/
+
+
+
+function handle_event(event){
+	console.log("I was clicked!!  " + event.target.nodeName);
+	var whatWasClicked = event.target;
+	if (whatWasClicked.nodeName == 'UL'){ //Only when a folder is clicked
+		//console.log(whatWasClicked.children);
+		var ULChildren = event.target.children;	//The third child is the LI elements
+			//console.log(ULChildren);
+			if (ULChildren != undefined){
+				for (var i=0;i<ULChildren.length;i++){
+					//console.log(i+" ULChildren = " + ULChildren[i].innerHTML);
+					if (ULChildren[i].className == 'hidden'){
+						ULChildren[i].setAttribute('class','showLi');
+					}
+					else if(ULChildren[i].className == 'showLi'){
+						ULChildren[i].setAttribute('class','hidden');
+					}
+				}
+			}
+	}
+
+
+}
+
+
+function handle_children(aBookmark,parentNode,device_name){
+	var ifFolder = aBookmark.ifFolder;
+	var parentId = aBookmark.parentId;
+	if (parentNode != null){
+		//One of the root folders
+		var parent = parentNode;
+	}
+	else{
+		var parent = document.getElementById(parentId+device_name);
+	}
+	
+	var item = document.getElementById(aBookmark.itemId+device_name);
+	if (!item){
+		if (ifFolder){
+			var children = aBookmark.children;
+			//console.log("Add " + aBookmark.title + " as folder!");
+			//var aDiv = document.createElement('div');
+			var bookmarkUL = document.createElement('ul');
+			bookmarkUL.setAttribute('id',aBookmark.itemId+device_name);
+			bookmarkUL.setAttribute('class','hidden');
+			//bookmarkUL.setAttribute('class','title');
+			var bookmarkText = document.createTextNode(aBookmark.title);
+			bookmarkUL.appendChild(bookmarkText);
+			var line = document.createElement('hr');
+			bookmarkUL.appendChild(line);
+			var favQuery = "http://www.gettyicons.com/free-icons/103/pretty-office-2/png/256/folder_256.png";
+			bookmarkUL.style.background = "url('"+favQuery+"') no-repeat left top";
+			bookmarkUL.style.backgroundSize = "15px 15px";
+			bookmarkUL.style.margin = '0px';
+			bookmarkUL.style.padding = '0px 0px 0px 20px';	//Modify only the space between the icon and the title.
+			
+			console.log("Add event Listener to " + aBookmark.title);
+			if (parentId != 0){
+				//bookmarkUL.addEventListener('click',clickEnter(handle_event),true);
+			}
+			parent.appendChild(bookmarkUL);
+			if (children){
+			
+				for (var j=0;j<children.length;j++){
+						handle_children(children[j], null, device_name);
+				}
+			
+			}
+				
+		}
+		else{
+			//console.log("Add " + aBookmark.title + " as NO folder!");
+			var bookmarkLI = document.createElement('LI');	
+			var ifMain = (parentId == 2 || parentId == 3 || parentId == 5);
+			//console.log("IS FROM PARENT ID = " + ifMain);
+			if(ifMain == false){
+				//bookmarkLI.setAttribute('class','hidden');
+			}
+
+			var liDiv = makeLiContent(aBookmark.title,aBookmark.url);
+			bookmarkLI.appendChild(liDiv);
+			liDiv.setAttribute('class','bookmark');
+		
+			var favQuery = "http://www.google.com/s2/favicons?domain="+aBookmark.url;
+			bookmarkLI.style.background = "url('"+favQuery+"') no-repeat left top";
+			bookmarkLI.style.margin = '0px';
+			/*Padding = Top, Right, Left, Bottom.*/
+			bookmarkLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
+			parent.appendChild(bookmarkLI);
+			
+				
+			}
+		}
+}
+
+
+
+
+function clickEnter(_fn)
+{
+   return function(_evt)
+   {
+      var relTarget = _evt.relatedTarget;
+      if (this === relTarget || isAChildOf(this, relTarget))
+         { return; }
+
+      _fn.call(this, _evt);
+   }
+};
+
+function isAChildOf(_parent, _child)
+{
+   if (_parent === _child) { return false; }
+      while (_child && _child !== _parent)
+   { _child = _child.parentNode; }
+
+   return _child === _parent;
+}
 
 
 function createEffectInTable(cellName, selectedType){
@@ -353,7 +584,7 @@ function createEffectInTable(cellName, selectedType){
 				console.log("\t\t\t\t cellClicked Sent.");
 		
 					
-			});
+			},false);
 			
 		//}else{
 		//	console.log("\t\t\t HAS CLICK");
@@ -401,19 +632,21 @@ function setOptions(option1, option2){
 function putLoading(){
 	console.log("\t\t\t\tAdding loading.....");
 	var loading = document.getElementById('loading');
-	var loadingIconSpan = document.createElement('span');
-	var loadingIcon = document.createElement('img');
-	loadingIcon.setAttribute('src',LOADING_ICON);
-	//loadingIcon.setAttribute('width','15px');
-	//loadingIcon.setAttribute('height','15px');
-	loadingIcon.setAttribute('title','Loading. Please wait.....');
-	loadingIconSpan.appendChild(loadingIcon);
-	loading.appendChild(loadingIconSpan);
+	if (loading.innerHTML == ''){
+		var loadingIconSpan = document.createElement('span');
+		var loadingIcon = document.createElement('img');
+		loadingIcon.setAttribute('src',LOADING_ICON);
+		//loadingIcon.setAttribute('width','15px');
+		//loadingIcon.setAttribute('height','15px');
+		loadingIcon.setAttribute('title','Loading. Please wait.....');
+		loadingIconSpan.appendChild(loadingIcon);
+		loading.appendChild(loadingIconSpan);
 	
-	var loadingText = document.createElement('span');
-	loadingText.innerHTML = 'Loading. Please wait.....';
-	loading.appendChild(loadingText);
-	console.log('\t\t\t\tLoading added complete.\r\n\r\n');
+		var loadingText = document.createElement('span');
+		loadingText.innerHTML = 'Loading. Please wait.....';
+		loading.appendChild(loadingText);
+		console.log('\t\t\t\tLoading added complete.\r\n\r\n');
+	}
 
 }
 

@@ -5,245 +5,604 @@ var data = require('sdk/self').data;
 var Request = require('sdk/request').Request;
 var tabs = require('sdk/tabs');
 var bookmarks = require('./bookmark.js');
-var URL = 'http://127.0.0.1:8000/';
-var SAVE_URL = 'http://127.0.0.1:8000/save/';
-var READ_URL = 'http://127.0.0.1:8000/read';
-var deviceId;
+var history = require('./history.js');
+var myTabs = require('./tabs.js');
+var preferences = require('./preferences.js');
+var { emit, on, once, off } = require("sdk/event/core");
+var timer = require('sdk/timers');
+var dialog = require('./dialog.js');
+
+var URL = 'http://127.0.0.1:8000';
+var SAVE_URL = URL+'/save/';
+var READ_URL = URL+'/read/';
+var READ_ALL_BOOKMARKS = URL + '/read/all/bookmarks/';
+var READ_ALL_HISTORY = URL + '/read/all/history/';
+var READ_ALL_TABS = URL + '/read/all/tabs/';
+var CHANGE_DEVICE_NAME = URL + '/change/device/name/';
 var bookmarksList = new Array();
 
-function reDirectAuth(){
-	tabs.open(URL+'login/');
-}
+const INTERVAL_MS = 30*60*1000;	//In milliseconds 30 minutes
+var save_interval_id;
+var read_interval_id;
+var deviceId;
+var if_sync_tabs = true;
+var if_sync_bookmarks = true;
+var if_sync_history = true;
 
-/* Manual save */
-function save(datas){
-	var element = datas.title.split('.json')[0];
-	/*This is to send the tabs list to the server.*/
-	//console.log('Send ');
-	//var dataToSave = new Array();
-	/*for each (var tabToSave in tabs){				
-		var newTab = {'id':tabToSave.id,'title':tabToSave.title,'url':tabToSave.url};
-		dataToSave.push(newTab);		
-	}*/
-	console.log(JSON.stringify(dataToSave))
-	console.log("Going to send = " + URL);
+
+
+exports.on = on.bind(null, exports);
+exports.once = once.bind(null, exports);
+exports.removeListener = function removeListener(type, listener) {
+  off(exports, type, listener);
+};
+
+
+
+
+function saveAllBookmarks(){
+	var datasToSave = bookmarks.getBookmarks();
+	var sendURL = URL + '/add/all/bookmarks/';
+	var deviceName = preferences.getDeviceName();
+	console.log('MY SERVER:  Save all bookmarks' );
+	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
 	var saveRequest = Request({
-		url: SAVE_URL + element+'/',
+		url: sendURL,
 		contentType: 'application/json',
-		content:  JSON.stringify(dataToSave),
+		headers: {'myName':deviceName,'myId':deviceId},
+		content:  JSON.stringify(datasToSave),
 		onComplete: function (response) {	
-		    	if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
 		    		reDirectAuth();
-		    	}
-		    	else if (response.status == '200'){
-		    		console.log("SAVED CORRECTLY");
+		    	}*/
+		    	if (response.status == '200'){
+		    		//console.log('MY SERVER:  '+"SAVED CORRECTLY");
+		    		var now = new Date();
+		    		var nTime = now.getTime();
+		    		emit(exports,'savedAllBookmarks',nTime);
 		    			
+		    	}
+		    	else if (response.status == '500'){
+		    		console.log('MY SERVER:  '+"Did not work out!");
+		    		var message = {'msg':'Internal server problem', 'type':'error'}
+		    		emit(exports, 'showMessage',message);
+		    	
+		    	}
+		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		console.log('MY SERVER:  '+"Not authorized!!");
+		    		dialog.loginDialog();	
+		    	}
+		    	else{
+		    		console.log('MY SERVER:  Response status = '+response.status);
+		    		console.log('MY SERVER:  response text = '+response.statusText);
+		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		    	
 		    	}
 	 	}
  	});
 	saveRequest.post();
-	
+}
+
+exports.saveAllBookmarks = saveAllBookmarks;
+
+function saveAllHistory(){
+	var datasToSave = history.queryHistory();
+	var sendURL = URL + '/add/all/history/';
+	var deviceName = preferences.getDeviceName();
+	console.log('MY SERVER:  Save all history' );
+	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
+	var saveRequest = Request({
+		url: sendURL,
+		contentType: 'application/json',
+		headers: {'myName':deviceName,'myId':deviceId},
+		content:  JSON.stringify(datasToSave),
+		onComplete: function (response) {	
+		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		reDirectAuth();
+		    	}*/
+		    	if (response.status == '200'){
+		    		//console.log('MY SERVER:  '+"SAVED CORRECTLY");
+		    		var now = new Date();
+		    		var nTime = now.getTime();
+		    		emit(exports,'savedAllHistory',nTime);
+		    			
+		    	}
+		    	else if (response.status == '500'){
+		    		console.log('MY SERVER:  '+"Did not work out!");
+		    		var message = {'msg':'Internal server problem', 'type':'error'}
+		    		emit(exports, 'showMessage',message);
+		    	
+		    	}
+		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		console.log('MY SERVER:  '+"Not authorized!!");
+		    		dialog.loginDialog();	
+		    	}
+		    	else{
+		    		console.log('MY SERVER:  Response status = '+response.status);
+		    		console.log('MY SERVER:  response text = '+response.statusText);
+		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		    	
+		    	}
+	 	}
+ 	});
+	saveRequest.post();
+}
+
+exports.saveAllHistory = saveAllHistory;
+
+function saveTabs(datasToSave){
+	var sendURL = URL + '/add/all/tabs/';
+	//console.log('MY SERVER:  '+"Gonna send to = " + sendURL );
+	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
+	var deviceName = preferences.getDeviceName();
+	var saveRequest = Request({
+		url: sendURL,
+		contentType: 'application/json',
+		headers: {'myName':deviceName,'myId':deviceId},
+		content:  JSON.stringify(datasToSave),
+		onComplete: function (response) {	
+		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		reDirectAuth();
+		    	}*/
+		    	if (response.status == '200'){
+		    		console.log('MY SERVER:  '+"TABS SAVED CORRECTLY");
+		    		//var now = new Date();
+		    		//var nTime = now.getTime();
+		    		//emit(exports,'savedAllTabs',nTime);
+		    			
+		    	}
+		    	else if (response.status == '500'){
+		    		console.log('MY SERVER:  '+"Did not work out!");
+		    		var message = {'msg':'Internal server problem', 'type':'error'}
+		    		emit(exports, 'showMessage',message);
+		    	
+		    	}
+		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		console.log('MY SERVER:  '+"Not authorized!!");
+		    		dialog.loginDialog();	
+		    	}
+		    	else{
+		    		console.log('MY SERVER:  Response status = '+response.status);
+		    		console.log('MY SERVER:  response text = '+response.statusText);
+		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		    	
+		    	}
+	 	}
+ 	});
+	saveRequest.post();
+
+
+}
+
+
+
+function setDeviceId(id){
+	deviceId = id;
+}
+exports.setDeviceId = setDeviceId;
+
+
+
+/* Manual save */
+function save(datas){
+        var element = datas.title.split('.json')[0];
+        var dataToSave = datas.dataToSave;
+        var deviceName = preferences.getDeviceName();
+        /*This is to send the tabs list to the server.*/
+        //console.log('MY SERVER:  '+'Send ');
+        //var dataToSave = new Array();
+        /*for each (var tabToSave in tabs){                                
+                var newTab = {'id':tabToSave.id,'title':tabToSave.title,'url':tabToSave.url};
+                dataToSave.push(newTab);                
+        }*/
+        //console.log('MY SERVER:  '+JSON.stringify(dataToSave))
+        console.log('MY SERVER:  '+"Going to send = " + URL);
+        var saveRequest = Request({
+                url: SAVE_URL + element+'/',
+                contentType: 'application/json',
+                headers: {'myName':deviceName,'myId':deviceId},
+                content: JSON.stringify(dataToSave),
+                onComplete: function (response) {        
+			if (response.status == '200'){
+                                 console.log('MY SERVER:  '+"SAVED CORRECTLY");
+                                         
+                        }
+                        else if (response.status == '500'){
+		    		console.log('MY SERVER:  '+"Did not work out!");
+		    		var message = {'msg':'Internal server problem', 'type':'error'}
+		    		emit(exports, 'showMessage',message);
+		    	
+		    	}
+		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		console.log('MY SERVER:  '+"Not authorized!!");
+		    		dialog.loginDialog();	
+		    	}
+		    	else{
+		    		console.log('MY SERVER:  Response status = '+response.status);
+		    		console.log('MY SERVER:  response text = '+response.statusText);
+		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		    	
+		    	}
+                 }
+         });
+        saveRequest.post();
+        
 }
 
 exports.save = save;
 
-
+/*Read manually saved items*/
 function read(datas){
-	var element = datas.title.split('.json')[0];
-	for each(var tab in tabs){
-		var URL = READ_URL + element+'/';
-		console.log("Going to send = " + URL);
-		var readRequest = Request({
-		    url: READ_URL + element+'/',
-		    //contentType: 'application/json',
-		    //content: {'title':tab.title,'url':tab.url,'id':tab.id},
-		    onComplete: function (response) {
-		    	console.log(response.text);
-    			console.log(response.status);
-    			console.log(JSON.stringify(response.headers));
-    			console.log(response.statusText);
-    			
-    			if (response.status == '401' && response.headers.error == 'Unauthorized'){
-    				reDirectAuth();
-    			}
-    			else if (response.status == '200'){
-    				console.log("READ CORRECTLY");
-    				//JSON.parse(response.text)
-    				console.log(response.text)
-    			
-    			}
- 		    }
- 		});
-		readRequest.get();
-	}
+        var element = datas.title.split('.json')[0];
+        var deviceName = preferences.getDeviceName();
+        //for each(var tab in tabs){
+                var URL = READ_URL + element+'/';
+                console.log('MY SERVER:  '+"Going to send = " + URL);
+                var readRequest = Request({
+		         url: READ_URL + element+'/',
+		         headers: {'myName':deviceName,'myId':deviceId},
+		         //contentType: 'application/json',
+		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
+		         onComplete: function (response) {
+		                 console.log('MY SERVER:  '+response.text);
+		                 console.log('MY SERVER:  '+response.status);
+		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		                 console.log('MY SERVER:  '+response.statusText);
+				 if (response.status == '200'){
+				 	console.log('MY SERVER:  '+"READ CORRECTLY");
+		                            //JSON.parse(response.text)
+		                        console.log('MY SERVER:  '+response.text);
+		                        emit (exports,'display',response.text)
+		                 }
+		                 else if (response.status == '500'){
+		                    	console.log('MY SERVER:  '+"Did not work out!");
+			    		var message = {'msg':'Internal server problem', 'type':'error'}
+			    		emit(exports, 'showMessage',message);
+			    	
+			    	 }
+			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+			    		console.log('MY SERVER:  '+"Not authorized!!");
+			    		dialog.loginDialog();	
+			    	 }
+			    	 else if (response.status == '404'){
+			    	 	emit(exports, 'display', null);
+			    	 }
+			    	 else{
+			    		console.log('MY SERVER:  Response status = '+response.status);
+			    		console.log('MY SERVER:  response text = '+response.statusText);
+			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		    	
+		    		}
+		          }
+               });
+               readRequest.get();
+        //}
 
 }
 
 exports.read = read;
+/*Read all bookmarks from all devices*/
+function readAllBookmarks(){
+        var deviceName = preferences.getDeviceName();
+        //for each(var tab in tabs){
+                console.log('MY SERVER:  Read all bookmarks');
+                var readRequest = Request({
+		         url: READ_ALL_BOOKMARKS,
+		         headers: {'myName':deviceName,'myId':deviceId},
+		         //contentType: 'application/json',
+		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
+		         onComplete: function (response) {
+		                 //console.log('MY SERVER:  '+response.text);
+		                 /*console.log('MY SERVER:  '+response.status);
+		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		                 console.log('MY SERVER:  '+response.statusText);*/
+				 if (response.status == '200'){
+				 	console.log('MY SERVER:  '+"READ CORRECTLY");
+		                            //JSON.parse(response.text)
+		                        var allBookmarks = JSON.parse(response.text);
+		                        //console.log('MY SERVER:  '+allBookmarks);
+		                        console.log('MY SERVER:  Bookmarks length='+allBookmarks.length);
+		                        
+		                        var listOfBookmarks = new Array();
+		                        for (var i=0;i<allBookmarks.length;i++){
+		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
+		                        	var aBookmark = {}
+		                        	var device = allBookmarks[i].device
+		                        	aBookmark.device = device;
+		                        	//console.log('MY SERVER:  '+device);
+		                        	//var thisDeviceBookmarks = JSON.parse(allBookmarks[i].bookmarks);
+		                        	//aBookmark.bookmarks = thisDeviceBookmarks
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks);
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks.length);
+		                        	var thisDeviceBookmarks = new Array();
+		                        	for (var j=0;j<allBookmarks[i].bookmarks.length;j++){
+		                        		var thisBookmark = JSON.parse(allBookmarks[i].bookmarks[j]);
+		                        		thisDeviceBookmarks.push(thisBookmark);
+		                        	}
+		                        	aBookmark.bookmarks = thisDeviceBookmarks;
+		                        	listOfBookmarks.push(aBookmark);
+		                        	//console.log('MY SERVER:  '+JSON.parse(allBookmarks[i].bookmarks));
+		                        	//listOfBookmarks.push(aBookmark);
+		                        	
+		                        	//console.log('MY SERVER:  '+aBookmark.title);
+		                        	//listOfBookmarks.push(aBookmark);
+		                        }
+		                        emit(exports, 'updateBookmarks', listOfBookmarks);
+		                 }
+		                 else if (response.status == '500'){
+		                    	console.log('MY SERVER:  '+"Did not work out!");
+			    		var message = {'msg':'Internal server problem', 'type':'error'}
+			    		emit(exports, 'showMessage',message);
+			    	
+			    	 }
+			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+			    		console.log('MY SERVER:  '+"Not authorized!!");
+			    		dialog.loginDialog();	
+			    	 }
+			    	else{
+			    		console.log('MY SERVER:  Response status = '+response.status);
+			    		console.log('MY SERVER:  response text = '+response.statusText);
+			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+			    	
+			    	}
+		          }
+               });
+               readRequest.get();
+        //}
 
-function handleBookmarks(datas){
-	/*
-	toSend = {'title':title,'url':url,'GUID':aGUID,'itemId':aItemId,'lastModified':aLastModified,'dateAdded':dateAdded,'typeOf':'bookmarks','reason':'add'};*/
-	var reason = datas.reason;
-	var sendURL = URL;
-	if (reason == 'add'){
-		sendURL = sendURL + 'add/bookmark/';
-	}
-	else if (reason == 'update'){
-		sendURL = sendURL + 'update/bookmark/';
-	}
-	else if(reson == 'remove'){
-		sendURL = sendURL + 'remove/bookmark/'
-	}
-	datas.deviceId = deviceId;
-	/*This is to send the tabs list to the server.*/
-	//console.log('Send ');
-	//var dataToSave = new Array();
-	/*for each (var tabToSave in tabs){				
-		var newTab = {'id':tabToSave.id,'title':tabToSave.title,'url':tabToSave.url};
-		dataToSave.push(newTab);		
-	}*/
-	//console.log(JSON.stringify(dataToSave))
-	//console.log("Going to send = " + URL);
-	var saveRequest = Request({
-		url: sendURL,
-		contentType: 'application/json',
-		content:  JSON.stringify(datas),
-		onComplete: function (response) {	
-		    	if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
+}
+
+
+
+
+exports.readAllBookmarks = readAllBookmarks;
+
+
+
+
+
+
+
+
+/*Read all history from all devices*/
+function readAllHistory(){
+        var deviceName = preferences.getDeviceName();
+        
+        //for each(var tab in tabs){
+                console.log('MY SERVER:  Read all history');
+                var readRequest = Request({
+		         url: READ_ALL_HISTORY,
+		         headers: {'myName':deviceName,'myId':deviceId},
+		         //contentType: 'application/json',
+		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
+		         onComplete: function (response) {
+		                 //console.log('MY SERVER:  '+response.text);
+		                 /*console.log('MY SERVER:  '+response.status);
+		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		                 console.log('MY SERVER:  '+response.statusText);*/
+				 if (response.status == '200'){
+				 	console.log('MY SERVER:  '+"READ CORRECTLY");
+		                            //JSON.parse(response.text)
+		                        var allHistory = JSON.parse(response.text);
+		                        //console.log('MY SERVER:  '+allBookmarks);
+		                        console.log('MY SERVER:  '+allHistory.length);
+		                        
+		                        var listOfHistory = new Array();
+		                        for (var i=0;i<allHistory.length;i++){
+		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
+		                        	var aHistory = {}
+		                        	var device = allHistory[i].device
+		                        	aHistory.device = device;
+		                        	//console.log('MY SERVER:  '+device);
+		                        	//var thisDeviceBookmarks = JSON.parse(allBookmarks[i].bookmarks);
+		                        	//aBookmark.bookmarks = thisDeviceBookmarks
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks);
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks.length);
+		                        	var thisDeviceHistory = new Array();
+		                        	for (var j=0;j<allHistory[i].history.length;j++){
+		                        		var thisHistory = JSON.parse(allHistory[i].history[j]);
+		                        		thisDeviceHistory.push(thisHistory);
+		                        	}
+		                        	aHistory.history = thisDeviceHistory;
+		                        	listOfHistory.push(aHistory);
+		                        	//console.log('MY SERVER:  '+JSON.parse(allBookmarks[i].bookmarks));
+		                        	//listOfBookmarks.push(aBookmark);
+		                        	
+		                        	//console.log('MY SERVER:  '+aBookmark.title);
+		                        	//listOfBookmarks.push(aBookmark);
+		                        }
+		                        emit(exports, 'updateHistory', listOfHistory);
+		                 }
+		                 else if (response.status == '500'){
+		                    	console.log('MY SERVER:  '+"Did not work out!");
+			    		var message = {'msg':'Internal server problem', 'type':'error'}
+			    		emit(exports, 'showMessage',message);
+			    	
+			    	 }
+			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+			    		console.log('MY SERVER:  '+"Not authorized!!");
+			    		dialog.loginDialog();	
+			    	 }
+			    	 else{
+			    		console.log('MY SERVER:  Response status = '+response.status);
+			    		console.log('MY SERVER:  response text = '+response.statusText);
+			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+			    	
+			    	}
+		          }
+               });
+               readRequest.get();
+        //}
+
+}
+
+exports.readAllHistory = readAllHistory;
+
+
+/*Read all tabs of all devices*/
+function readAllTabs(){
+        var deviceName = preferences.getDeviceName();
+        //for each(var tab in tabs){
+               // console.log('MY SERVER:  '+"Going to send = " + URL);
+                var readRequest = Request({
+		         url: READ_ALL_TABS,
+		         headers: {'myName':deviceName,'myId':deviceId},
+		         //contentType: 'application/json',
+		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
+		         onComplete: function (response) {
+		                 //console.log('MY SERVER:  '+response.text);
+		                 /*console.log('MY SERVER:  '+response.status);
+		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
+		                 console.log('MY SERVER:  '+response.statusText);*/
+				 if (response.status == '200'){
+				 	console.log('MY SERVER:  '+"READ CORRECTLY");
+		                            //JSON.parse(response.text)
+		                        var allTabs = JSON.parse(response.text);
+		                        //console.log('MY SERVER:  '+allBookmarks);
+		                        console.log('MY SERVER:  '+allTabs.length);
+		                        
+		                        var listOfTabs = new Array();
+		                        for (var i=0;i<allTabs.length;i++){
+		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
+		                        	var aTab = {}
+		                        	var device = allTabs[i].device
+		                        	aTab.device = device;
+		                        	//console.log('MY SERVER:  '+device);
+		                        	//var thisDeviceBookmarks = JSON.parse(allBookmarks[i].bookmarks);
+		                        	//aBookmark.bookmarks = thisDeviceBookmarks
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks);
+		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks.length);
+		                        	var thisDeviceTabs = new Array();
+		                        	for (var j=0;j<allTabs[i].tabs.length;j++){
+		                        		var thisTab = JSON.parse(allTabs[i].tabs[j]);
+		                        		thisDeviceTabs.push(thisTab);
+		                        	}
+		                        	aTab.tabs = thisDeviceTabs;
+		                        	listOfTabs.push(aTab);
+		                        	//console.log('MY SERVER:  '+JSON.parse(allBookmarks[i].bookmarks));
+		                        	//listOfBookmarks.push(aBookmark);
+		                        	
+		                        	//console.log('MY SERVER:  '+aBookmark.title);
+		                        	//listOfBookmarks.push(aBookmark);
+		                        }
+		                        emit(exports, 'updateTabs', listOfTabs);
+		                 }
+		                 else if (response.status == '500'){
+		                    	console.log('MY SERVER:  '+"Did not work out!");
+			    		var message = {'msg':'Internal server problem', 'type':'error'}
+			    		emit(exports, 'showMessage',message);
+			    	
+			    	 }
+			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+			    		console.log('MY SERVER:  '+"Not authorized!!");
+			    		dialog.loginDialog();	
+			    	 }
+				 else{
+			    		console.log('MY SERVER:  Response status = '+response.status);
+			    		console.log('MY SERVER:  response text = '+response.statusText);
+			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
+			    	
+			    	}
+		          }
+               });
+               readRequest.get();
+        //}
+
+}
+
+exports.readAllTabs = readAllTabs;
+
+function changeDeviceName(new_device_name){
+        /*This is to send the tabs list to the server.*/
+        //console.log('MY SERVER:  '+'Send ');
+        //var dataToSave = new Array();
+        /*for each (var tabToSave in tabs){                                
+                var newTab = {'id':tabToSave.id,'title':tabToSave.title,'url':tabToSave.url};
+                dataToSave.push(newTab);                
+        }*/
+        //console.log('MY SERVER:  '+JSON.stringify(dataToSave))
+        console.log('MY SERVER:  '+"Going to send = " + URL);
+        var changeRequest = Request({
+                url: CHANGE_DEVICE_NAME,
+                //contentType: 'application/json',
+                headers: {'myName':new_device_name,'myId':deviceId},
+                //content: JSON.stringify(dataToSave),
+                onComplete: function (response) {        
+			if (response.status == '200'){
+                                 console.log('MY SERVER:  '+"SAVED CORRECTLY");
+                                         
+                        }
+                        else if (response.status == '500'){
+		    		console.log('MY SERVER:  '+"Did not work out!");
+		    		var message = {'msg':'Internal server problem', 'type':'error'}
+		    		emit(exports, 'showMessage',message);
+		    	
 		    	}
-		    	else if (response.status == '200'){
-		    		console.log("SAVED CORRECTLY");
-		    			
+		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		    		console.log('MY SERVER:  '+"Not authorized!!");
+		    		dialog.loginDialog();	
 		    	}
-	 	}
- 	});
-	saveRequest.post();
-	
-}
-
-
-function searchForParent(childNode, whereToSearch){
-	var parentId = childNode.parentId;
-	//console.log("Parent ID of "+ childNode.title +" = " + parentId);
-	//console.log(JSON.stringify(bookmarksList));
-	for (var i=0;i<whereToSearch.length;i++){
-		//console.log("Searching in ......");
-		//console.log("Title = "+ whereToSearch[i].title +" & ID of this = " + whereToSearch[i].id);
-		if (whereToSearch[i].itemId == parentId){
-			//console.log("Indent level of  "+ childNode.title + "  "+childNode.indentLevel);
-			whereToSearch[i].children.push(childNode);
-			//console.log();
-			//console.log("Break and return!");
-			break;
-			return;
-		
-		}
-		if (whereToSearch[i].children){
-			if (whereToSearch[i].children.length > 0){
-				searchForParent(childNode,whereToSearch[i].children);
-			}
-		}
-	
-	}
-
-}
-
-function takeBookmark(thisBookmark){
-	//var thisBookmark = bookmarkInfo[0];
-	ifFolder = thisBookmark.ifFolder;
-	//thisBookmark.deviceId = deviceId;
-	if (ifFolder){
-		//console.log("A Folder " + things[0].title);
-		if (!thisBookmark.children){
-			//console.log("Create children folder!!!!");
-			//console.log("No children " + things[0].title);
-			//var aux = new Object();
-			//aux = things[0];
-			//aux.children = new Array();
-			//thisBookmark.ifFolder = true;
-			thisBookmark.children = new Array();
-		}
-		//console.log("<ul>"+things[0].title);
-		//console.log("SEarch for parent = " + things[0].title);
-		searchForParent(thisBookmark,bookmarksList);
-	}
-	else{
-		//thisBookmark.ifFolder = ifFolder;
-		//console.log("<li>"+things[0].title);
-		//console.log("Not a folder = " + things[0].title);
-		searchForParent(thisBookmark,bookmarksList);
-	}
-
-}
-
-function saveAllBookmarks(datasToSave){
-	var sendURL = URL + 'add/all/bookmarks/';
-	console.log("Gonna send to = " + sendURL );
-	console.log("Gonna send = " + JSON.stringify(datasToSave));
-	var saveRequest = Request({
-		url: sendURL,
-		contentType: 'application/json',
-		headers: {'myName':'shweta-ubuntu','myId':deviceId},
-		content:  JSON.stringify(datasToSave),
-		onComplete: function (response) {	
-		    	if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
+		    	else if (response.status == '0'){
+		    		console.log('MY SERVER: Server is not connected');
 		    	}
-		    	else if (response.status == '200'){
-		    		console.log("SAVED CORRECTLY");
-		    			
+		    	else{
+		    		console.log('MY SERVER:  Response status = '+response.status);
+		    		console.log('MY SERVER:  response text = '+response.statusText);
 		    	}
-	 	}
- 	});
-	saveRequest.post();
+                 }
+         });
+        changeRequest.get();
+
 
 
 }
 
+function saveAll(){
+	if_sync_history = preferences.getSyncHistory();
+	if_sync_bookmarks = preferences.getSyncBookmarks();
+	if (if_sync_bookmarks == true){
+		saveAllBookmarks();
+	}
+	if (if_sync_history == true){
+		saveAllHistory();
+	}
+}
 
-function getBookmarks(){
-	bookmarksList = new Array();
-	var folderIds = bookmarks.getFoldersId();
-	for each (var id in folderIds){
-		var thisFolder = new Object();
-		thisFolder.itemId = id;
-		thisFolder.title = bookmarks.nameFolder(id);
-		//thisFolder.deviceId = deviceId;
-		thisFolder.children = new Array();
-		thisFolder.parentId = 0;
-		bookmarksList.push(thisFolder);
-		bookmarks.getFoldersChildren(id);
+function getAll(){
+	if_sync_history = preferences.getSyncHistory();
+	if_sync_bookmarks = preferences.getSyncBookmarks();
+	if (if_sync_bookmarks == true){
+		readAllBookmarks();
+	}
+	if (if_sync_history == true){
+		readAllHistory();
+	}
+	if (if_sync_tabs == true){
+		readAllTabs();
+	}
+}
+
+exports.getAll = getAll;
+function startUp(){
+	save_interval_id = timer.setInterval(saveAll, INTERVAL_MS);
+	read_interval_id = timer.setInterval(getAll, INTERVAL_MS)
+	myTabs.startUp();
+	myTabs.on('save',saveTabs);
+	preferences.on('deviceNameChanged',changeDeviceName);
+}
+
+function clean(){
+	if (save_interval_id != undefined){
+		timer.clearInterval(save_interval_id);
+	}
+	if (read_interval_id != undefined){
+		timer.clearInterval(read_interval_id);
 	}
 	
-	//console.log("Bookmarks = " + JSON.stringify(bookmarksList));
-	saveAllBookmarks(bookmarksList);
-	
-}
+	myTabs.removeListener('save');
 
-exports.getBookmarks = getBookmarks;
-function startUp(id){
-	deviceId = id;
-	
-	//if (reason == 'install'){
-		//Then we have to retrieve all the bookmarks and save them:
-		
-		//Get all the bookmarks and save them!!!
-	//getBookmarks();
-	//}
-	
-	bookmarks.on('take',takeBookmark);
-	
-	
-	//bookmarks.on('bookmarks',handleBookmarks);
 }
-
+exports.clean = clean;
 exports.startUp = startUp;
-
-
-
-
-
 
  

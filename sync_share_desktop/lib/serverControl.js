@@ -1,12 +1,13 @@
 var { emit, on, once, off } = require("sdk/event/core");
 var dropbox = require('./dropbox.js');
 var gapi = require('./gapi.js');
+var myServer = require('./myServer.js');
 //var myServer = require(');
 
 
 var chosenServer;
 //var serverInfo = {'dropbox':false,'googleDrive':false,'both':false};
-const preferences = require("sdk/simple-prefs");
+const preferences = require("./preferences.js");
 var theServer;
 var dropboxDatas = {};
 dropboxDatas.access_token;
@@ -23,6 +24,7 @@ gapiDatas.refresh_token;
 const DROPBOX = 'dropbox';
 const GOOGLE_DRIVE = 'gapi';
 const BOTH = 'both';
+const NONE = 'none';
 
 
 
@@ -54,7 +56,7 @@ function handleDropboxAuth(authDatas){
 	}
 	
 	/*var currentTab = tabs.activeTab;
-	console.log("Active tab " + currentTab.title);
+	console.log('SERVER:  '+"Active tab " + currentTab.title);
 	var currentTabWorker = currentTab.attach({
 		contentScriptFile: data.url('messages.js')
 	});
@@ -66,7 +68,7 @@ function handleDropboxAuth(authDatas){
 	panelMessage.show();
 	timer.setTimeout(hidePanel, 5000);	//5 seconds*/
 	
-	//console.log("EXPIRES IN " + expires_in);
+	//console.log('SERVER:  '+"EXPIRES IN " + expires_in);
 	
 	/*
 	if (whoCalled == 'searchFile'){
@@ -127,7 +129,7 @@ function handleGapiAuth(authDatas){
 	
 	emit(exports,'showMessage',message);
 	/*var currentTab = tabs.activeTab;
-	console.log("Active tab " + currentTab.title);
+	console.log('SERVER:  '+"Active tab " + currentTab.title);
 	var currentTabWorker = currentTab.attach({
 		contentScriptFile: data.url('messages.js')
 	});
@@ -137,7 +139,7 @@ function handleGapiAuth(authDatas){
 	panelMessage.show();
 	timer.setTimeout(hidePanel, 5000);	//5 seconds*/
 	
-	//console.log("EXPIRES IN " + expires_in);
+	//console.log('SERVER:  '+"EXPIRES IN " + expires_in);
 	
 	/*
 	if (whoCalled == 'searchFile'){
@@ -168,9 +170,9 @@ function handleGapiAuth(authDatas){
 
 
 function changeServer(){
-	console.log("hello");
+	console.log('SERVER:  '+"hello");
 	/*chosenServer = preferences.prefs['server'];
-	console.log(server);*/	
+	console.log('SERVER:  '+server);*/	
 	setServer();
 }
 exports.changeServer = changeServer;
@@ -191,7 +193,7 @@ function setServer(){
 	//if(chosenServer != undefined){
 	//	serverInfo[chosenServer] = false;
 	//}
-	chosenServer = preferences.prefs['server'];
+	chosenServer = preferences.getExtraServer();
 	//serverInfo[chosenServer] = true;
 	/*if (chosenServer == DROPBOX){//If it is not both then:
 		theServer = dropbox;
@@ -202,7 +204,7 @@ function setServer(){
 	else if (chosenServer == BOTH){
 		theServer = 'both';
 	}*/
-	console.log('Chosen server = ' + chosenServer);	
+	console.log('SERVER:  '+'Chosen server = ' + chosenServer);	
 }
 exports.setServer = setServer;
 
@@ -227,6 +229,12 @@ function save(writeDatas){
 		writeDatas.token = gapiDatas.access_token;
 		gapi.save(writeDatas);	
 	}
+	else if (chosenServer == NONE){
+		//Do nothing
+		message.msg = message.msg + 'No extra server.'
+	}
+	//Have to send to my server:
+	myServer.save(writeDatas);
 	message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
 	emit(exports, 'showMessage',message);
 
@@ -254,6 +262,12 @@ function read(readInfo){
 		readInfo.token = gapiDatas.access_token;
 		gapi.read(readInfo);	
 	}
+	else if (chosenServer == NONE){
+		//Do nothing
+		message.msg = message.msg = 'No extra server.';
+		//emit(exports, 'display',null);
+	}
+	myServer.read(readInfo);
 	message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
 	emit(exports, 'showMessage',message);
 }
@@ -263,7 +277,7 @@ function start(){
 	//Set the server:
 	setServer();
 	//Listen for the button Save changes in the preferences panel.
-	preferences.on("saveChanges", changeServer);
+	//preferences.on("saveChanges", changeServer);
 	//When the user is unauthorized:
 	//gapi.on('Unauthorized',handleUnAuth);
 	//When the authentication process is completed:
@@ -280,6 +294,8 @@ function start(){
 	dropbox.on('display',handleDisplay);
 	//To show the corresponding message
 	dropbox.on('showMessage',handleShowMessage); 
+	
+	myServer.on('display',handleDisplay);
 }
 exports.start = start;
    

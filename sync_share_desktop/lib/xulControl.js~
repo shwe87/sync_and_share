@@ -2,7 +2,7 @@ const {Ci,Cc} = require("chrome");
 var { emit, on, once, off } = require("sdk/event/core");
 var tabs = require("sdk/tabs");
 var preferences = require("sdk/simple-prefs");
-var myId = preferences.prefs['id'];
+const { myId } = require("sdk/self");
 
 
 var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
@@ -181,6 +181,7 @@ exports.addAllOptions = function(){
 	menuPopUp.appendChild(addOpenMenu());
 	/*************A Separator***********************/
 	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
+	menuPopUp.appendChild(separator);
 	//Add the Share option.
 	menuPopUp.appendChild(addShareMenu());
 	//Add the view Share items

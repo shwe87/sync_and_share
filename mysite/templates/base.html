@@ -4,17 +4,18 @@
   <title>{% block title%}  {% endblock %}</title>
   <head>
     <link href={% static "css/pageStyle.css" %} rel="stylesheet" type="text/css">
+    <link rel="SHORTCUT ICON" href={% static "images/logo.png" %}>
     {% browserid_css %}
     {% block head %} {% endblock %}
   </head>
   <body>
   <center>
   <div class="logo">
-  	<div><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/></div>
+  	<div><img src={% static "images/logo.png" %} title="logo by Shweta"/></div>
   	<div><span class="small">Sync & Share</span></div>
   </div>
   </center>
-  <nav class="menu">
+  <!--nav class="menu">
   	<div class="menuBar">
 		  {% if user.is_authenticated %}
 			  <div id="toShareFrom">
@@ -33,7 +34,7 @@
 		   {% endif %}
 		   </div>
 	</div>
-   </nav>
+   </nav-->
   <center> 
     {% browserid_info %}
     {% block info %} {% endblock %}

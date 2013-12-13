@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load mptt_tags %}
 {% block title %} Share with {% endblock %}
 {% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
 <!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
@@ -55,6 +56,86 @@
 			</div>
 			       		
 		{% endfor %}		
+	</div>
+	
+	<div id="syncBookmarks" class="autoSync">
+		<div class="mainTitle">Bookmarks</div>
+		{% for d in devices %}
+			<div class="device">
+				<ul onclick="showOrHide(event)" class="hiding"> Bookmarks in {{ d.device_name }}
+					<ul class="hidden">
+					    {% recursetree nodes %}
+						{%if node.ifFolder %}
+
+						<li onclick="showOrHideTree(event)" class="folder">
+
+						{% else %}
+						<li class="notFolder">
+						{% endif %}
+						    {% if not node.ifFolder %}
+						    <label>
+						    	<input name="shareBookmarks" type="checkbox" value="{{ node.unique }}" /> 
+						    	<a href="{{ node.url }}">{{ node.title }}</a>
+						    </label>
+						    
+						    {% else %}
+						    {{ node.title }}
+						    {% endif %}
+						    {% if not node.is_leaf_node %}
+							<ul class="children hidden">
+							    {{ children }}
+							</ul>
+						    {% endif %}
+						</li>
+					    {% endrecursetree %}
+					</ul>
+				</ul>
+			</div>
+		{% endfor %}
+	</div>
+	
+	<div id="syncHistory" class="autoSync">
+		<div class="mainTitle">History</div>
+		{% for d in devices %}
+			<div class="device">
+				<ul onclick="showOrHide(event)" class="hiding">History in {{ d.device_name }}
+					{% for h in history %}
+					<li class="hidden"><label>
+						<input name="shareHistory" type="checkbox" value="{{ h.unique }}" /> 
+						<a href="{{ h.url }}">{{ h.title }}</a>
+					</label>
+					</li>
+					{% endfor %}
+				
+				</ul>
+		
+			</div>
+		{% endfor %}
+	
+	</div>
+	
+	<div id="syncTabs" class="autoSync">
+		<div class="mainTitle">Tabs</div>
+		{% for d in devices %}
+			<div class="device">
+				<ul onclick="showOrHide(event)" class="hiding">Tabs in {{ d.device_name }}
+					{% for t in tabs%}
+					<li class="hidden">
+					<label>
+						<input name="shareTabs" type="checkbox" value="{{ t.unique }}">
+						<a href="{{ t.url }}"> {{ t.title }}</a>
+					</label>
+					</li>
+					{% endfor %}
+				
+				
+				</ul>
+			</div>
+		
+		
+		{% endfor %}
+	
+	
 	</div>
 	
 	

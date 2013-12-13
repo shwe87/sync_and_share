@@ -28,7 +28,7 @@ DATABASES = {
 ALLOWED_HOSTS = []
 
 # Path to redirect to on successful login.
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login/'
 
 LOGIN_URL = "/login"
 LOGOUT_URL = "/logout"

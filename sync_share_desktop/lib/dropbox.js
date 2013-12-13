@@ -39,7 +39,7 @@ function ifAuthenticated(){
 			}
 		}
 	}	
-	console.log("Search Cookie result = " + authenticated);
+	console.log('DROPBOX:  '+"Search Cookie result = " + authenticated);
 	return authenticated;
 
 }
@@ -84,17 +84,17 @@ function auth(datas){
 						tab.close();	
 					});
 				}catch(e){
-					console.log('ERROR!');
+					console.log('DROPBOX:  '+'ERROR!');
 				}
 				var getAccess = Request({		
 					url: TOKEN_URL,
 					contentType: 'application/x-www-form-urlencoded',
 					content: {'code': myCode,'client_id':CLIENT_ID,'client_secret':CLIENT_SECRET,'grant_type':'authorization_code'},
 					onComplete: function(response){
-						console.log("AUTH Status = " + response.status);
-						console.log("AUTH STATUS TEXT = " + response.statusText);
-						console.log("AUTH HEADERS = " + JSON.stringify(response.headers));
-						console.log("AUTH JSON = " + JSON.stringify(response.json));
+						console.log('DROPBOX:  '+"AUTH Status = " + response.status);
+						console.log('DROPBOX:  '+"AUTH STATUS TEXT = " + response.statusText);
+						console.log('DROPBOX:  '+"AUTH HEADERS = " + JSON.stringify(response.headers));
+						console.log('DROPBOX:  '+"AUTH JSON = " + JSON.stringify(response.json));
 						if(response.status =='200'){
 							/*		
 							{"access_token":A TOKEN,
@@ -108,7 +108,7 @@ function auth(datas){
 							datas.authSuccess = true;
 							setAuthenticated();
 							
-							console.log('auth: Elements  = '+JSON.stringify(datas));				
+							console.log('DROPBOX:  '+'auth: Elements  = '+JSON.stringify(datas));				
 	
 						}
 						else{
@@ -128,7 +128,7 @@ function auth(datas){
 					}
 				});
 				getAccess.post();
-				console.log('Posted!');
+				console.log('DROPBOX:  '+'Posted!');
 			});
 		
 		}
@@ -153,12 +153,12 @@ function handleOnlyShow(showData){
 		//downloadedData = JSON.parse(downloadData.downloadedContent);
 	//}catch(e){
 		//Otherwise it's downloaded as json
-	//	console.log("ERROR = " + e.toString());
+	//	console.log('DROPBOX:  '+"ERROR = " + e.toString());
 		
 	//}
 	
 	
-	console.log("HAVE TO SHOW!!!!");
+	console.log('DROPBOX:  '+"HAVE TO SHOW!!!!");
 	var exists = showData.exists;
 	if (exists){
 		downloadedData = showData.downloadedContent;
@@ -182,16 +182,16 @@ function handleBeforeWrite(datas){
 		//downloadedData = JSON.parse(downloadData.downloadedContent);
 	//}catch(e){
 		//Otherwise it's downloaded as json
-	//	console.log("ERROR = " + e.toString());
+	//	console.log('DROPBOX:  '+"ERROR = " + e.toString());
 		downloadedData = datas.downloadedContent;
 	//}
-	console.log("DOWNLOADED DATA = " + JSON.stringify(downloadedData));
+	console.log('DROPBOX:  '+"DOWNLOADED DATA = " + JSON.stringify(downloadedData));
 	var dataToSave = datas.dataToSave;
 	if (exists){
 
 		
 		
-		console.log("Have to rewrite!!!! " + JSON.stringify(dataToSave));
+		console.log('DROPBOX:  '+"Have to rewrite!!!! " + JSON.stringify(dataToSave));
 		
 		
 		
@@ -203,9 +203,9 @@ function handleBeforeWrite(datas){
     			//Once we have got the position of the tab with the id, lets save its cookies:
     			listOfTabs[pos].cookies = cookiesInfo;
     			 */
-    		//console.log("Keys " + Object.keys(downloadedData));
+    		//console.log('DROPBOX:  '+"Keys " + Object.keys(downloadedData));
     		var key = Object.keys(downloadedData);
-    		//console.log("Using key = " + downloadedData[key]);
+    		//console.log('DROPBOX:  '+"Using key = " + downloadedData[key]);
 		//If it is update file then have to update the save data:
 		var arrayOfObjects = new Array();	//New array containing the elements' array
 		arrayOfObjects = downloadedData[key].slice(0);
@@ -218,27 +218,27 @@ function handleBeforeWrite(datas){
 		else{
 			arrayOfObjects = downlaodedData.history.slice(0); //Contains the histories' array
 		}*/
-		console.log("Array Of Objects = " + JSON.stringify(arrayOfObjects));
-		console.log("DATA TO SAVE = " + JSON.stringify(dataToSave));
+		console.log('DROPBOX:  '+"Array Of Objects = " + JSON.stringify(arrayOfObjects));
+		console.log('DROPBOX:  '+"DATA TO SAVE = " + JSON.stringify(dataToSave));
 		var upload = false;
 		var alreadySaved = new Array();
 		//Lets see if the data we are going to save was already saved before:
 		for each (var oneData in dataToSave){
-			console.log(oneData.url);
+			console.log('DROPBOX:  '+oneData.url);
 			var pos = arrayOfObjects.map(function(e) { 
-					console.log("MAP = " + e.url);
+					console.log('DROPBOX:  '+"MAP = " + e.url);
     					return e.url; 
     			}).indexOf(oneData.url);
     			
     			
     			if (pos == -1){//Doesn't exist
-    				console.log("\r\n\r\n\r\n"+oneData.url + " doesn't exist\r\n\r\n\r\n");
+    				console.log('DROPBOX:  '+"\r\n\r\n\r\n"+oneData.url + " doesn't exist\r\n\r\n\r\n");
 				downloadedData[key].push(oneData);
 				upload = true;
 					
 			}
 			else{
-				console.log("This tab is already saved " + oneData.title);
+				console.log('DROPBOX:  '+"This tab is already saved " + oneData.title);
 				alreadySaved.push(oneData.title);			
 			}
     		}
@@ -258,7 +258,7 @@ function handleBeforeWrite(datas){
 			panelMessage.show();
 			timer.setTimeout(hidePanel, 5000);	//5 seconds*/
 			/*var elementToSave = tabs.activeTab;
-			//console.log( oneData.title + " IS ALREADY SAVED!!!!!");
+			//console.log('DROPBOX:  '+ oneData.title + " IS ALREADY SAVED!!!!!");
 			var elementWorker = elementToSave.attach({
 				contentScriptFile: data.url('messages.js')
 							
@@ -275,14 +275,14 @@ function handleBeforeWrite(datas){
 	}
 	else{
 		//To save
-		console.log("FILE = " + title);
+		console.log('DROPBOX:  '+"FILE = " + title);
 		//var key = Object.keys();
 		var key = title.split('.json')[0];
 		var object = {};
 		
 		object[key] = dataToSave;
 		datas.dataToSave = object;
-		console.log("Para guardar = " + JSON.stringify(datas.dataToSave));
+		console.log('DROPBOX:  '+"Para guardar = " + JSON.stringify(datas.dataToSave));
 		write(datas);
 	
 	}
@@ -300,10 +300,10 @@ function getData(datas){
 		headers: {'Host':'www.api-content.dropbox.com.com','Authorization': 'Bearer '+ token},
 		//content: {'rev': ''},
 		onComplete: function(response){
-			console.log("GET FILE Status = " + response.status);
-			console.log("GET FILE STATUS TEXT = " + response.statusText);
-			//console.log("GET FILE HEADERS = " + JSON.stringify(response.headers));
-			console.log("GET FILE JSON = " + JSON.stringify(response.json));
+			console.log('DROPBOX:  '+"GET FILE Status = " + response.status);
+			console.log('DROPBOX:  '+"GET FILE STATUS TEXT = " + response.statusText);
+			//console.log('DROPBOX:  '+"GET FILE HEADERS = " + JSON.stringify(response.headers));
+			console.log('DROPBOX:  '+"GET FILE JSON = " + JSON.stringify(response.json));
 			if (datas.save == true){
 				datas.action = REWRITE;
 			}
@@ -318,7 +318,7 @@ function getData(datas){
 			else if (response.status == '200'){
 				datas.exists = true;
 				var metadata = response.headers['x-dropbox-metadata'];
-				console.log("METADATA rev = " + JSON.stringify(metadata));
+				console.log('DROPBOX:  '+"METADATA rev = " + JSON.stringify(metadata));
 				datas.metadata = metadata;
 				datas.rev = metadata.rev;
 				datas.downloadedContent = response.json;
@@ -364,18 +364,18 @@ function write(datas){
 	if (rev != null ){
 		URL = URL+'?parent_rev='+rev;
 	}
-	console.log(URL);
+	console.log('DROPBOX:  '+URL);
 	var saveData = Request({
 		url: URL,
 		headers: {'Host':'www.api-content.dropbox.com.com','Authorization':'Bearer ' + token,'Content-length':saveDatas.length,'Content-Type':'text/plain; charset=UTF-8'},
 		content: saveDatas,
 		onComplete: function(response){
 			var message = {};
-			console.log("SAVE DATA Status = " + response.status);
-			console.log("SAVE DATA STATUS TEXT = " + response.statusText);
-			console.log("SAVE DATAE HEADERS = " + JSON.stringify(response.headers));
-			console.log("SAVE DATA JSON = " + JSON.stringify(response.json));
-			console.log("SAVE DATA TEXT = " + response.text);	
+			console.log('DROPBOX:  '+"SAVE DATA Status = " + response.status);
+			console.log('DROPBOX:  '+"SAVE DATA STATUS TEXT = " + response.statusText);
+			console.log('DROPBOX:  '+"SAVE DATAE HEADERS = " + JSON.stringify(response.headers));
+			console.log('DROPBOX:  '+"SAVE DATA JSON = " + JSON.stringify(response.json));
+			console.log('DROPBOX:  '+"SAVE DATA TEXT = " + response.text);	
 			if (response.status == '200'){
 				datas.success = true;
 				message.msg = 'Correctly Saved!';
@@ -396,7 +396,7 @@ function write(datas){
 				message.type = 'error';	
 				handleResponse(response);			
 			}
-			console.log("SAVE = " + message.msg);
+			console.log('DROPBOX:  '+"SAVE = " + message.msg);
 			emit(exports, 'showMessage', message)	
 		}	
 	});

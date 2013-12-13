@@ -4,8 +4,6 @@ body{
 	background-attachment: fixed;
         font-family: Palatino,Georgia,Times;
         color: #383127;
-
-
 }
 
 nav.menu a{
@@ -59,7 +57,14 @@ div#userInfo, div#toShareFrom, div#viewShare{
 div#toShareFrom,div#viewShare{
 	margin-right: 100px;
 }
+span.highlight{
 
+	color:#60a282;
+}
+
+span.small, div.helpText,li.small{
+     	font-size: x-small;
+}
 
 /*.menu div{
         text-align: center;
@@ -87,6 +92,7 @@ div.authentication{
 	width:45%;
 	padding-top: 50px;
 	padding-bottom: 50px;
+	margin-bottom:100px;
 	
 }
  
@@ -106,3 +112,5 @@ ul.errorlist{
 span.small{
      	font-size: x-small;
 }
+
+

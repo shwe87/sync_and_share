@@ -83,7 +83,7 @@ function ifAuthenticated(){
 			}
 		}
 	}	
-	console.log("Search Cookie result = " + authenticated);
+	console.log('GAPI:  '+"Search Cookie result = " + authenticated);
 	return authenticated;
 
 }
@@ -117,14 +117,14 @@ function auth(datas){
 						tab.close();
 					});
 				}catch(e){
-					console.log('Shut down!!');
+					console.log('GAPI:  '+'Shut down!!');
 				}
 				var getAccess = Request({		
 					url: 'https://accounts.google.com/o/oauth2/token',
 					contentType: 'application/x-www-form-urlencoded',
 					content: {'code': myCode,'client_id':CLIENT_ID,'client_secret':CLIENT_SECRET,'redirect_uri':REDIRECT_URI_URN,'grant_type':'authorization_code'},
 					onComplete: function(response){
-						//console.log('STATUS ' + response.statusText);
+						//console.log('GAPI:  '+'STATUS ' + response.statusText);
 						if(response.statusText =='OK'){
 							/*
 							The response format will be:
@@ -146,7 +146,7 @@ function auth(datas){
 							//datas.accessDatas = response.json;
 							datas.authSuccess = true;
 							setAuthenticated();
-							console.log('auth: Elements  = '+JSON.stringify(datas));						
+							console.log('GAPI:  '+'auth: Elements  = '+JSON.stringify(datas));						
 							//about(datas.token);
 						}		
 						else{
@@ -166,7 +166,7 @@ function auth(datas){
 					}
 				});
 				getAccess.post();
-				//console.log('Posted!');
+				//console.log('GAPI:  '+'Posted!');
 			});
 		
 		}	
@@ -184,7 +184,7 @@ function handleSearchFile(fileData){
 	var fileName = fileData.title;
 	var dataToSave = fileData.dataToSave;		
 	if (exists){
-		console.log("handleSearchFile : File " + fileName + " exists!");
+		console.log('GAPI:  '+"handleSearchFile : File " + fileName + " exists!");
 		if (fileData.save == true){		
 			//Download the file & save:
 			fileData.action = REWRITE;
@@ -201,7 +201,7 @@ function handleSearchFile(fileData){
 	}
 	else{
 		//If the file doesn't exist then we have to create the file
-		console.log("handleSearchFile: File " + fileName + " doesn't exists! ");
+		console.log('GAPI:  '+"handleSearchFile: File " + fileName + " doesn't exists! ");
 		/*
 		var anArray = ['Hola','Yo','Soy','Shweta'];
 	var anObject = {'title':'new','author':'nobody','array':anArray};
@@ -213,7 +213,7 @@ function handleSearchFile(fileData){
 		//anArray.concat(dataToSave);
 		if (fileData.save == true){
 			//To save
-			console.log("FILE = " + fileName);
+			console.log('GAPI:  '+"FILE = " + fileName);
 			//var key = Object.keys();
 			var key = fileName.split('.json')[0];
 			var object = {};
@@ -228,12 +228,12 @@ function handleSearchFile(fileData){
 			}*/
 			object[key] = dataToSave;
 			fileData.dataToSave = object;
-			console.log("Para guardar = " + JSON.stringify(fileData.dataToSave));
+			console.log('GAPI:  '+"Para guardar = " + JSON.stringify(fileData.dataToSave));
 			startUpload(fileData);
 		}
 		else{
 			//Just to download, but there is nothing.
-			console.log("Nothing saved!!!");                            
+			console.log('GAPI:  '+"Nothing saved!!!");                            
                         emit(exports, 'display',null);
 			
 		}			
@@ -247,11 +247,11 @@ function handleSearchFile(fileData){
 //Search for specific file with the file name title.
 function searchFile(searchDatas){
 	//title, dataToSave, token
-	console.log("Search File.");
+	console.log('GAPI:  '+"Search File.");
 	var title = searchDatas.title;
 	var token = searchDatas.token;
 	var dataToSave = searchDatas.dataToSave;
-	console.log("SEARCH FOR = " + title);
+	console.log('GAPI:  '+"SEARCH FOR = " + title);
 	//If dataToSave null then there is nothing to save
 	//ElementToSave: 
         var exists = false;	//Lets assume that it doesn't exist.
@@ -261,14 +261,14 @@ function searchFile(searchDatas){
                 url: request,
                 headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token},
                 onComplete: function(response){
-                	//console.log();
-                	console.log("Search File = " + response.statusText);
-                	console.log("Search File = " + response.status);
-                	console.log("Search File = " + JSON.stringify(response.headers));
-                	//console.log("Search File = " + response.text);
+                	//console.log('GAPI:  '+);
+                	console.log('GAPI:  '+"Search File = " + response.statusText);
+                	console.log('GAPI:  '+"Search File = " + response.status);
+                	console.log('GAPI:  '+"Search File = " + JSON.stringify(response.headers));
+                	//console.log('GAPI:  '+"Search File = " + response.text);
                 	if (response.status == '401'){	//Invalid token; Unauthorized
                 		//auth('searchFile',[title,dataToSave]);
-                		console.log("Search file : Unauthorized.");
+                		console.log('GAPI:  '+"Search file : Unauthorized.");
                 		searchDatas.whoCalled = whoCalled;
                 		searchDatas.authorized = false;
                 		auth(searchDatas);
@@ -279,12 +279,12 @@ function searchFile(searchDatas){
         			var fileId = '';
 		               	if (response.json.items.length == 0){
 		               		// If there is no item then the file doesn't exist-
-		               		console.log("Search File Doesn't Exist " + response.text); 
+		               		console.log('GAPI:  '+"Search File Doesn't Exist " + response.text); 
 		               		exists = false;                      		
 		               	}
 		               	else{
 		               		//The files exists.
-		               		console.log("Search File It exists " + title);
+		               		console.log('GAPI:  '+"Search File It exists " + title);
 		               		exists = true;
 		               		dLoadURL = response.json.items[0].downloadUrl;
 		               		fileId = response.json.items[0].id;		
@@ -313,7 +313,7 @@ function uploadFile(uploadData){
 	//fileData = [exists, title, dataToSave, token, dLoadURL, fileId]
 	
 
-	console.log('uploadFile: UPLOAD!!!!');
+	console.log('GAPI:  '+'uploadFile: UPLOAD!!!!');
 	//var fileData = uploadData[0];
 	var dataToSave = uploadData.dataToSave;
 	var token = uploadData.token;
@@ -321,18 +321,18 @@ function uploadFile(uploadData){
 	//var token = uploadData[2];
 	
 	var str = JSON.stringify(dataToSave);
-	console.log("Going to upload = " + str ) ;
+	console.log('GAPI:  '+"Going to upload = " + str ) ;
 	var session = Request({		
 		url: resumable_sesion,
 		//contentType: 'application/json; charset=UTF-8',
 		headers: {'Authorization': 'Bearer '+ token/*'Content-Length':38*/,'Content-Type':'application/json; charset=UTF-8'},
 		content: str,
 		onComplete: function(response){			
-			console.log('Upload file = ' + response.text);
-			console.log('Upload file status = ' + response.status);
-			console.log('Upload File status text = ' + response.statusText);
-			console.log('Headers = ' + JSON.stringify(response.headers));
-			console.log('uploadFile: Upload completed!!');
+			console.log('GAPI:  '+'Upload file = ' + response.text);
+			console.log('GAPI:  '+'Upload file status = ' + response.status);
+			console.log('GAPI:  '+'Upload File status text = ' + response.statusText);
+			console.log('GAPI:  '+'Headers = ' + JSON.stringify(response.headers));
+			console.log('GAPI:  '+'uploadFile: Upload completed!!');
 			if (response.status == '200'){
 				resumable_sesion = response.headers.Location;
 				uploadData.resumable_sesion_uri = resumable_sesion;
@@ -368,7 +368,7 @@ function startUpload(fileData){
 	
 	if (!exists){		
 		//If it is a new file then create it:
-		console.log('handleSave: NO EXSITE '+ fileName);
+		console.log('GAPI:  '+'handleSave: NO EXSITE '+ fileName);
 		var parents = [{'id':'appdata'}];
 		var j = {'title': fileName,'parents':parents};
 		var str = JSON.stringify(j);
@@ -378,13 +378,13 @@ function startUpload(fileData){
 			headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token,'Content-Length':38,'Content-Type':'application/json; charset=UTF-8','X-Upload-Content-Type':'application/json'/*,'X-Upload-Content-Length':2000000*/},
 			content: str,
 			onComplete: function(response){
-				console.log('Start Upload file = ' + response.statusText+'\r\n\r\n');
-				console.log('Start Upload file status = ' + response.status+'\r\n\r\n');
-				console.log('Start Upload File status text = ' + response.statusText+'\r\n\r\n');
-				console.log('Start Headers = ' + JSON.stringify(response.headers+'\r\n\r\n'));
+				console.log('GAPI:  '+'Start Upload file = ' + response.statusText+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Upload file status = ' + response.status+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Upload File status text = ' + response.statusText+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Headers = ' + JSON.stringify(response.headers+'\r\n\r\n'));
 				if (response.status == '200'){
 					resumable_sesion_uri = response.headers.Location;
-					//console.log(resumable_sesion_uri);
+					//console.log('GAPI:  '+resumable_sesion_uri);
 					//this.uploadFile(dataToSave, resumable_sesion_uri, token);
 					//this.listen;
 					//emit(exports, 'startComplete', [dataToSave, resumable_sesion_uri, token]);
@@ -410,17 +410,17 @@ function startUpload(fileData){
 		var fileId = fileData.fileId;
 		//Try to just add lines, not upload a new file.
 		//First step: Start a resumable session:
-		console.log('handleSave: Existe ' + fileName );
+		console.log('GAPI:  '+'handleSave: Existe ' + fileName );
 		var session = Request({                
 		        url: 'https://www.googleapis.com/upload/drive/v2/files/'+fileId+'?uploadType=resumable',
 		        //contentType: 'application/json; charset=UTF-8',
 		        headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token/*,'Content-Length':38,'Content-Type':'application/json; charset=UTF-8','X-Upload-Content-Type':'application/json'/*,'X-Upload-Content-Length':2000000*/},
 		        //content: str,
 		        onComplete: function(response){
-		                console.log('Start Upload file = ' + response.statusText+'\r\n\r\n');
-				console.log('Start Upload file status = ' + response.status+'\r\n\r\n');
-				console.log('Start Upload File status text = ' + response.statusText+'\r\n\r\n');
-				console.log('Start Headers = ' + JSON.stringify(response.headers+'\r\n\r\n'));
+		                console.log('GAPI:  '+'Start Upload file = ' + response.statusText+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Upload file status = ' + response.status+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Upload File status text = ' + response.statusText+'\r\n\r\n');
+				console.log('GAPI:  '+'Start Headers = ' + JSON.stringify(response.headers+'\r\n\r\n'));
 		                if (response.status == '200'){
 				        resumable_sesion_uri = response.headers.Location;
 				        //this.uploadFile(dataToSave, resumable_sesion_uri, token);
@@ -447,10 +447,10 @@ function about(token){
 		url: 'https://www.googleapis.com/oauth2/v3/userinfo',
 		headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token},
 		onComplete: function(response){
-			console.log('ABOUT = ' + response.status+'\r\n\r\n');
-			console.log('ABOUT = ' + response.statusText+'\r\n\r\n');
-			console.log('ABOUt = ' + JSON.stringify(response.headers+'\r\n\r\n'));
-			console.log("ABOUT = " + JSON.stringify(response.json));
+			console.log('GAPI:  '+'ABOUT = ' + response.status+'\r\n\r\n');
+			console.log('GAPI:  '+'ABOUT = ' + response.statusText+'\r\n\r\n');
+			console.log('GAPI:  '+'ABOUt = ' + JSON.stringify(response.headers+'\r\n\r\n'));
+			console.log('GAPI:  '+"ABOUT = " + JSON.stringify(response.json));
 		
 		
 		}
@@ -508,13 +508,13 @@ function handleDownloadCompleted(downloadData){
 		downloadedData = JSON.parse(downloadData.downloadedContent);
 	}catch(e){
 		//Otherwise it's downloaded as json
-		console.log("ERROR = " + e.toString());
+		console.log('GAPI:  '+"ERROR = " + e.toString());
 		downloadedData = downloadData.downloadedContent;
 	}
-	console.log("DOWNLOADED DATA = " + JSON.stringify(downloadedData));
+	console.log('GAPI:  '+"DOWNLOADED DATA = " + JSON.stringify(downloadedData));
 	if (actionAfterDownload == REWRITE){
 
-		console.log("Have to rewrite!!!!");
+		console.log('GAPI:  '+"Have to rewrite!!!!");
 		var dataToSave = downloadData.dataToSave;
 		
 		
@@ -527,9 +527,9 @@ function handleDownloadCompleted(downloadData){
     			//Once we have got the position of the tab with the id, lets save its cookies:
     			listOfTabs[pos].cookies = cookiesInfo;
     			 */
-    		//console.log("Keys " + Object.keys(downloadedData));
+    		//console.log('GAPI:  '+"Keys " + Object.keys(downloadedData));
     		var key = Object.keys(downloadedData);
-    		//console.log("Using key = " + downloadedData[key]);
+    		//console.log('GAPI:  '+"Using key = " + downloadedData[key]);
 		//If it is update file then have to update the save data:
 		var arrayOfObjects = new Array();	//New array containing the elements' array
 		arrayOfObjects = downloadedData[key].slice(0);
@@ -542,27 +542,27 @@ function handleDownloadCompleted(downloadData){
 		else{
 			arrayOfObjects = downlaodedData.history.slice(0); //Contains the histories' array
 		}*/
-		console.log("Array Of Objects = " + JSON.stringify(arrayOfObjects));
-		console.log("DATA TO SAVE = " + JSON.stringify(dataToSave));
+		console.log('GAPI:  '+"Array Of Objects = " + JSON.stringify(arrayOfObjects));
+		console.log('GAPI:  '+"DATA TO SAVE = " + JSON.stringify(dataToSave));
 		var upload = false;
 		var alreadySaved = new Array();
 		//Lets see if the data we are going to save was already saved before:
 		for each (var oneData in dataToSave){
-			console.log(oneData.url);
+			console.log('GAPI:  '+oneData.url);
 			var pos = arrayOfObjects.map(function(e) { 
-					console.log("MAP = " + e.url);
+					console.log('GAPI:  '+"MAP = " + e.url);
     					return e.url; 
     			}).indexOf(oneData.url);
     			
     			
     			if (pos == -1){//Doesn't exist
-    				console.log("\r\n\r\n\r\n"+oneData.url + " doesn't exist\r\n\r\n\r\n");
+    				console.log('GAPI:  '+"\r\n\r\n\r\n"+oneData.url + " doesn't exist\r\n\r\n\r\n");
 				downloadedData[key].push(oneData);
 				upload = true;
 					
 			}
 			else{
-				console.log("This tab is already saved " + oneData.title);
+				console.log('GAPI:  '+"This tab is already saved " + oneData.title);
 				alreadySaved.push(oneData.title);			
 			}
     		}
@@ -582,7 +582,7 @@ function handleDownloadCompleted(downloadData){
 			panelMessage.show();
 			timer.setTimeout(hidePanel, 5000);	//5 seconds*/
 			/*var elementToSave = tabs.activeTab;
-			//console.log( oneData.title + " IS ALREADY SAVED!!!!!");
+			//console.log('GAPI:  '+ oneData.title + " IS ALREADY SAVED!!!!!");
 			var elementWorker = elementToSave.attach({
 				contentScriptFile: data.url('messages.js')
 							
@@ -601,7 +601,7 @@ function handleDownloadCompleted(downloadData){
 		/*try{
 			openMenuTabWorker.port.emit('show',downloadedData);		
 		}catch(e){
-			console.log("ERROR!");
+			console.log('GAPI:  '+"ERROR!");
 		}*/
 		emit(exports,'display',downloadedData);
 	
@@ -620,11 +620,11 @@ function downloadData(datas){
                 url: downloadURL,
                 headers: {'Authorization': 'Bearer '+ token},
                 onComplete: function(response){
-                       // console.log("downloadData: Downloaded data = "  response.text);
-                        console.log("downloadData: status " + response.status);
-                        console.log("downloadData: status text " + response.statusText);
-                        //console.log("downloadData: Headers " + JSON.stringify(response.headers));
-                       // console.log();
+                       // console.log('GAPI:  '+"downloadData: Downloaded data = "  response.text);
+                        console.log('GAPI:  '+"downloadData: status " + response.status);
+                        console.log('GAPI:  '+"downloadData: status text " + response.statusText);
+                        //console.log('GAPI:  '+"downloadData: Headers " + JSON.stringify(response.headers));
+                       // console.log('GAPI:  '+);
                        if(response.status == '401'){
                        		//refresh_token
                        		//emit(exports,'auth',[fileName, downloadURL]);

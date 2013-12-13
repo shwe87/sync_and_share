@@ -43,7 +43,9 @@ function hide(nodeToShow){
 function showOrHide(event){
 	var node = event.target;
 	var children = node.children;
+	//alert(children.length);
 	for (var i=0;i<children.length;i++){
+		//alert(children[i].innerHTML);
 		var thisClass = children[i].className;
 		if (thisClass == 'hidden'){
 			children[i].setAttribute('class','shown');
@@ -53,9 +55,52 @@ function showOrHide(event){
 			children[i].setAttribute('class','hidden');
 			node.setAttribute('class','hiding');
 		}
+		/*thisClass = thisClass.split(' ');
+		//alert(thisClass);
+		if (thisClass.length > 1){
+			if (thisClass[1] == 'hidden'){
+				children[i].setAttribute('class',thisClass[0]+' shown');
+			}
+			else if (thisClass[1] == 'shown'){
+				children[i].setAttribute('class', thisClass[0]+' shown' );
+			}
+		}*/
 	}
 
 }
+
+function showOrHideTree(event){
+	//alert(event.target.nodeName+" clicked");
+	var node = event.target;
+	var children = node.children;
+	
+	//alert(children.length);
+	//var thisOne = -1;
+	for (var i=0;i<children.length;i++){
+		//alert(children[i].innerHTML);
+		//alert(children[0].innerHTML);
+		var thisClass = children[i].className;
+		thisClass = thisClass.split(' ');
+		//alert(thisClass);
+		//alert(thisClass);
+		if (thisClass.length > 1){
+			if (thisClass[1] == 'hidden'){
+				children[i].setAttribute('class',thisClass[0]+' showing');
+				thisOne = i;
+			}
+			/*else if (thisClass[1] == 'shown'){
+				children[0].setAttribute('class', thisClass[0]+' hidden' );
+			}*/
+		}
+			
+	}
+
+	
+
+
+}
+
+
 
 
 const FRIENDS_EMAIL = 'friendsEmail';
@@ -313,22 +358,7 @@ function delSharedFromContent(event, shareId, toDeleteId){
 }*/
 
 function delFromGroup(event, groupId){
-	var node = document.getElementById(groupId);
-	var parent = node.parentNode;
-	parent.setAttribute('class','hidden');
-	var sharedGroup = document.getElementById('sharedGroup');
-	var children = sharedGroup.children;
-	var ifHide = true;
-	for (var i=0;i<children.length;i++){
-	       	alert(children[i].className)
-	       	if (children[i].className != 'hidden'){
-	       		ifHide = false;
-	       	}
-	}
-	if (ifHide){
-	       	var groupTitle = document.getElementById('groupTitle');
-	       	groupTitle.setAttribute('class','hidden');
-	}
+	
 	
 	
 	//alert(shareId);
@@ -343,47 +373,32 @@ function delFromGroup(event, groupId){
 	//alert(typeOf);
 	//alert( uniqueId);
 	//alert(event.target.parentNode.parentNode.parentNode.getAttribute('value'));
-	/*var req = new XMLHttpRequest();
+	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() {
 	       			//alert(req.responseText);
 		if (req.status == '200'){
-			/*var parent = event.target.parentNode.parentNode.parentNode;
-	       		alert(parent.nodeName);
-	       		if (parent.nodeName == 'DIV'){
-	       			parent.setAttribute('class','hidden');
-	       		}
-	       		//Check if the parent node has anything left:
-	       		var mainParent = document.getElementById('sharedFrom');
-	       		var ifHide = true;
-	       		var children = mainParent.children;
-	       		for (var i=0;i<children.length;i++){
-	       			alert(children[i].className)
-	       			if (children[i].className != 'hidden'){
-	       				ifHide = false;
-	       			}
-	       		}
-	       		if (ifHide){
-	       			var shareFromTitle = document.getElementById('shareFromTitle');
-	       			shareFromTitle.setAttribute('class','hidden');
-	       		}
-	       		//alert("OK");
-	       		//var node = document.getElementById(toDeleteId);
-	       		//var parent = node.parentNode;
-	       		//parent.setAttribute('class','hidden');
-	       		//alert(parent.nodeName)
-	       		//alert(node.nodeName + ' ' + node.innerHTML);
-			//alert(parent.nodeName);
-			/*var children = parent.children;
-			for (var i=0;i<children.length;i++){
-				parent.removeChild(children[i]);
-			}
-			parent.setAttribute('class','hidden');*/
-	       			
-	 /*      	}
-	       	else{
-	       		//alert("Something went wrong!!!!! " + req.status);
-	       			//event.target.innerHTML = "Not found. Refresh the page!"
-	       	}
+			var node = document.getElementById(groupId);
+			var parent = node.parentNode;
+			parent.setAttribute('class','hidden');
+			var sharedGroup = document.getElementById('sharedGroup');
+			var children = sharedGroup.children;
+			var ifHide = true;
+		for (var i=0;i<children.length;i++){
+		       	alert(children[i].className)
+		       	if (children[i].className != 'hidden'){
+		       		ifHide = false;
+		       	}
+		}
+		if (ifHide){
+		       	var groupTitle = document.getElementById('groupTitle');
+		       	groupTitle.setAttribute('class','hidden');
+		}
+		       			
+		       	}
+		       	else{
+		       		//alert("Something went wrong!!!!! " + req.status);
+		       			//event.target.innerHTML = "Not found. Refresh the page!"
+		       	}
 	    					
 	}
 	url = '/delete/from/group/'; //+ encodeURIComponent(uniqueId);
@@ -393,7 +408,7 @@ function delFromGroup(event, groupId){
 	//params = params + '&toDeleteId=' + encodeURIComponent(toDeleteId);
 	//params = params + 'typeOf=' + encodeURIComponent(typeOf);
 	var params = params.replace(/%20/g, '+')
-	req.send(params);*/	
+	req.send(params);	
 }
 
 

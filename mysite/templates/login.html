@@ -3,15 +3,16 @@
 {% block title %} Log in {% endblock %}
 {% block content %}
 	<div class="authentication">
-        <div class="message">
+        <div class="message small">
         Sync & Share uses Mozilla Persona for authentication.
         </div>
         {% if user.is_authenticated %}
-          <div> You are already signed in as: {{ user.email }}</div>
-          {% browserid_logout text='Logout' link_class='browserid-logout'%}
+          <div class="small"> You are already signed in as: <span class="highlight">{{ user.email }}</span></div>
+         {% comment %} {% browserid_logout text='Logout' link_class='browserid-logout'%} {% endcomment %}
         {% else %}
           <div class="error">Not signed in. Please press the button to sign in:</div>
           {% browserid_login text='Mozilla Persona Login' color='orange' %}
+          <div class="small">After you sign in, you can go to settings.</div>
         {% endif %}
       </div>
 

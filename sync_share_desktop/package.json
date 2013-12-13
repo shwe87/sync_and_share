@@ -12,37 +12,66 @@
   	"private-browsing":"false"
   
   },
-  "preferences": [{       
-	    "name": "server",
+  "preferences": [
+  	{
+	    "description": "Auto sync tabs?",
+	    "type": "bool",
+	    "name": "syncTabs",
+	    "value": true,
+	    "title": "Tabs"
+	},
+	{
+	    "description": "Auto sync bookmarks?",
+	    "type": "bool",
+	    "name": "syncBookmarks",
+	    "value": true,
+	    "title": "Bookmarks"
+	},
+	{
+	    "description": "Auto sync history?",
+	    "type": "bool",
+	    "name": "syncHistory",
+	    "value": true,
+	    "title": "History"
+	},
+        {
+            "type": "string",
+            "name": "deviceName",
+            "value": "username-desktop",
+            "title": "Name this device as: "
+        },
+        {
+           "type": "control",
+           "label": "Save device name",
+           "name": "saveDeviceName",
+           "title": "Save device name"
+        },
+        {
+	    "name": "extraServer",
 	    "type": "radio",
-	    "title": "Default server",
-	    "value": "dropbox",
-	    "description": "The chosen server will be used to save your datas.",
+	    "title": "Extra server",
+	    "value": "none",
+	    "description": "These servers can also be used to save your tabs, bookmarks & history manually.",
 	    "options": [
 		{
+		    "value": "none",
+		    "label": "Don't user extra server"
+		},
+		{
 		    "value": "dropbox",
-		    "label": "Dropbox"
+		    "label": "Use Dropbox"
 		},
 		{
 		    "value": "gapi",
-		    "label": "Google Drive"
+		    "label": "User Google-Drive"
 		},
 		{
-		    "value":"both",
-		    "label":"Both"
+		    "value": "both",
+		    "label": "Use both"
+		
 		}
 	    ]
-
-  	},
-  	{
-	    "type": "control",
-	    "label": "Save changes",
-	    "name": "saveChanges",
-	    "title": "Save Changes"	
-  	}	
-  
-  
-  
-  ]
+	}
+    ]
 }
 

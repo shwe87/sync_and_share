@@ -1,9 +1,77 @@
 {
-  "name": "sync_share_desktop",
-  "title": "sync_share_desktop",
+  "name": "sync-share-desktop",
+  "title": "Sync & Share",
   "id": "jid1-Yvw9LU0J6vLQkA",
-  "description": "a basic add-on",
-  "author": "",
+  "description": "Syncing and sharing between devices and friends.",
+  "author": "Shweta",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1",
+  "fullName": "sync and share",
+  "icon64":"skin/myLogo64.png",
+  "permissions":{
+  	"private-browsing":"false"
+  
+  },
+  "preferences": [
+  	{
+	    "description": "Auto sync tabs?",
+	    "type": "bool",
+	    "name": "syncTabs",
+	    "value": true,
+	    "title": "Tabs"
+	},
+	{
+	    "description": "Auto sync bookmarks?",
+	    "type": "bool",
+	    "name": "syncBookmarks",
+	    "value": true,
+	    "title": "Bookmarks"
+	},
+	{
+	    "description": "Auto sync history?",
+	    "type": "bool",
+	    "name": "syncHistory",
+	    "value": true,
+	    "title": "History"
+	},
+        {
+            "type": "string",
+            "name": "deviceName",
+            "value": "username-desktop",
+            "title": "Name this device as: "
+        },
+        {
+           "type": "control",
+           "label": "Save device name",
+           "name": "saveDeviceName",
+           "title": "Save device name"
+        },
+        {
+	    "name": "extraServer",
+	    "type": "radio",
+	    "title": "Extra server",
+	    "value": "none",
+	    "description": "These servers can also be used to save your tabs, bookmarks & history manually.",
+	    "options": [
+		{
+		    "value": "none",
+		    "label": "Don't user extra server"
+		},
+		{
+		    "value": "dropbox",
+		    "label": "Use Dropbox"
+		},
+		{
+		    "value": "gapi",
+		    "label": "User Google-Drive"
+		},
+		{
+		    "value": "both",
+		    "label": "Use both"
+		
+		}
+	    ]
+	}
+    ]
 }
+

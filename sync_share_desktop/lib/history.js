@@ -5,7 +5,12 @@ var {Cc, Ci, Cu} = require("chrome");
 var historyService = Cc["@mozilla.org/browser/nav-history-service;1"]
                                .getService(Ci.nsINavHistoryService);             
               
-              
+function convertToDate(timeInMicro){
+	var aux = new Date(timeInMicro/1000);
+	//console.log( "History = " + aux);
+	return aux;
+	
+}              
 exports.queryHistory = function(){
 	var listOfHistory = new Array();
 	//var history = {};
@@ -29,19 +34,22 @@ exports.queryHistory = function(){
 	  var visited = node.accessCount;
 	  var lastVisitedTimeInMicrosecs = node.time;
 	  var iconURI = node.icon; // is null if no favicon available
-	  console.log("iconURI " + iconURI);
+	  //console.log("iconURI " + iconURI);
 	  nodeHistory.title = title;
 	  nodeHistory.url = url;
 	  nodeHistory.visited = visited;
-	  nodeHistory.time = lastVisitedTimeInMicrosecs;
+	  //var lastVisited = new Date(lastVisitedTimeInMicrosecs/1000).toUTCString();
+	 // console.log("Lastvisited history");
+	  nodeHistory.lastVisited = convertToDate(lastVisitedTimeInMicrosecs);
+	  
 	  /*if (iconURI != null){
 	  	var icn = iconURI.split('favicon');
 	  	/*console.log("icn " + icn);
 	  	iconURI = icn[1];
 	  	console.log("iconURI " + iconURI);*/
 	  //}
-	  nodeHistory.icon = iconURI;
-	  console.log('History = ' + JSON.stringify(nodeHistory));
+	  //nodeHistory.icon = iconURI;
+	  //console.log('History = ' + JSON.stringify(nodeHistory));
 	  listOfHistory.push(nodeHistory);
 	  
 	}

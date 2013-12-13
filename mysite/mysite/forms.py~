@@ -8,6 +8,10 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from syncShare.models import UserGroup
+from syncShare.models import Sync
+from syncShare.models import Bookmark
+from syncShare.models import History
+from syncShare.models import Tab
 
 def validate_user(email):
 	try:
@@ -70,7 +74,14 @@ class ShareForm(forms.Form):
 			('3','Share with existing group/s')
 			)
 	GROUP_OPTIONS = ()
-	toShare = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_OPTIONS)
+	SHARE_BOOKMARKS = ()
+	SHARE_HISTORY = ()
+	SHARE_TABS = ()
+	#To share manually saved share
+	toShare = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_OPTIONS,required=False)#Manually saved share
+	shareBookmarks = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_BOOKMARKS,required=False)
+	shareHistory = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_HISTORY,required=False)
+	shareTabs = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_TABS,required=False)
 	selectFrom = forms.ChoiceField(widget=forms.Select(attrs={'id':'selectTypeWhom'}),choices=SELECT_OPTIONS)
 	friends_email = MultiEmailField(help_text='Write emails separated by commas', required=False);
 	group_name = forms.CharField(max_length=100,label='Group Name', help_text='Maximum 100 characters', required=False)
@@ -87,7 +98,13 @@ class ShareForm(forms.Form):
         	group_name = cleaned_data.get("group_name")
         	existingGroups = cleaned_data.get("existingGroups")
         	selectFrom = cleaned_data.get("selectFrom")
+        	toShare = cleaned_data.get("toShare")
+        	shareBookmarks = cleaned_data.get("shareBookmarks")
+        	shareHistory = cleaned_data.get("shareHistory")
+        	shareTabs = cleaned_data.get("shareTabs")
 		
+		if not toShare and not shareBookmarks and not shareTabs and not shareHistory:
+			raise forms.ValidationError(u"You must choose somthing to share!")
 		if friends_email:
 			# Clear the duplicate emails:
 			friends_email = sorted(set(friends_email))
@@ -108,24 +125,49 @@ class ShareForm(forms.Form):
         		#print len(friends_email)
         		if not friends_email or friends_email == None:
         			#print ("2222222222")
-        			self.selectFrom.field.widget.choices = self.SELECT_OPTIONS
         			raise forms.ValidationError(u"Friends email can't be empty. Or you are trying to share to yourself.")
         	elif (selectFrom == '2'):
         		if not(group_name and friends_email):
-        			self.selectFrom.field.widget.choices = self.SELECT_OPTIONS
         			raise forms.ValidationError(u"The group name field and the friends' emails should be filled.")
         	elif (selectFrom == '3'):
         		if not existingGroups:
-        			self.selectFrom.field.widget.choices =self.SELECT_OPTIONS
         			raise forms.ValidationError(u"At least one group should be checked.")
         	"""if not (friends_email and group_name and existingGroups):
         		raise forms.ValidationError("Must choose one of the sharing options.")"""
+        		
+        	if toShare:
+        		for s in toShare:
+        			try:
+        				savedData = Sync.objects.get(unique=s)
+        			except Sync.DoesNotExist:
+        				raise forms.ValidationError(u"To share Please refresh this page again!")
+        	
+        	if shareBookmarks:
+        		for b in shareBookmarks:
+        			try:
+        				savedBookmarks = Bookmark.objects.get(unique=b)
+        			except Bookmark.DoesNotExist:
+        				raise forms.ValidationError(u"shareBookmarks Please refresh this page again!")
+        	if shareHistory:
+        		for h in shareHistory:
+        			try:
+        				savedHistory = History.objects.get(unique=h)
+        			except History.DoesNotExist:
+        				raise forms.ValidationError(u"shareHistory Please refresh this page again!")
+        	if shareTabs:
+        		for t in shareTabs:
+        			try:
+        				savedTabs = Tab.objects.get(unique=t)
+        			except Tab.DoesNotExist:
+        				raise forms.ValidationError(u"shareTabs Please refresh this page again!")			
             	
             	return cleaned_data
 
 
 
-
+class SettingsForm(forms.Form):
+	device_name = forms.CharField(widget=forms.TextInput, label="Name this browser")
+	
 
 
 

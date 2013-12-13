@@ -4,22 +4,36 @@
 {% block title %} View Bookmarks {% endblock %}
 {% block head %}<link href={% static "css/viewBookmarks.css" %} rel="stylesheet" type="text/css"> {% endblock %}
 {% block content %}
-<ul>
-    {% recursetree nodes %}
-        <li>
-            {% if not node.ifFolder %}
-            	<a href="{{ node.url }}">{{ node.title }}</a>
-            {% else %}
-            	{{ node.title }}
-            {% endif %}
-            {% if not node.is_leaf_node %}
-                <ul class="children">
-                    {{ children }}
-                </ul>
-            {% endif %}
-        </li>
-    {% endrecursetree %}
-</ul>
+{% for d in devices %}
+{{ d.device_name }}
+
+    {% for nodes in bookmarks %}
+<ul>    {% recursetree nodes %}
+		{% if node.device.device_id == d.device_id %}
+	    	{% if node.ifFolder %}
+		<li>
+		
+		{% else %}
+		<li>
+		{% endif %}
+		    {% if not node.ifFolder %}
+		    	<a href="{{ node.url }}">{{ node.title }}</a>
+		    {% else %}
+		    	{{ node.title }}
+		    {% endif %}
+		    {% if not node.is_leaf_node %}
+		        <ul class="children">
+		            {{ children }}
+		        </ul>
+		    {% endif %}
+		</li>
+		{% endif %}
+		
+	
+    {% endrecursetree %}</ul>
+    {% endfor %}
+
+{% endfor %}
 {% endblock %}
 
 
