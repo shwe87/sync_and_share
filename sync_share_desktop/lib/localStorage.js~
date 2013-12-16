@@ -1,0 +1,259 @@
+var ss = require("sdk/simple-storage");		//Permanent variables will be saved here, even the bookmarks,history and tabs.
+var { emit, on, once, off } = require("sdk/event/core");
+var {Cc, Ci, Cu} = require("chrome");
+
+var myServer = require('./myServer.js');
+var preferences = require('./preferences.js');
+exports.on = on.bind(null, exports);
+exports.once = once.bind(null, exports);
+exports.removeListener = function removeListener(type, listener) {
+  off(exports, type, listener);
+};
+
+
+function setId(){
+	if (!ss.storage.id){
+		//Generate an unique id for each device:
+		var uuidGenerator = Cc['@mozilla.org/uuid-generator;1'].
+		                  getService(Ci.nsIUUIDGenerator);
+		ss.storage.id = uuidGenerator.generateUUID().toString();
+		myServer.setDeviceId(ss.storage.id);
+		console.log('main '+"Added = " + ss.storage.id);
+	}
+	else{
+		myServer.setDeviceId(ss.storage.id);
+		console.log('main '+"Already saved = " + ss.storage.id);
+	}
+}
+
+exports.setId = setId;
+
+function moreThanXMinutes(before, x){
+	console.log('main '+"Before = "+before);
+	var now = new Date();
+	var nTime = now.getTime();	//milliseconds
+	console.log('main '+"Now = " + nTime);
+	var diff = (nTime - before)/1000;	//seconds
+	var diffInMins = Math.round(diff/60);	//minutes
+	console.log('main '+"Minute diff = " + diffInMins);
+	if (diffInMins > x){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function getNowTime(){
+	var now = new Date();
+	var nowTime = now.getTime();
+	return nowTime;
+
+}
+/**********************************************************************************************************************************
+@function updateBookmarksSentTime: When myServer module saves all the bookmarks of this device on the server then save the time when the bookmarks were saved in the server. This is done to check later onload if it is necessary to save the bookmarks again. (Have to save bookmarks every 30 minutes).
+@param time {PRTime}: microsends expressed from 1 Januray 1970. The last bookmarks sent to server time.
+*********************************************************************************************************************************/
+function updateBookmarksSentTime(time){
+	ss.storage.bookmarksSent = time;
+
+}
+/**********************************************************************************************************************************
+@function updateHistorySentTime: When myServer module saves all the history of this device on the server then save the time when the history were saved in the server. This is done to check later onload if it is necessary to save the history again. (Have to save history every 30 minutes).
+@param time {PRTime}: microsends expressed from 1 Januray 1970. The last history sent to server time.
+***********************************************************************************************************************************/
+function updateHistorySentTime(time){
+	ss.storage.historySent = time;	
+}
+/*********************************************************************************************************************************
+@function saveReadBookmarks: When the server has read all the bookmarks of all devices of this user, save them.
+@param listOfBookmarks {Array}: a List of all bookmarks.
+*******************************************************************************************************************************/
+function saveReadBookmarks(listOfBookmarks){
+	ss.storage.bookmarks = listOfBookmarks;
+	ss.storage.lastBookmarkRead = getNowTime();
+}
+
+/*******************************************************************************************************************************
+@function saveReadHistory: When the server has read all the history of all devices of this user, save them.
+@param listOfHistory {Array}: a List of all history.
+********************************************************************************************************************************/
+function saveReadHistory(listOfHistory){
+	ss.storage.history = listOfHistory;
+	ss.storage.lastHistoryRead = getNowTime();
+}
+/*******************************************************************************************************************************
+@function saveReadTabs: When the server has read all the tabs of all devices of this user, save them.
+@param listOfTabs {Array}: a List of all tabs.
+********************************************************************************************************************************/
+function saveReadTabs(listOfTabs){
+	console.log("localstorage: Save read tabs = " + JSON.stringify(listOfTabs));
+	ss.storage.tabs = listOfTabs;
+	ss.storage.lastTabRead = getNowTime();
+}
+
+function changeDeviceName(deviceName){
+	ss.storage.deviceName = deviceName;
+
+}
+
+
+function handleDatas(email){
+	console.log('email: ' + email);
+	if (!ss.storage.bookmarksSent){
+    	//Has never synced:
+    	//if (!ss.storage.lastUpdate.bookmarks){
+    		//ss.storage.lastUpdate = {'bookmarks':130,'history':130}
+    		console.log('main '+"No bookmarks saved have to SAVE BOOKMARKS!");
+    		myServer.saveAllBookmarks();
+    		
+    	}
+    	else{
+    		console.log('main :Bookmarks updated = '+ss.storage.bookmarksSent);
+    		//console.log('main '+ss.storage.historyUpdated);
+    		var haveToUpdateB = moreThanXMinutes(ss.storage.bookmarkUpdated, 30);
+    		if (haveToUpdateB == true){
+    			myServer.saveAllBookmarks();
+    			//myServer.readAll();
+    		}
+    	}
+    	if (!ss.storage.historySent){	
+    		//ss.storage.lastUpdate.bookmarks = updated;
+    	//}
+    	//if (!ss.storage.lastUpdate.history){
+    		console.log('main '+"No history saved have to SAVE HISTORY!");
+    		myServer.saveAllHistory();
+    		
+    		//ss.storage.lastUpdate.history = updated;
+    	//}
+    	
+    	}
+    	else{
+    		console.log('main '+ss.storage.historySent);
+    		var haveToUpdateH = moreThanXMinutes(ss.storage.historySent, 30); 
+    		if (haveToUpdateH == true){
+    			myServer.saveAllHistory();
+    		}
+   	}
+    
+    
+    	if (!ss.storage.lastBookmarkRead){
+    		console.log('main '+"No bookmarks read have to READ BOOKMARKS!");
+    		myServer.readAllBookmarks();
+    	}
+    	else{
+    		var haveToUpdateRB = moreThanXMinutes(ss.storage.lastBookmarkRead, 30); 
+    		if (haveToUpdateRB == true){
+    			myServer.readAllBookmarks();
+    		}
+    	}
+    	if (!ss.storage.lastHistoryRead){
+    		console.log('main '+"No history read have to READ HISTORY!");
+    		myServer.readAllHistory();
+    	}
+    	else{
+    		var haveToUpdateRH = moreThanXMinutes(ss.storage.lastHistoryRead, 30); 
+    		if (haveToUpdateRH == true){
+    			myServer.readAllHistory();
+    	}
+    	}
+    
+    	if (!ss.storage.lastTabRead){
+    		console.log('main '+"No tab read have to READ TABS!");
+    		myServer.readAllTabs();
+    	}
+    	else{
+    		var haveToUpdateRT = moreThanXMinutes(ss.storage.lastTabRead, 30); 
+    		if (haveToUpdateRT == true){
+    			myServer.readAllTabs();
+  		}
+    	}
+
+}
+exports.handleDatas = handleDatas;
+
+
+function setDeviceName(deviceName){
+	ss.storage.deviceName = deviceName;
+}
+
+exports.setDeviceName = setDeviceName;
+
+function getDeviceId(){
+	return ss.storage.id
+}
+exports.getDeviceId = getDeviceId;
+
+function getDeviceName(){
+	return ss.storage.deviceName;
+}
+exports.getDeviceName = getDeviceName;
+
+
+function getAllSavedBookmarks(){
+	if (ss.storage.bookmarks){
+		return ss.storage.bookmarks;
+	}
+	else{
+		return null;
+	}
+
+}
+
+exports.getAllSavedBookmarks = getAllSavedBookmarks;
+
+function getAllSavedHistory(){
+	if (ss.storage.history){
+		return ss.storage.history;
+	}
+	else{
+		return null;
+	}
+
+}
+exports.getAllSavedHistory = getAllSavedHistory;
+
+function getAllSavedTabs(){
+	console.log("Local storage: get all saved tabs!!!" );
+	if (ss.storage.tabs){
+		return ss.storage.tabs;
+	}
+	else{
+		return null;
+	}
+
+}
+
+exports.getAllSavedTabs = getAllSavedTabs;
+
+
+
+
+
+function startUp(){
+	myServer.on('allBookmarksSavedInServer',updateBookmarksSentTime);
+	myServer.on('allHistorySavedInServer',updateHistorySentTime);
+	myServer.on('allBookmarksReadFromServer',saveReadBookmarks);
+	myServer.on('allHistoryReadFromServer',saveReadHistory);
+	myServer.on('allTabsReadFromServer',saveReadTabs);
+	preferences.on('deviceNameChanged',changeDeviceName);
+}
+exports.startUp = startUp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

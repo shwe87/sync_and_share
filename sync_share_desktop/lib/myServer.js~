@@ -11,8 +11,9 @@ var preferences = require('./preferences.js');
 var { emit, on, once, off } = require("sdk/event/core");
 var timer = require('sdk/timers');
 var dialog = require('./dialog.js');
+var localStorage = require('./localStorage.js');
 
-var URL = 'http://127.0.0.1:8000';
+var URL = 'http://127.0.0.1:8001';
 var SAVE_URL = URL+'/save/';
 var READ_URL = URL+'/read/';
 var READ_ALL_BOOKMARKS = URL + '/read/all/bookmarks/';
@@ -37,46 +38,51 @@ exports.removeListener = function removeListener(type, listener) {
   off(exports, type, listener);
 };
 
+function handleErrors(response){
+	if (response.status == '500'){
+		console.log('MY SERVER:  '+"Did not work out!");
+		var message = {'msg':'Internal server problem', 'type':'error'}
+		emit(exports, 'showMessage',message);
+		    	
+	}
+	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+		console.log('MY SERVER:  '+"Not authorized!!");
+		dialog.loginDialog();	
+	}
+	else if (response.status == '0'){
+		console.log('MY SERVER: Server is not connected');
+	}
+	else{
+		console.log('MY SERVER:  Response status = '+response.status);
+		console.log('MY SERVER:  response text = '+response.statusText);
+	}
 
+}
 
-
+/**********************************************************************************************************************
+@function saveAllBookmarks: Save all the bookmarks of this device by sending them to the server.
+1) Retrieve the bookmarks from the bookmarks module (save it to the var datasToSave).
+2) When the request is completed, check the response, if everything is OK then the bookmarks were saved successfully.
+***********************************************************************************************************************/
 function saveAllBookmarks(){
 	var datasToSave = bookmarks.getBookmarks();
 	var sendURL = URL + '/add/all/bookmarks/';
 	var deviceName = preferences.getDeviceName();
-	console.log('MY SERVER:  Save all bookmarks' );
-	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
+	console.log('MY SERVER:  Save all bookmarks in the server' );
 	var saveRequest = Request({
 		url: sendURL,
 		contentType: 'application/json',
 		headers: {'myName':deviceName,'myId':deviceId},
 		content:  JSON.stringify(datasToSave),
 		onComplete: function (response) {	
-		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
-		    	}*/
 		    	if (response.status == '200'){
-		    		//console.log('MY SERVER:  '+"SAVED CORRECTLY");
 		    		var now = new Date();
 		    		var nTime = now.getTime();
-		    		emit(exports,'savedAllBookmarks',nTime);
+		    		emit(exports,'allBookmarksSavedInServer',nTime);
 		    			
 		    	}
-		    	else if (response.status == '500'){
-		    		console.log('MY SERVER:  '+"Did not work out!");
-		    		var message = {'msg':'Internal server problem', 'type':'error'}
-		    		emit(exports, 'showMessage',message);
-		    	
-		    	}
-		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		console.log('MY SERVER:  '+"Not authorized!!");
-		    		dialog.loginDialog();	
-		    	}
 		    	else{
-		    		console.log('MY SERVER:  Response status = '+response.status);
-		    		console.log('MY SERVER:  response text = '+response.statusText);
-		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		    	
+		    		handleErrors(response);
 		    	}
 	 	}
  	});
@@ -84,44 +90,30 @@ function saveAllBookmarks(){
 }
 
 exports.saveAllBookmarks = saveAllBookmarks;
-
+/**********************************************************************************************************************
+@function saveAllHistory: Save all the history of this device by sending them to the server.
+1) Retrieve the history from the history module (save it to the var datasToSave).
+2) When the request is completed, check the response, if everything is OK then the history was saved successfully.
+***********************************************************************************************************************/
 function saveAllHistory(){
 	var datasToSave = history.queryHistory();
 	var sendURL = URL + '/add/all/history/';
 	var deviceName = preferences.getDeviceName();
 	console.log('MY SERVER:  Save all history' );
-	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
 	var saveRequest = Request({
 		url: sendURL,
 		contentType: 'application/json',
 		headers: {'myName':deviceName,'myId':deviceId},
 		content:  JSON.stringify(datasToSave),
 		onComplete: function (response) {	
-		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
-		    	}*/
 		    	if (response.status == '200'){
-		    		//console.log('MY SERVER:  '+"SAVED CORRECTLY");
 		    		var now = new Date();
 		    		var nTime = now.getTime();
-		    		emit(exports,'savedAllHistory',nTime);
+		    		emit(exports,'allHistorySavedInServer',nTime);
 		    			
 		    	}
-		    	else if (response.status == '500'){
-		    		console.log('MY SERVER:  '+"Did not work out!");
-		    		var message = {'msg':'Internal server problem', 'type':'error'}
-		    		emit(exports, 'showMessage',message);
-		    	
-		    	}
-		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		console.log('MY SERVER:  '+"Not authorized!!");
-		    		dialog.loginDialog();	
-		    	}
 		    	else{
-		    		console.log('MY SERVER:  Response status = '+response.status);
-		    		console.log('MY SERVER:  response text = '+response.statusText);
-		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		    	
+		    		handleErrors(response);
 		    	}
 	 	}
  	});
@@ -130,7 +122,13 @@ function saveAllHistory(){
 
 exports.saveAllHistory = saveAllHistory;
 
+/**********************************************************************************************************************
+@function saveTabs: Save all the provided tabs.
+@param datasToSave {Array}: An array of tabs to save in the server.
+When the request is completed, check the response, if everything is OK then all the tabs were saved successfully.
+***********************************************************************************************************************/
 function saveTabs(datasToSave){
+	console.log("My server: Have to save tabs");
 	var sendURL = URL + '/add/all/tabs/';
 	//console.log('MY SERVER:  '+"Gonna send to = " + sendURL );
 	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
@@ -141,31 +139,12 @@ function saveTabs(datasToSave){
 		headers: {'myName':deviceName,'myId':deviceId},
 		content:  JSON.stringify(datasToSave),
 		onComplete: function (response) {	
-		    	/*if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		reDirectAuth();
-		    	}*/
 		    	if (response.status == '200'){
 		    		console.log('MY SERVER:  '+"TABS SAVED CORRECTLY");
-		    		//var now = new Date();
-		    		//var nTime = now.getTime();
-		    		//emit(exports,'savedAllTabs',nTime);
 		    			
 		    	}
-		    	else if (response.status == '500'){
-		    		console.log('MY SERVER:  '+"Did not work out!");
-		    		var message = {'msg':'Internal server problem', 'type':'error'}
-		    		emit(exports, 'showMessage',message);
-		    	
-		    	}
-		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		console.log('MY SERVER:  '+"Not authorized!!");
-		    		dialog.loginDialog();	
-		    	}
 		    	else{
-		    		console.log('MY SERVER:  Response status = '+response.status);
-		    		console.log('MY SERVER:  response text = '+response.statusText);
-		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		    	
+		    		handleErrors(response);
 		    	}
 	 	}
  	});
@@ -173,7 +152,7 @@ function saveTabs(datasToSave){
 
 
 }
-
+exports.saveTabs = saveTabs;
 
 
 function setDeviceId(id){
@@ -183,19 +162,16 @@ exports.setDeviceId = setDeviceId;
 
 
 
-/* Manual save */
+/*********************************************************************************************************************************
+@function saves: This is for the manual save, when the user clicks anu function like Save all tabs, save this tab, save this bookmark,etc.
+@param datas {Object}: It has all the information that this function needs to send the request. Only these are used:
+	-@element {String}: Can be 'tabs.json', 'bookmarks.json' or 'history.json'. The element that is going to be saved.
+	-@dataToSave {Array}: The list of the element to save. A list of bookmarks, a list of tabs or a list of history
+*********************************************************************************************************************************/
 function save(datas){
         var element = datas.title.split('.json')[0];
         var dataToSave = datas.dataToSave;
         var deviceName = preferences.getDeviceName();
-        /*This is to send the tabs list to the server.*/
-        //console.log('MY SERVER:  '+'Send ');
-        //var dataToSave = new Array();
-        /*for each (var tabToSave in tabs){                                
-                var newTab = {'id':tabToSave.id,'title':tabToSave.title,'url':tabToSave.url};
-                dataToSave.push(newTab);                
-        }*/
-        //console.log('MY SERVER:  '+JSON.stringify(dataToSave))
         console.log('MY SERVER:  '+"Going to send = " + URL);
         var saveRequest = Request({
                 url: SAVE_URL + element+'/',
@@ -207,21 +183,8 @@ function save(datas){
                                  console.log('MY SERVER:  '+"SAVED CORRECTLY");
                                          
                         }
-                        else if (response.status == '500'){
-		    		console.log('MY SERVER:  '+"Did not work out!");
-		    		var message = {'msg':'Internal server problem', 'type':'error'}
-		    		emit(exports, 'showMessage',message);
-		    	
-		    	}
-		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		console.log('MY SERVER:  '+"Not authorized!!");
-		    		dialog.loginDialog();	
-		    	}
-		    	else{
-		    		console.log('MY SERVER:  Response status = '+response.status);
-		    		console.log('MY SERVER:  response text = '+response.statusText);
-		    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		    	
+                       else{
+		    		handleErrors(response);
 		    	}
                  }
          });
@@ -231,124 +194,94 @@ function save(datas){
 
 exports.save = save;
 
-/*Read manually saved items*/
+/*********************************************************************************************************************************
+@function read: Read the datas that were saved manually by the user.
+@param datas {Object}: It has all the information that this function needs to read from the server.
+	-@element {String}: Can be 'tabs.json', 'bookmarks.json' or 'history.json'. The element that is going to be read.
+*********************************************************************************************************************************/
 function read(datas){
         var element = datas.title.split('.json')[0];
         var deviceName = preferences.getDeviceName();
         //for each(var tab in tabs){
-                var URL = READ_URL + element+'/';
-                console.log('MY SERVER:  '+"Going to send = " + URL);
-                var readRequest = Request({
-		         url: READ_URL + element+'/',
-		         headers: {'myName':deviceName,'myId':deviceId},
-		         //contentType: 'application/json',
-		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
-		         onComplete: function (response) {
-		                 console.log('MY SERVER:  '+response.text);
-		                 console.log('MY SERVER:  '+response.status);
-		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		                 console.log('MY SERVER:  '+response.statusText);
-				 if (response.status == '200'){
-				 	console.log('MY SERVER:  '+"READ CORRECTLY");
-		                            //JSON.parse(response.text)
-		                        console.log('MY SERVER:  '+response.text);
-		                        emit (exports,'display',response.text)
-		                 }
-		                 else if (response.status == '500'){
-		                    	console.log('MY SERVER:  '+"Did not work out!");
-			    		var message = {'msg':'Internal server problem', 'type':'error'}
-			    		emit(exports, 'showMessage',message);
-			    	
-			    	 }
-			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-			    		console.log('MY SERVER:  '+"Not authorized!!");
-			    		dialog.loginDialog();	
-			    	 }
-			    	 else if (response.status == '404'){
-			    	 	emit(exports, 'display', null);
-			    	 }
-			    	 else{
-			    		console.log('MY SERVER:  Response status = '+response.status);
-			    		console.log('MY SERVER:  response text = '+response.statusText);
-			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		    	
-		    		}
-		          }
-               });
-               readRequest.get();
-        //}
-
+        var URL = READ_URL + element+'/';
+        console.log('MY SERVER:  '+"Going to send = " + URL);
+        var readRequest = Request({
+        	url: READ_URL + element+'/',
+		headers: {'myName':deviceName,'myId':deviceId},
+		onComplete: function (response) {
+			if (response.status == '200'){
+				console.log('MY SERVER:  '+"READ CORRECTLY");
+		                console.log('MY SERVER:  '+response.text);
+		                emit (exports,'display',response.text)
+		        }
+		        else if (response.status == '500'){
+		        	console.log('MY SERVER:  '+"Did not work out!");
+			    	var message = {'msg':'Internal server problem', 'type':'error'}
+			    	emit(exports, 'showMessage',message);
+			}
+			else if (response.status == '404'){
+			    	emit(exports, 'display', null);
+			}
+			else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+				//console.log('MY SERVER:  '+"Not authorized!!");
+				//dialog.loginDialog();	
+				emit(exports, 'notAuthorized', 'Sync & Share');
+			}
+			else{
+				handleErrors(response);
+			}
+		}
+      });
+      readRequest.get();	//Make a get request.
 }
-
 exports.read = read;
-/*Read all bookmarks from all devices*/
+/*********************************************************************************************************************************
+@function readAllBookmarks: This function reads all the bookmarks of al devices that this user chose to save in this server. When the server provides us all the user's bookmarks, they need to be handled because they come as json:
+@var response.text: Is where all the datas saved
+*********************************************************************************************************************************/
 function readAllBookmarks(){
         var deviceName = preferences.getDeviceName();
-        //for each(var tab in tabs){
-                console.log('MY SERVER:  Read all bookmarks');
-                var readRequest = Request({
-		         url: READ_ALL_BOOKMARKS,
-		         headers: {'myName':deviceName,'myId':deviceId},
-		         //contentType: 'application/json',
-		         //content: {'title':tab.title,'url':tab.url,'id':tab.id},
-		         onComplete: function (response) {
-		                 //console.log('MY SERVER:  '+response.text);
-		                 /*console.log('MY SERVER:  '+response.status);
-		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
-		                 console.log('MY SERVER:  '+response.statusText);*/
-				 if (response.status == '200'){
-				 	console.log('MY SERVER:  '+"READ CORRECTLY");
-		                            //JSON.parse(response.text)
-		                        var allBookmarks = JSON.parse(response.text);
-		                        //console.log('MY SERVER:  '+allBookmarks);
-		                        console.log('MY SERVER:  Bookmarks length='+allBookmarks.length);
-		                        
-		                        var listOfBookmarks = new Array();
-		                        for (var i=0;i<allBookmarks.length;i++){
-		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
-		                        	var aBookmark = {}
-		                        	var device = allBookmarks[i].device
-		                        	aBookmark.device = device;
-		                        	//console.log('MY SERVER:  '+device);
-		                        	//var thisDeviceBookmarks = JSON.parse(allBookmarks[i].bookmarks);
-		                        	//aBookmark.bookmarks = thisDeviceBookmarks
-		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks);
-		                        	//console.log('MY SERVER:  '+allBookmarks[i].bookmarks.length);
-		                        	var thisDeviceBookmarks = new Array();
-		                        	for (var j=0;j<allBookmarks[i].bookmarks.length;j++){
-		                        		var thisBookmark = JSON.parse(allBookmarks[i].bookmarks[j]);
-		                        		thisDeviceBookmarks.push(thisBookmark);
-		                        	}
-		                        	aBookmark.bookmarks = thisDeviceBookmarks;
-		                        	listOfBookmarks.push(aBookmark);
-		                        	//console.log('MY SERVER:  '+JSON.parse(allBookmarks[i].bookmarks));
-		                        	//listOfBookmarks.push(aBookmark);
-		                        	
-		                        	//console.log('MY SERVER:  '+aBookmark.title);
-		                        	//listOfBookmarks.push(aBookmark);
+        console.log('MY SERVER:  Read all bookmarks');
+        var readRequest = Request({
+        	url: READ_ALL_BOOKMARKS,
+		headers: {'myName':deviceName,'myId':deviceId},
+		onComplete: function (response) {
+			if (response.status == '200'){
+				console.log('MY SERVER:  '+"READ CORRECTLY");
+				var allBookmarks = JSON.parse(response.text);	//Received as string, convert to JSON.
+		                console.log('MY SERVER:  Bookmarks length='+allBookmarks.length);
+		                var listOfBookmarks = new Array();		//To save the received bookmarks here.
+		                for (var i=0;i<allBookmarks.length;i++){
+		                	/*allBookmarks is an array of following:
+		                		[
+		                		'device':{
+		                			'device_id':a_device_id,
+		                			'device_name':a_device_name
+		                			}
+		                		'bookmarks': [a list of all the bookmarks of the device.]
+		                		]
+		                	*/
+		                	var aBookmark = {}
+		                        var device = allBookmarks[i].device
+		                        aBookmark.device = device;
+		                    
+		                        var thisDeviceBookmarks = new Array();
+		                        for (var j=0;j<allBookmarks[i].bookmarks.length;j++){
+		                        	var thisBookmark = JSON.parse(allBookmarks[i].bookmarks[j]);
+		                        	thisDeviceBookmarks.push(thisBookmark);
 		                        }
-		                        emit(exports, 'updateBookmarks', listOfBookmarks);
-		                 }
-		                 else if (response.status == '500'){
-		                    	console.log('MY SERVER:  '+"Did not work out!");
-			    		var message = {'msg':'Internal server problem', 'type':'error'}
-			    		emit(exports, 'showMessage',message);
-			    	
-			    	 }
-			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-			    		console.log('MY SERVER:  '+"Not authorized!!");
-			    		dialog.loginDialog();	
-			    	 }
-			    	else{
-			    		console.log('MY SERVER:  Response status = '+response.status);
-			    		console.log('MY SERVER:  response text = '+response.statusText);
-			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-			    	
-			    	}
-		          }
-               });
-               readRequest.get();
-        //}
+		                        aBookmark.bookmarks = thisDeviceBookmarks;
+		                        listOfBookmarks.push(aBookmark);
+		                        	
+		                }
+		                emit(exports, 'allBookmarksReadFromServer', listOfBookmarks);
+		         }
+		         else{
+		    		handleErrors(response);
+		    	 }
+		}
+        });
+        readRequest.get();
 
 }
 
@@ -364,7 +297,10 @@ exports.readAllBookmarks = readAllBookmarks;
 
 
 
-/*Read all history from all devices*/
+/*********************************************************************************************************************************
+@function readAllHistory: This function reads all the history of all the devices that this user chose to save in this server. When the server provides us all the user's history, they need to be handled because they come as json:
+@var response.text: Is where all the datas saved
+*********************************************************************************************************************************/
 function readAllHistory(){
         var deviceName = preferences.getDeviceName();
         
@@ -390,6 +326,15 @@ function readAllHistory(){
 		                        var listOfHistory = new Array();
 		                        for (var i=0;i<allHistory.length;i++){
 		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
+		                        	/*allHistory is an array of following:
+				        		[
+				        		'device':{
+				        			'device_id':a_device_id,
+				        			'device_name':a_device_name
+				        			}
+				        		'history': [a list of all the history of the device.]
+				        		]
+		                		*/
 		                        	var aHistory = {}
 		                        	var device = allHistory[i].device
 		                        	aHistory.device = device;
@@ -411,24 +356,11 @@ function readAllHistory(){
 		                        	//console.log('MY SERVER:  '+aBookmark.title);
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
-		                        emit(exports, 'updateHistory', listOfHistory);
+		                        emit(exports, 'allHistoryReadFromServer', listOfHistory);
 		                 }
-		                 else if (response.status == '500'){
-		                    	console.log('MY SERVER:  '+"Did not work out!");
-			    		var message = {'msg':'Internal server problem', 'type':'error'}
-			    		emit(exports, 'showMessage',message);
-			    	
-			    	 }
-			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-			    		console.log('MY SERVER:  '+"Not authorized!!");
-			    		dialog.loginDialog();	
-			    	 }
-			    	 else{
-			    		console.log('MY SERVER:  Response status = '+response.status);
-			    		console.log('MY SERVER:  response text = '+response.statusText);
-			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-			    	
-			    	}
+		                 else{
+		    			handleErrors(response);
+		    		}
 		          }
                });
                readRequest.get();
@@ -439,11 +371,16 @@ function readAllHistory(){
 exports.readAllHistory = readAllHistory;
 
 
-/*Read all tabs of all devices*/
+/*********************************************************************************************************************************
+@function readAllTabs: This function reads all the tabs of all the devices that this user chose to save in this server. When the server provides us all the user's tabs, they need to be handled because they come as json:
+@var response.text: Is where all the datas saved
+*********************************************************************************************************************************/
 function readAllTabs(){
         var deviceName = preferences.getDeviceName();
         //for each(var tab in tabs){
                // console.log('MY SERVER:  '+"Going to send = " + URL);
+               deviceId = localStorage.getDeviceId();
+               console.log(deviceId);
                 var readRequest = Request({
 		         url: READ_ALL_TABS,
 		         headers: {'myName':deviceName,'myId':deviceId},
@@ -464,6 +401,15 @@ function readAllTabs(){
 		                        var listOfTabs = new Array();
 		                        for (var i=0;i<allTabs.length;i++){
 		                        	//var bookmarks_device = JSON.parse(allBookmarks[i]);
+		                        	/*allTabs is an array of following:
+				        		[
+				        		'device':{
+				        			'device_id':a_device_id,
+				        			'device_name':a_device_name
+				        			}
+				        		'tabs': [a list of all the tabs of the device.]
+				        		]
+		                		*/
 		                        	var aTab = {}
 		                        	var device = allTabs[i].device
 		                        	aTab.device = device;
@@ -485,24 +431,11 @@ function readAllTabs(){
 		                        	//console.log('MY SERVER:  '+aBookmark.title);
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
-		                        emit(exports, 'updateTabs', listOfTabs);
+		                        emit(exports, 'allTabsReadFromServer', listOfTabs);
 		                 }
-		                 else if (response.status == '500'){
-		                    	console.log('MY SERVER:  '+"Did not work out!");
-			    		var message = {'msg':'Internal server problem', 'type':'error'}
-			    		emit(exports, 'showMessage',message);
-			    	
-			    	 }
-			    	 else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-			    		console.log('MY SERVER:  '+"Not authorized!!");
-			    		dialog.loginDialog();	
-			    	 }
-				 else{
-			    		console.log('MY SERVER:  Response status = '+response.status);
-			    		console.log('MY SERVER:  response text = '+response.statusText);
-			    		//console.log('MY SERVER:  '+JSON.stringify(response.headers));
-			    	
-			    	}
+		                 else{
+		    			handleErrors(response);
+		    		}
 		          }
                });
                readRequest.get();
@@ -511,7 +444,10 @@ function readAllTabs(){
 }
 
 exports.readAllTabs = readAllTabs;
-
+/*********************************************************************************************************************************
+@function changeDeviceName: In settings, when the user changes the device name, change it on the server also.
+@param new_device_name {String}: Set the device name to this one.
+*********************************************************************************************************************************/
 function changeDeviceName(new_device_name){
         /*This is to send the tabs list to the server.*/
         //console.log('MY SERVER:  '+'Send ');
@@ -532,22 +468,8 @@ function changeDeviceName(new_device_name){
                                  console.log('MY SERVER:  '+"SAVED CORRECTLY");
                                          
                         }
-                        else if (response.status == '500'){
-		    		console.log('MY SERVER:  '+"Did not work out!");
-		    		var message = {'msg':'Internal server problem', 'type':'error'}
-		    		emit(exports, 'showMessage',message);
-		    	
-		    	}
-		    	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-		    		console.log('MY SERVER:  '+"Not authorized!!");
-		    		dialog.loginDialog();	
-		    	}
-		    	else if (response.status == '0'){
-		    		console.log('MY SERVER: Server is not connected');
-		    	}
-		    	else{
-		    		console.log('MY SERVER:  Response status = '+response.status);
-		    		console.log('MY SERVER:  response text = '+response.statusText);
+                        else{
+		    		handleErrors(response);
 		    	}
                  }
          });
@@ -557,40 +479,55 @@ function changeDeviceName(new_device_name){
 
 }
 
+/*********************************************************************************************************************************
+@function saveAll: Save everything, bookmarks and history at once. (Depends on user's preferences). The tabs will be saved automatically, depending on the events trigered by the tabs module.
+*********************************************************************************************************************************/
 function saveAll(){
-	if_sync_history = preferences.getSyncHistory();
-	if_sync_bookmarks = preferences.getSyncBookmarks();
-	if (if_sync_bookmarks == true){
+	if_sync_history = preferences.getSyncHistory();	//The user chose to sync history, so save it.
+	if_sync_bookmarks = preferences.getSyncBookmarks(); //The user chose to sync bookmarks, so save it.
+	if (if_sync_bookmarks == true){		//If sync bookmarks then save them
 		saveAllBookmarks();
 	}
-	if (if_sync_history == true){
+	if (if_sync_history == true){		//If sync history then save them
 		saveAllHistory();
 	}
+	console.log("MY SERVER : Save all called");
 }
 
+/*********************************************************************************************************************************
+@function getAll: Get all the history, bookmarks and tabs that this user has synced from the server. (Depends on the user's preferences).
+*********************************************************************************************************************************/
 function getAll(){
-	if_sync_history = preferences.getSyncHistory();
-	if_sync_bookmarks = preferences.getSyncBookmarks();
-	if (if_sync_bookmarks == true){
+	if_sync_history = preferences.getSyncHistory();		//User's preference to sync history
+	if_sync_bookmarks = preferences.getSyncBookmarks();	//User's preference to sync bookmarks.
+	if (if_sync_bookmarks == true){				//If the user chose to syn bookmarks
 		readAllBookmarks();
 	}
-	if (if_sync_history == true){
+	if (if_sync_history == true){				//If the user chose to sync history.
 		readAllHistory();
 	}
-	if (if_sync_tabs == true){
+	if (if_sync_tabs == true){				//If the user chose to syn tabs.
 		readAllTabs();
 	}
+	console.log("MY SERVER: REad all");
 }
 
 exports.getAll = getAll;
+
+/*********************************************************************************************************************************
+@function startUp: Called from the main module. Indicated this module to start up. When it starts up, it sets a timer to save and read all bookmarks, history and tabs. It will save and read every 30 minutes.
+*********************************************************************************************************************************/
 function startUp(){
+	console.log("MY SERVER: startUp");
 	save_interval_id = timer.setInterval(saveAll, INTERVAL_MS);
 	read_interval_id = timer.setInterval(getAll, INTERVAL_MS)
-	myTabs.startUp();
-	myTabs.on('save',saveTabs);
-	preferences.on('deviceNameChanged',changeDeviceName);
+	myTabs.startUp();					//Tell the tabs module to start up.
+	myTabs.on('save',saveTabs);				//Listen for save tabs event.
+	preferences.on('deviceNameChanged',changeDeviceName);	//Listen for the device name changed event.
 }
-
+/*********************************************************************************************************************************
+@function clean: On unload, clear everything, the timer has to be cleared and clear the listeners also.
+*********************************************************************************************************************************/
 function clean(){
 	if (save_interval_id != undefined){
 		timer.clearInterval(save_interval_id);

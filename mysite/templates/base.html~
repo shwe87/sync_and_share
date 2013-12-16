@@ -3,6 +3,8 @@
 <html>
   <title>{% block title%}  {% endblock %}</title>
   <head>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <link href={% static "css/pageStyle.css" %} rel="stylesheet" type="text/css">
     <link rel="SHORTCUT ICON" href={% static "images/logo.png" %}>
     {% browserid_css %}
@@ -15,7 +17,7 @@
   	<div><span class="small">Sync & Share</span></div>
   </div>
   </center>
-  <nav class="menu">
+  <!--nav class="menu">
   	<div class="menuBar">
 		  {% if user.is_authenticated %}
 			  <div id="toShareFrom">
@@ -34,7 +36,7 @@
 		   {% endif %}
 		   </div>
 	</div>
-   </nav>
+   </nav-->
   <center> 
     {% browserid_info %}
     {% block info %} {% endblock %}

@@ -1,5 +1,5 @@
 var data = require("sdk/self").data;
-var LOGIN_URL = 'http://127.0.0.1:8000/login/';
+var LOGIN_URL = 'http://192.168.1.13:8001';
 var alreadyOpen = false;
 var tabs = require('sdk/tabs');
 var { emit, on, once, off } = require("sdk/event/core");
@@ -30,7 +30,7 @@ function checkIfOpen(){
 	
 }
 
-var tabWorker;
+
 function loginDialog(){
 	try{
 		var if_open = checkIfOpen();
@@ -43,8 +43,10 @@ function loginDialog(){
 						
 					});
 					try{
+						
 						tabWorker.port.on('takeEmail',function(email){
-						emit(exports,'loggedIn',email);
+							console.log("Send logged in!!!");
+							emit(exports,'loggedIn',email);
 				
 						});
 					}catch(f){
@@ -53,6 +55,7 @@ function loginDialog(){
 				}
 			});
 			alreadyOpen = true;
+			
 			
 		}
 	}catch(e){

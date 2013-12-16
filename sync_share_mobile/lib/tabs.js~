@@ -118,6 +118,7 @@ tabs.on('pageshow',function(tab){
 			}
 		}*/
 		sync_tabs = preferences.getSyncTabs();
+		console.log(sync_tabs);
 		if (sync_tabs == true){ 
 			console.log("TABS: Page show!!! HAve to send tabs!");
 			var openTabs = getAllTabs();
@@ -150,7 +151,9 @@ tabs.on('close',function(tab){
 	
 			emit(exports,'save',tabsList);
 		}*/
+		
 		sync_tabs = preferences.getSyncTabs();
+		console.log(sync_tabs);
 		if (sync_tabs == true){
 			console.log("TABS: Page close!! Have to send!");
 			var openTabs = getAllTabs();

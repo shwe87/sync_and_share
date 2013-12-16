@@ -34,7 +34,7 @@ Synch & Share
 <div id="optionsContent" class="hidden">
 <nav class="optionsMenu">
 	<ul>
-		<li id="saveTabs"><div id="saveTabsCell">Save all open tabs</div></li>
+		<li id="saveTab"><div id="saveTabCell">Save all open tabs</div></li>
 		<br><br>
 		<li id="share"><div id="shareCell">Share Options</div></li>
 		<br><br>

@@ -655,7 +655,12 @@ function read(searchDatas){
 		searchFile(searchDatas);
 	}
 	else{
-		auth(searchDatas);
+		var message = {};
+		message.msg = 'Not Signed in!';
+		message.type = 'error';
+		emit(exports, 'showMessage', message );
+		emit(exports, 'notAuthorized','Google Drive');
+		//auth(searchDatas);
 	}
 }
 

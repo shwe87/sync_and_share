@@ -264,7 +264,7 @@ function start(){
 	//Set the server:
 	setServer();
 	//Listen for the button Save changes in the preferences panel.
-	preferences.on('serverChanged', changeServer);
+	preferences.on("saveChanges", changeServer);
 	//When the user is unauthorized:
 	//gapi.on('Unauthorized',handleUnAuth);
 	//When the authentication process is completed:

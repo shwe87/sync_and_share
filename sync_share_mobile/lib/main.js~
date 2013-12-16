@@ -220,7 +220,7 @@ function openMenu(msg){
 				tabs.open('http://192.168.1.16:8001/share/');
 			});
 			openMenuTabWorker.port.on('saveTabs',function(nothing){
-				saveTabs(tabs);
+				
 			});
 	  	}
 	});

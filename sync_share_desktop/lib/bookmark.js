@@ -112,6 +112,7 @@ function saveBookmark(aBookmark){
 
 function convertToDate(timeInMicro){
 	var aux = new Date(timeInMicro);
+	
 	//console.log("Bookmarks = " + aux);
 	return aux;
 	
@@ -147,6 +148,7 @@ function getFoldersChildren(myFolderId){
                 //childNode.dateAdded = child.dateAdded;
                 //console.log("dateAdded bookmark");
                 childNode.dateAdded = convertToDate(child.dateAdded/1000);
+                console.log(childNode.dateAdded);
                 //var lastModified = new Date(child.lastModified/1000).toUTCString();
                 //childNode.lastModified = child.lastModified;
                 //console.log("lastModified bookmark");

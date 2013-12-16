@@ -515,6 +515,10 @@ function showOptions(){
 	optionsContent.setAttribute('class','shown');
 	var mainContent = document.getElementById('mainContent');
 	mainContent.setAttribute('class','hidden');
+	
+	
+
+
 }
 
 function showTitle(element, server){

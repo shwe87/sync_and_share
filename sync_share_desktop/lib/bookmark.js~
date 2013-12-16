@@ -136,9 +136,10 @@ function getFoldersChildren(myFolderId){
                 //console.log("FAVICON = " + childNode.icon);
                 childNode.itemId = child.itemId;
                 childNode.title = child.title;
+                childNode.parentId = child.parent.itemId;
                 childNode.url = child.uri;
                 
-                childNode.parentId = child.parent.itemId;
+                
                 //childNode.type = child.type;
                 //All the times are in PRTime: milliseconds since epoch time.
                 //Convert to date and send it:

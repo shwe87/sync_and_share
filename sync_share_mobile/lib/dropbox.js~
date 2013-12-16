@@ -414,8 +414,7 @@ function read(readDatas){
 	else{
 		var message = 'Not Signed in!';
 		emit(exports, 'showMessage', message);
-		emit(exports, 'notAuthorized','Dropbox');
-		//auth(readDatas);
+		auth(readDatas);
 	}
 }
 exports.read = read;

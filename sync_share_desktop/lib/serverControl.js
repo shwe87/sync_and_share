@@ -55,44 +55,10 @@ function handleDropboxAuth(authDatas){
 	
 	}
 	
-	/*var currentTab = tabs.activeTab;
-	console.log('SERVER:  '+"Active tab " + currentTab.title);
-	var currentTabWorker = currentTab.attach({
-		contentScriptFile: data.url('messages.js')
-	});
-	currentTabWorker.port.emit('authenticated','Signed in correctly!');
-	*/
+
 	
 	emit(exports,'showMessage',message);
-	/*panelMessage.write({'msg':'Signed in correctly!','type':'correct'});
-	panelMessage.show();
-	timer.setTimeout(hidePanel, 5000);	//5 seconds*/
-	
-	//console.log('SERVER:  '+"EXPIRES IN " + expires_in);
-	
-	/*
-	if (whoCalled == 'searchFile'){
-		//Continue to search File
-		//callersData = ['searchFile' , title, dataToSave]
-		var title = authDatas.title;
-		var dataToSave = authDatas.dataToSave;
-		//var elementToSave = callersData[3];
-		gapi.searchFile(authDatas);
-	}
-	/*if(whoCalled == 'OpenTab'){
-		tabs.open({
-  			url: data.url('GoogleDriveShare.html'),
-  			inNewWindow: true
-    		});
-		
-	}*/
-	/*
-	else if (whoCalled == 'downloadData'){
-		//callersData = ['downloadData', fileName, downloadURL]
-		var title = authDatas.title;
-		var downloadURL = authDatas.dLoadURL;
-		gapi.downloadData(authDatas);	
-	}*/
+
 
 
 }
@@ -169,13 +135,17 @@ function handleGapiAuth(authDatas){
 }
 
 
-function changeServer(){
-	console.log('SERVER:  '+"hello");
-	/*chosenServer = preferences.prefs['server'];
-	console.log('SERVER:  '+server);*/	
-	setServer();
+function changeServer(newServer){
+	
+	//setServer();
+	console.log("SERVER : Server Changed to = " + newServer);
+	chosenServer = newServer;
+	//var message = 'Changed correctly!';
+	//emit(exports,'showMessage',message);
+	
+
 }
-exports.changeServer = changeServer;
+
 
 function handleDisplay(toShowDatas){
 	emit(exports,'display',toShowDatas);
@@ -273,9 +243,15 @@ function read(readInfo){
 }
 exports.read = read;
 
+function handleNotAuthorized(serverName){
+	console.log("Not authorized!!");
+	var message = {'msg':'Not authorized: Please sign in ' + serverName + ' to view the saved items.'}
+	emit(exports,'display',message);
+}
 function start(){
 	//Set the server:
 	setServer();
+	preferences.on('serverChanged',changeServer);
 	//Listen for the button Save changes in the preferences panel.
 	//preferences.on("saveChanges", changeServer);
 	//When the user is unauthorized:
@@ -286,16 +262,19 @@ function start(){
 	gapi.on('display',handleDisplay);
 	//To show the corresponding message
 	gapi.on('showMessage',handleShowMessage); 
+	gapi.on('notAuthorized',handleNotAuthorized);
 
 	//dropbox.on('Unauthorized',handleUnAuth);
 	//When the authentication process is completed:
 	dropbox.on('authComplete',handleDropboxAuth);
+	dropbox.on('notAuthorized',handleNotAuthorized);
 	//Display the downloaded data.  
 	dropbox.on('display',handleDisplay);
 	//To show the corresponding message
 	dropbox.on('showMessage',handleShowMessage); 
 	
 	myServer.on('display',handleDisplay);
+	myServer.on('notAuthorized',handleNotAuthorized);
 }
 exports.start = start;
    

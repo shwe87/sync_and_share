@@ -23,7 +23,7 @@ nav.optionsMenu div:active
         background:url(http://i44.tinypic.com/207nsr9.jpg);	/*When an item is hovered, a personal background is shown.*/
         border:1px solid #70AB8F;	/*Greenish border*/
 }
-.menu div,.optionsMenu div{
+.menu div{
         text-align: center;
         border:groove #383127 1px; 	
     	border-radius:6px 6px 6px 6px;

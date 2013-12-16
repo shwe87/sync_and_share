@@ -81,6 +81,7 @@ self.port.on('initHiddenRow',initHiddenRow);
 
 //Show the saved tabs. Display the elements in the content.
 self.port.on('show',function(elementsToShow){
+	console.log("Script: display elementToShow = " + JSON.stringify(elementsToShow));
 	//console.log(JSON.stringify(elementsToShow));
 	//First clean the table, delete the previous items that were showing:
 	//clean('mainContent');
@@ -96,30 +97,39 @@ self.port.on('show',function(elementsToShow){
 	else{
 		
 		var key = Object.keys(elementsToShow);
+		console.log("SCRIPT : key = " + key);
 		try{
-			var all = elementsToShow[key];
-			if (all.length == 0){
+			if (key == 'msg'){
 				var mainContent = document.getElementById('mainContent');
 				var p = document.createElement('p');
-				p.innerHTML = 'Nothing Saved yet!';
+				p.innerHTML = elementsToShow[key];
 				mainContent.appendChild(p);
-		
-			}else{
-				for each (var element in all){
-					//var rowCell = document.createElement('tr');
-					//var columnCell = document.createElement('td');
+			}
+			else{
+				var all = elementsToShow[key];
+				if (all.length == 0){
 					var mainContent = document.getElementById('mainContent');
-					var p1 = document.createElement('p');
-					p1.setAttribute('id','title');
-					p1.innerHTML = element.title;
-					mainContent.appendChild(p1);
-					//document.insertBefore(image,p1);
-					var p2 = document.createElement('p');
-					p2.setAttribute('class','url');
-					p2.innerHTML = element.url;
-					var line = document.createElement('hr');
-					mainContent.appendChild(p2);
-					mainContent.appendChild(line);
+					var p = document.createElement('p');
+					p.innerHTML = 'Nothing Saved yet!';
+					mainContent.appendChild(p);
+		
+				}else{
+					for each (var element in all){
+						//var rowCell = document.createElement('tr');
+						//var columnCell = document.createElement('td');
+						var mainContent = document.getElementById('mainContent');
+						var p1 = document.createElement('p');
+						p1.setAttribute('class','title');
+						p1.innerHTML = element.title;
+						mainContent.appendChild(p1);
+						//document.insertBefore(image,p1);
+						var p2 = document.createElement('p');
+						p2.setAttribute('class','url');
+						p2.innerHTML = element.url;
+						var line = document.createElement('hr');
+						mainContent.appendChild(p2);
+						mainContent.appendChild(line);
+					}
 				}
 			}
 		}catch(e){
@@ -184,7 +194,7 @@ self.port.on('takeAllTabs',function(allTabs){
 	//console.log("History length = " +  allHistory.length);
 	if (allTabs.length == 0){
 		var tabsP = document.createElement('p');
-		tabsP.innerHTML = "No history to show.";
+		tabsP.innerHTML = "No Tabs to show.";
 		tabsList.appendChild(tabsP);
 	}
 	else{
@@ -192,7 +202,7 @@ self.port.on('takeAllTabs',function(allTabs){
 			var anItem = document.createElement('DIV');
 			anItem.setAttribute('class','item');
 			var aTab = allTabs[j]
-			console.log(aTab.device);
+			//console.log(aTab.device);
 			try{
 				var device = JSON.parse(aTab.device);
 			
@@ -201,17 +211,14 @@ self.port.on('takeAllTabs',function(allTabs){
 				var device = aTab.device;
 			}
 			var device_name = device.device_name;
-			console.log(device_name);
+			//console.log(device_name);
 			var tabs = aTab.tabs;
 			var aDeviceUL = document.createElement('UL');
 			aDeviceUL.setAttribute('class','device');
 			aDeviceUL.addEventListener('click',function(event){
 				var node = event.target;
 				var children = node.children;
-				if (children.length == 0){
-					var text = document.createTextNode('Nothing to show');
-					node.appendChild(text);
-				}
+				
 				for (var k=0;k<children.length;k++){
 					var child = children[k];
 					var childClass = child.className;
@@ -221,6 +228,13 @@ self.port.on('takeAllTabs',function(allTabs){
 					else{
 						child.setAttribute('class','hidden');
 					}
+				}
+				if (children.length == 0){
+					var messageLI = document.createElement('LI');
+					var text = document.createTextNode('Nothing to show');
+					messageLI.appendChild(text);
+					messageLI.setAttribute('class','shown');
+					node.appendChild(messageLI);
 				}
 			});
 

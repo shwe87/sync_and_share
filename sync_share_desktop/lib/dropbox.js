@@ -326,7 +326,9 @@ function getData(datas){
 			}
 			else if(response.status == '401'){
 				ifContinue = false;
+				console.log("DROPBOX: " + "Not authorized!");
 				auth(datas);
+				
 			}
 			else{
 				ifContinue = false;
@@ -418,7 +420,8 @@ function read(readDatas){
 		message.msg = 'Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
-		auth(readDatas);
+		emit(exports, 'notAuthorized','Dropbox');
+		//auth(readDatas);
 	}
 }
 exports.read = read;

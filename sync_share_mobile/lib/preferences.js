@@ -1,102 +1,33 @@
-var settings = require("sdk/simple-prefs");
 var { emit, on, once, off } = require("sdk/event/core");
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
 exports.removeListener = function removeListener(type, listener) {
   off(exports, type, listener);
 };
+var settings = require("sdk/simple-prefs");
 
 
-/*Preferences list in this app:
-,
-  "preferences": [
-  	{
-	    "description": "Auto sync tabs?",
-	    "type": "bool",
-	    "name": "syncTabs",
-	    "value": true,
-	    "title": "Tabs"
-	},
-	{
-	    "description": "Auto sync bookmarks?",
-	    "type": "bool",
-	    "name": "syncBookmarks",
-	    "value": true,
-	    "title": "Bookmarks"
-	},
-	{
-	    "description": "Auto sync history?",
-	    "type": "bool",
-	    "name": "syncHistory",
-	    "value": true,
-	    "title": "History"
-	},
-        {
-            "type": "string",
-            "name": "deviceName",
-            "value": "username-desktop",
-            "title": "Name this device as: "
-        },
-        {
-           "type": "control",
-           "label": "Save device name",
-           "name": "saveDeviceName",
-           "title": "Save device name"
-        },
-        {
-	    "name": "extraServer",
-	    "type": "radio",
-	    "title": "Extra server",
-	    "value": "None",
-	    "options": [
-		{
-		    "value": "None",
-		    "label": "Don't user extra server"
-		},
-		{
-		    "value": "D",
-		    "label": "Use Dropbox"
-		},
-		{
-		    "value": "G",
-		    "label": "User Google-Drive"
-		},
-		{
-		    "value": "B",
-		    "label": "Use both"
-		
-		}
-	    ]
-	}
-    ]
-
-
-
-*/
 function onDeviceNameChange(prefName) {
-   // console.log("Device name set to " + settings.prefs['deviceName']);
-    var message = {'msg':"Device name set to " + settings.prefs['deviceName'], 'type': 'correct'}
-    emit(exports,'showMessage', message);
-    emit(exports,'deviceNameChanged',settings.prefs['deviceName']);
-    
+    var message = "Device name set to " + settings.prefs['deviceName'];
+    emit(exports,'showMessage', message);    
 }
 
 function onExtraServerChange(prefName){
-	var message = {'msg':"Extra server set to " + settings.prefs[prefName], 'type': 'correct'};
+	var message = "Extra server set to " + settings.prefs[prefName];
 	emit(exports, 'showMessage', message);
 	console.log("Prefs: Server changed sent ");
 	emit(exports, 'serverChanged',settings.prefs[prefName]);
 }
 function onSyncTabs(prefName){
-	var message = {'msg':"Tabs won't be auto synchronized anymore", 'type': 'correct'};
+	var message = "Tabs won't be auto synchronized anymore";
 	emit(exports, 'showMessage', message);
 }
 function onSyncBookmarks(prefName){
-	var message = {'msg':"Bookmarks won't be auto synchronized anymore", 'type': 'correct'};
+	var message = "Bookmarks won't be auto synchronized anymore";
 	emit(exports, 'showMessage', message);
 }
 function onSyncHistory(prefName){
-	var message = {'msg':"History won't be auto synchronized anymore ", 'type': 'correct'};
+	var message = "History won't be auto synchronized anymore ";
 	emit(exports, 'showMessage', message);
 }
 

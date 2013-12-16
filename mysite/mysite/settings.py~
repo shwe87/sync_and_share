@@ -28,7 +28,7 @@ DATABASES = {
 ALLOWED_HOSTS = []
 
 # Path to redirect to on successful login.
-LOGIN_REDIRECT_URL = '/login'
+LOGIN_REDIRECT_URL = '/login/'
 
 LOGIN_URL = "/login"
 LOGOUT_URL = "/logout"
@@ -164,7 +164,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_URL = 'http://192.168.1.13:8001'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 

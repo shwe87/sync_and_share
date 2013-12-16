@@ -1,55 +1,64 @@
-var windows = require("sdk/window/utils");
 var data = require("sdk/self").data;
-var LOGIN_URL = 'http://127.0.0.1:8000/login/';
-const { id } = require("sdk/self");
-var dialogName = id+"LoginWindow";
-var features = "resizable=no,scrollbars=yes,width=700,height=400,centerscreen=yes";
-var dialog;
+var LOGIN_URL = 'http://127.0.0.1:8001/login/';
 var alreadyOpen = false;
+var tabs = require('sdk/tabs');
+var { emit, on, once, off } = require("sdk/event/core");
+
+exports.on = on.bind(null, exports);
+exports.once = once.bind(null, exports);
+exports.removeListener = function removeListener(type, listener) {
+  off(exports, type, listener);
+};
 
 
 function checkIfOpen(){
-	if (dialog != undefined){
-		if (dialog.closed == true && alreadyOpen == false){
-			console.log('dialog:  '+"Open!!");
+	var found = false;
+	for each(var aTab in tabs){
+		if (aTab.url == LOGIN_URL){
+			found = true;
+			break;
+		}
+	}
+	if (found == false){
+		if (alreadyOpen == false){
 			return false;
 		}
-		else if (dialog.closed == false){
-			console.log('dialog:  '+"Don't open! Dialog is not closed");
-			alreadyOpen = true;
-			return true;
-		}
-			
 	}
 	else{
-		if (alreadyOpen == false){
-			console.log('dialog:  '+"You can open!");
-			alreadyOpen = true;
-			return false;
-		}
-		else{
-			console.log('dialog:  '+"You can't open");
-			return true;
-		}
+		return true;
 	}
+	
 }
 
-
+var tabWorker;
 function loginDialog(){
 	try{
 		var if_open = checkIfOpen();
 		if (if_open == false){
-			var aWindow = windows.getMostRecentBrowserWindow()
-			dialog = aWindow.open(LOGIN_URL,dialogName,features);
+			tabs.open({
+				url: LOGIN_URL,
+				onReady: function(tab){
+					var tabWorker = tab.attach({
+						contentScriptFile: data.url('mysite-login.js')
+						
+					});
+					try{
+						tabWorker.port.on('takeEmail',function(email){
+						emit(exports,'loggedIn',email);
+				
+						});
+					}catch(f){
+						console.log('dialog: Error ' + f.toString());
+					}
+				}
+			});
 			alreadyOpen = true;
-		}
-		else{
-			dialog.focus();
-			alreadyOpen = true;
+			
 		}
 	}catch(e){
 		console.log('dialog:  '+e.toString());
 	}
 }
+
 
 exports.loginDialog = loginDialog;

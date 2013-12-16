@@ -29,6 +29,7 @@ import datetime
 #from friends.models import FriendshipRequest
 from compare import compare
 import itertools
+from django.db import IntegrityError
 
 def get_senders_info(request):
 	info = {}
@@ -64,7 +65,7 @@ def parseData(datasList):
 			pass
 		thisDict['url'] = d.url
 		thisDict['typeOf'] = d.typeOf
-		thisDict['user'] = d.user
+		thisDict['user'] = d.user.email
 		thisList.append(thisDict)
 		#thisList['id'] = t.tabID
 	return thisList
@@ -746,15 +747,16 @@ def deleteFromGroup(request):
 def get_device(owner,device_id,device_name):
 	createDevice = False
 	try:
-		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,device_name=device_name)
-		if not thisDevice:
-			createDevice = True
+		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner)
 	except UsersDevice.DoesNotExist:
 		createDevice = True
 	
 	if createDevice:
-		thisDevice = UsersDevice(device_id=device_id,user=owner,device_name=device_name)
-		thisDevice.save()
+		try:
+			thisDevice = UsersDevice(device_id=device_id,user=owner,device_name=device_name)
+			thisDevice.save()
+		except IntegrityError:
+			thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner)
 	return thisDevice
 
 
@@ -902,20 +904,22 @@ def readAllBookmarks(request):
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
-			thisDevice = get_device(owner,device_id,device_name)
+			#thisDevice = get_device(owner,device_id,device_name)
 			exclude_this_device = users_all_devices.exclude(device_id=device_id)
 			all_devices = []
-			bookmarksList = []
+			
 			toSend = []
 			for d in exclude_this_device:
 				#all_devices.append(d.serialize_to_json())
 				a_device = {}
 				a_device['device'] = d.serialize_to_json() 
 				bookmarks = d.bookmark_set.all()
-				for b in bookmarks:
-					bookmarksList.append(b.serialize_to_json())
-				a_device['bookmarks'] = bookmarksList
-				toSend.append(a_device)
+				bookmarksList = []
+				if bookmarks:
+					for b in bookmarks:
+						bookmarksList.append(b.serialize_to_json())
+					a_device['bookmarks'] = bookmarksList
+					toSend.append(a_device)
 			response = HttpResponse(json.dumps(toSend),content_type='application/json')
 		else:
 			response = HttpResponseNotAllowed('Invalid headers')
@@ -939,20 +943,22 @@ def readAllHistory(request):
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
-			thisDevice = get_device(owner,device_id,device_name)
+			#thisDevice = get_device(owner,device_id,device_name)
 			exclude_this_device = users_all_devices.exclude(device_id=device_id)
 			all_devices = []
-			historyList = []
+			
 			toSend = []
 			for d in exclude_this_device:
 				#all_devices.append(d.serialize_to_json())
 				a_device = {}
 				a_device['device'] = d.serialize_to_json()
 				history = d.history_set.all()
-				for h in history:
-					historyList.append(h.serialize_to_json())
-				a_device['history'] = historyList
-				toSend.append(a_device)
+				historyList = []
+				if history:
+					for h in history:
+						historyList.append(h.serialize_to_json())
+					a_device['history'] = historyList
+					toSend.append(a_device)
 			response = HttpResponse(json.dumps(toSend),content_type='application/json')
 		else:
 			response = HttpResponseNotAllowed('Invalid headers')
@@ -974,23 +980,32 @@ def readAllTabs(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
+			print device_id
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
 			#Give the user the ones that are not from this device:
 			all_devices = []
-			tabsList = []
+			
 			toSend = []
-			thisDevice = UsersDevice.objects.get(user=request.user,device_id=device_id,device_name=device_name)
+			#thisDevice = UsersDevice.objects.get(user=request.user,device_id=device_id)
+			#thisDevice = get_device(owner,device_id,device_name)
+			print "******Without excluded******"
+			print len(users_all_devices)
 			excluded_this_device = users_all_devices.exclude(device_id=device_id)
-			print excluded_this_device
+			print "******With exclude******"
+			print len(excluded_this_device)
 			for d in excluded_this_device:
 				#all_devices.append(d.serialize_to_json())
 				a_device = {}
 				a_device['device'] = d.serialize_to_json()
+				print d.device_id
 				tabs = d.tab_set.all()
-				for t in tabs:
-					tabsList.append(t.serialize_to_json())
-				a_device['tabs'] = tabsList
-				toSend.append(a_device)
+				tabsList = []
+				if tabs:
+					print str(device_id) + " has tabs!"
+					for t in tabs:
+						tabsList.append(t.serialize_to_json())
+					a_device['tabs'] = tabsList
+					toSend.append(a_device)
 			response = HttpResponse(json.dumps(toSend),content_type='application/json')
 		else:
 			response = HttpResponseNotAllowed('Invalid headers')
@@ -1082,7 +1097,6 @@ def addNewTabs(request):
 	response = HttpResponse()
 	if (request.user.is_authenticated()):
 		device_info = get_senders_info(request)
-
 		info_error = device_info['error']
 		if (info_error == False):
 			owner = request.user
@@ -1090,7 +1104,6 @@ def addNewTabs(request):
 			device_name = device_info['device_name']
 			thisDevice = get_device(owner,device_id,device_name)		#Get user's device
 			parsedData = json.loads(request.body)
-	
 			found = False
 			st = Tab.objects.filter(owner=owner,device=thisDevice)
 			toDelete = []
@@ -1100,13 +1113,15 @@ def addNewTabs(request):
 			for t in st:
 				for p in parsedData:
 					if (t.url == p['url']):
-						print "Yes!!!"
+						print p['url'] + " already exists!!"
 						#toSave.append(p)
 						found = True
 						break
 					else:
 						found = False
+				
 				if found == False:
+					print str(p['url'] + 'was not found!')
 					toDelete.append(t)
 					print "Have to delete: "
 					print toDelete
@@ -1118,9 +1133,11 @@ def addNewTabs(request):
 				try:
 					unique = str(device_id + url+owner.email)
 					savedTabs = Tab.objects.get(unique=unique)
+					print p['url'] + " tab exists!"
 					savedTabs.tabID=ID
 					savedTabs.save()
 				except Tab.DoesNotExist:
+					print p['url'] + " doesn't exist!!"
 					savedTabs = Tab(title=title,url=url,tabID=ID,device=thisDevice,owner=owner)
 					savedTabs.save()
 			for t in toDelete:
@@ -1131,7 +1148,7 @@ def addNewTabs(request):
 						r.shared_tabs.remove(t)
 						t.delete()
 				else:
-					print " Was not being shared " + t.title
+					print " Was not being shared " + t.url
 					t.delete()
 		else:
 			response = HttpResponseNotAllowed('Invalid headers')

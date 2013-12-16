@@ -74,7 +74,7 @@ exports.removeListener = function removeListener(type, listener) {
 
 */
 function onDeviceNameChange(prefName) {
-    console.log("Device name set to " + settings.prefs['deviceName']);
+   // console.log("Device name set to " + settings.prefs['deviceName']);
     var message = {'msg':"Device name set to " + settings.prefs['deviceName'], 'type': 'correct'}
     emit(exports,'showMessage', message);
     emit(exports,'deviceNameChanged',settings.prefs['deviceName']);
@@ -82,8 +82,10 @@ function onDeviceNameChange(prefName) {
 }
 
 function onExtraServerChange(prefName){
-	var message = {'msg':"Extra server set to " + settings.prefs[prefName], 'type': 'correct'};
+	var message = "Extra server set to " + settings.prefs[prefName];
 	emit(exports, 'showMessage', message);
+	console.log("Prefs: Server changed sent ");
+	emit(exports, 'serverChanged',settings.prefs[prefName]);
 }
 function onSyncTabs(prefName){
 	var message = {'msg':"Tabs won't be auto synchronized anymore", 'type': 'correct'};

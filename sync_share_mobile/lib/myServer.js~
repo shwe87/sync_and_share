@@ -1,19 +1,23 @@
 /*
 This add-on will try to communicate with the Django Server created by me.
 */
+var { emit, on, once, off } = require("sdk/event/core");
+exports.on = on.bind(null, exports);
+exports.once = once.bind(null, exports);
+exports.removeListener = function removeListener(type, listener) {
+  off(exports, type, listener);
+};
 var data = require('sdk/self').data;
 var Request = require('sdk/request').Request;
 var tabs = require('sdk/tabs');
-var bookmarks = require('./bookmark.js');
-var history = require('./history.js');
 var myTabs = require('./tabs.js');
 var preferences = require('./preferences.js');
-var { emit, on, once, off } = require("sdk/event/core");
+
 var timer = require('sdk/timers');
 var dialog = require('./dialog.js');
 var localStorage = require('./localStorage.js');
 
-var URL = 'http://127.0.0.1:8001';
+var URL = 'http://192.168.1.16:8001';
 var SAVE_URL = URL+'/save/';
 var READ_URL = URL+'/read/';
 var READ_ALL_BOOKMARKS = URL + '/read/all/bookmarks/';
@@ -23,7 +27,6 @@ var CHANGE_DEVICE_NAME = URL + '/change/device/name/';
 var bookmarksList = new Array();
 
 const INTERVAL_MS = 30*60*1000;	//In milliseconds 30 minutes
-var save_interval_id;
 var read_interval_id;
 var deviceId;
 var if_sync_tabs = true;
@@ -32,16 +35,12 @@ var if_sync_history = true;
 
 
 
-exports.on = on.bind(null, exports);
-exports.once = once.bind(null, exports);
-exports.removeListener = function removeListener(type, listener) {
-  off(exports, type, listener);
-};
+
 
 function handleErrors(response){
 	if (response.status == '500'){
 		console.log('MY SERVER:  '+"Did not work out!");
-		var message = {'msg':'Internal server problem', 'type':'error'}
+		var message = 'Internal server problem';
 		emit(exports, 'showMessage',message);
 		    	
 	}
@@ -59,68 +58,8 @@ function handleErrors(response){
 
 }
 
-/**********************************************************************************************************************
-@function saveAllBookmarks: Save all the bookmarks of this device by sending them to the server.
-1) Retrieve the bookmarks from the bookmarks module (save it to the var datasToSave).
-2) When the request is completed, check the response, if everything is OK then the bookmarks were saved successfully.
-***********************************************************************************************************************/
-function saveAllBookmarks(){
-	var datasToSave = bookmarks.getBookmarks();
-	var sendURL = URL + '/add/all/bookmarks/';
-	var deviceName = preferences.getDeviceName();
-	console.log('MY SERVER:  Save all bookmarks in the server' );
-	var saveRequest = Request({
-		url: sendURL,
-		contentType: 'application/json',
-		headers: {'myName':deviceName,'myId':deviceId},
-		content:  JSON.stringify(datasToSave),
-		onComplete: function (response) {	
-		    	if (response.status == '200'){
-		    		var now = new Date();
-		    		var nTime = now.getTime();
-		    		emit(exports,'allBookmarksSavedInServer',nTime);
-		    			
-		    	}
-		    	else{
-		    		handleErrors(response);
-		    	}
-	 	}
- 	});
-	saveRequest.post();
-}
 
-exports.saveAllBookmarks = saveAllBookmarks;
-/**********************************************************************************************************************
-@function saveAllHistory: Save all the history of this device by sending them to the server.
-1) Retrieve the history from the history module (save it to the var datasToSave).
-2) When the request is completed, check the response, if everything is OK then the history was saved successfully.
-***********************************************************************************************************************/
-function saveAllHistory(){
-	var datasToSave = history.queryHistory();
-	var sendURL = URL + '/add/all/history/';
-	var deviceName = preferences.getDeviceName();
-	console.log('MY SERVER:  Save all history' );
-	var saveRequest = Request({
-		url: sendURL,
-		contentType: 'application/json',
-		headers: {'myName':deviceName,'myId':deviceId},
-		content:  JSON.stringify(datasToSave),
-		onComplete: function (response) {	
-		    	if (response.status == '200'){
-		    		var now = new Date();
-		    		var nTime = now.getTime();
-		    		emit(exports,'allHistorySavedInServer',nTime);
-		    			
-		    	}
-		    	else{
-		    		handleErrors(response);
-		    	}
-	 	}
- 	});
-	saveRequest.post();
-}
 
-exports.saveAllHistory = saveAllHistory;
 
 /**********************************************************************************************************************
 @function saveTabs: Save all the provided tabs.
@@ -128,11 +67,12 @@ exports.saveAllHistory = saveAllHistory;
 When the request is completed, check the response, if everything is OK then all the tabs were saved successfully.
 ***********************************************************************************************************************/
 function saveTabs(datasToSave){
-	console.log("My server: Have to save tabs");
+	console.log("MY SERVER: Save tabs = " + JSON.stringify(datasToSave));
 	var sendURL = URL + '/add/all/tabs/';
 	//console.log('MY SERVER:  '+"Gonna send to = " + sendURL );
 	//console.log('MY SERVER:  '+"Gonna send = " + JSON.stringify(datasToSave));
 	var deviceName = preferences.getDeviceName();
+	deviceId = localStorage.getDeviceId();
 	var saveRequest = Request({
 		url: sendURL,
 		contentType: 'application/json',
@@ -152,7 +92,7 @@ function saveTabs(datasToSave){
 
 
 }
-exports.saveTabs = saveTabs;
+
 
 
 function setDeviceId(id){
@@ -163,7 +103,7 @@ exports.setDeviceId = setDeviceId;
 
 
 /*********************************************************************************************************************************
-@function saves: This is for the manual save, when the user clicks anu function like Save all tabs, save this tab, save this bookmark,etc.
+@function save: This is for the manual save, when the user clicks anu function like Save all tabs, save this tab, save this bookmark,etc.
 @param datas {Object}: It has all the information that this function needs to send the request. Only these are used:
 	-@element {String}: Can be 'tabs.json', 'bookmarks.json' or 'history.json'. The element that is going to be saved.
 	-@dataToSave {Array}: The list of the element to save. A list of bookmarks, a list of tabs or a list of history
@@ -172,6 +112,7 @@ function save(datas){
         var element = datas.title.split('.json')[0];
         var dataToSave = datas.dataToSave;
         var deviceName = preferences.getDeviceName();
+        deviceId = localStorage.getDeviceId();
         console.log('MY SERVER:  '+"Going to send = " + URL);
         var saveRequest = Request({
                 url: SAVE_URL + element+'/',
@@ -202,6 +143,7 @@ exports.save = save;
 function read(datas){
         var element = datas.title.split('.json')[0];
         var deviceName = preferences.getDeviceName();
+        deviceId = localStorage.getDeviceId();
         //for each(var tab in tabs){
         var URL = READ_URL + element+'/';
         console.log('MY SERVER:  '+"Going to send = " + URL);
@@ -212,20 +154,39 @@ function read(datas){
 			if (response.status == '200'){
 				console.log('MY SERVER:  '+"READ CORRECTLY");
 		                console.log('MY SERVER:  '+response.text);
-		                emit (exports,'display',response.text)
+		                console.log('MY SERVER: ' + element);
+		                toShow = new Object();
+		                try{
+		                	var dataToShow = JSON.parse(response.text);
+		                }
+		                catch(e){
+		                	console.log("MYSERVER: Can't convert!!! ");
+		                	var dataToShow = response.text;
+		                }
+		                toShow.data = {element:dataToShow};
+		                toShow.server = 'mysite';
+		                toShow.element = element;
+		                
+		                emit (exports,'display',toShow)
 		        }
 		        else if (response.status == '500'){
 		        	console.log('MY SERVER:  '+"Did not work out!");
-			    	var message = {'msg':'Internal server problem', 'type':'error'}
+			    	var message = 'Internal server problem';
 			    	emit(exports, 'showMessage',message);
 			}
 			else if (response.status == '404'){
-			    	emit(exports, 'display', null);
+				console.log("MY SERVER: Read nothing saved! ");
+				var toShow = new Object();
+				toShow.data = null;
+				toShow.server = 'mysite';
+				toShow.element = element;
+				console.log("MY SERVER read: " + element);
+			    	emit(exports, 'display', toShow);
 			}
 			else if (response.status == '401' && response.headers.error == 'Unauthorized'){
 				//console.log('MY SERVER:  '+"Not authorized!!");
 				//dialog.loginDialog();	
-				emit(exports, 'notAuthorized', 'Sync & Share');
+				emit(exports, 'notAuthorized', null);
 			}
 			else{
 				handleErrors(response);
@@ -241,6 +202,7 @@ exports.read = read;
 *********************************************************************************************************************************/
 function readAllBookmarks(){
         var deviceName = preferences.getDeviceName();
+        deviceId = localStorage.getDeviceId();
         console.log('MY SERVER:  Read all bookmarks');
         var readRequest = Request({
         	url: READ_ALL_BOOKMARKS,
@@ -274,6 +236,7 @@ function readAllBookmarks(){
 		                        listOfBookmarks.push(aBookmark);
 		                        	
 		                }
+		                console.log("Bookmarks read = " + JSON.stringify(listOfBookmarks));
 		                emit(exports, 'allBookmarksReadFromServer', listOfBookmarks);
 		         }
 		         else{
@@ -303,7 +266,7 @@ exports.readAllBookmarks = readAllBookmarks;
 *********************************************************************************************************************************/
 function readAllHistory(){
         var deviceName = preferences.getDeviceName();
-        
+        deviceId = localStorage.getDeviceId();
         //for each(var tab in tabs){
                 console.log('MY SERVER:  Read all history');
                 var readRequest = Request({
@@ -356,6 +319,7 @@ function readAllHistory(){
 		                        	//console.log('MY SERVER:  '+aBookmark.title);
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
+		                        console.log("History read = " + JSON.stringify(listOfHistory));
 		                        emit(exports, 'allHistoryReadFromServer', listOfHistory);
 		                 }
 		                 else{
@@ -377,10 +341,13 @@ exports.readAllHistory = readAllHistory;
 *********************************************************************************************************************************/
 function readAllTabs(){
         var deviceName = preferences.getDeviceName();
+        deviceId = localStorage.getDeviceId();
+        console.log("Gonna read all tabs!");
         //for each(var tab in tabs){
                // console.log('MY SERVER:  '+"Going to send = " + URL);
                deviceId = localStorage.getDeviceId();
-               console.log(deviceId);
+            	console.log(deviceId);
+            	console.log(deviceName);
                 var readRequest = Request({
 		         url: READ_ALL_TABS,
 		         headers: {'myName':deviceName,'myId':deviceId},
@@ -392,7 +359,7 @@ function readAllTabs(){
 		                 console.log('MY SERVER:  '+JSON.stringify(response.headers));
 		                 console.log('MY SERVER:  '+response.statusText);*/
 				 if (response.status == '200'){
-				 	console.log('MY SERVER:  '+"READ CORRECTLY");
+				 	console.log('MY SERVER:  '+"TABS READ CORRECTLY");
 		                            //JSON.parse(response.text)
 		                        var allTabs = JSON.parse(response.text);
 		                        //console.log('MY SERVER:  '+allBookmarks);
@@ -431,6 +398,7 @@ function readAllTabs(){
 		                        	//console.log('MY SERVER:  '+aBookmark.title);
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
+		                        console.log("MY SERVER: Read tabs from server = " + JSON.stringify(listOfTabs));
 		                        emit(exports, 'allTabsReadFromServer', listOfTabs);
 		                 }
 		                 else{
@@ -457,6 +425,7 @@ function changeDeviceName(new_device_name){
                 dataToSave.push(newTab);                
         }*/
         //console.log('MY SERVER:  '+JSON.stringify(dataToSave))
+        deviceId = localStorage.getDeviceId();
         console.log('MY SERVER:  '+"Going to send = " + URL);
         var changeRequest = Request({
                 url: CHANGE_DEVICE_NAME,
@@ -479,27 +448,15 @@ function changeDeviceName(new_device_name){
 
 }
 
-/*********************************************************************************************************************************
-@function saveAll: Save everything, bookmarks and history at once. (Depends on user's preferences). The tabs will be saved automatically, depending on the events trigered by the tabs module.
-*********************************************************************************************************************************/
-function saveAll(){
-	if_sync_history = preferences.getSyncHistory();	//The user chose to sync history, so save it.
-	if_sync_bookmarks = preferences.getSyncBookmarks(); //The user chose to sync bookmarks, so save it.
-	if (if_sync_bookmarks == true){		//If sync bookmarks then save them
-		saveAllBookmarks();
-	}
-	if (if_sync_history == true){		//If sync history then save them
-		saveAllHistory();
-	}
-	console.log("MY SERVER : Save all called");
-}
-exports.saveAll = saveAll;
+
+
 /*********************************************************************************************************************************
 @function getAll: Get all the history, bookmarks and tabs that this user has synced from the server. (Depends on the user's preferences).
 *********************************************************************************************************************************/
 function getAll(){
 	if_sync_history = preferences.getSyncHistory();		//User's preference to sync history
 	if_sync_bookmarks = preferences.getSyncBookmarks();	//User's preference to sync bookmarks.
+	if_sync_tabs = preferences.getSyncTabs();
 	if (if_sync_bookmarks == true){				//If the user chose to syn bookmarks
 		readAllBookmarks();
 	}
@@ -519,7 +476,6 @@ exports.getAll = getAll;
 *********************************************************************************************************************************/
 function startUp(){
 	console.log("MY SERVER: startUp");
-	save_interval_id = timer.setInterval(saveAll, INTERVAL_MS);
 	read_interval_id = timer.setInterval(getAll, INTERVAL_MS)
 	myTabs.startUp();					//Tell the tabs module to start up.
 	myTabs.on('save',saveTabs);				//Listen for save tabs event.

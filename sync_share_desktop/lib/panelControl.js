@@ -45,7 +45,7 @@ var Panel = Class({
   	}
   },
   show: function show(){
-  	console.log('PANEL:  '+this.showing);
+  	//console.log('PANEL:  '+this.showing);
 	/*
         this.showing = true;
         this.hidden = false;*/

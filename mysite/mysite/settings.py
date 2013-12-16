@@ -164,7 +164,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_URL = 'http://192.168.1.16:8001'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
