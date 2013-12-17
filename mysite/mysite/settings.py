@@ -103,6 +103,7 @@ SECRET_KEY = 'tl^o-d!m!*9njym8utjszakzvm6z13xc=)!ko15!=o)i^78pl8'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
+    'django_mobile.loader.Loader',
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
@@ -114,6 +115,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django_mobile.middleware.MobileDetectionMiddleware',
+    'django_mobile.middleware.SetFlavourMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -141,6 +144,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'syncShare',
     'mptt',
+    'django_mobile',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -160,6 +164,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
    # ...
    'django.contrib.auth.context_processors.auth',
    'django_browserid.context_processors.browserid',
+   'django_mobile.context_processors.flavour',
    # ...
 )
 

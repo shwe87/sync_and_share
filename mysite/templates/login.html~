@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load browserid %}
 {% block title %} Log in {% endblock %}
+{% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/> 
+{% endblock %}
 {% block content %}
 	<div class="authentication">
         <div class="message small">
@@ -8,12 +11,6 @@
         </div>
         {% if user.is_authenticated %}
           <div class="small"> You are already signed in as: <span class="highlight">{{ user.email }}</span></div>
-          {% if form %}
-		  <form action="/login/" method="post">{% csrf_token %}
-			{{ form.as_p }}
-			<input type="submit" value="Submit" />
-		  </form>
-	  {% endif %}
          {% comment %} {% browserid_logout text='Logout' link_class='browserid-logout'%} {% endcomment %}
         {% else %}
           <div class="error">Not signed in. Please press the button to sign in:</div>

@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %} Share with {% endblock %}
-{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% block title %} Nothing to share with {% endblock %}
+{% block head %}
+{% if flavour == "mobile" %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
+{% endblock %}
 {% block content %}
 	
-	
+	<div class="noShare">
 	<div class="mainTitle">Choose what to share:</div>
 	<div class="syncError">	
 		<div class="error">
@@ -18,6 +24,7 @@
 		<div class="error">
 			Save something before trying to share anything!
 		</div>	
+	</div>
 	</div>
 {% endblock %}
 

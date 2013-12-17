@@ -3,9 +3,14 @@
 <html>
   <title>{% block title%}  {% endblock %}</title>
   <head>
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-    <link href={% static "css/pageStyle.css" %} rel="stylesheet" type="text/css">
+	  {% if flavour == "mobile" %}
+	<link href={% static "css/mobile/pageStyle.css" %} rel="stylesheet" type="text/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	{% else %}
+	<link href={% static "css/desktop/pageStyle.css" %} rel="stylesheet" type="text/css">
+	{% endif %}
+    
+    
     <link rel="SHORTCUT ICON" href={% static "images/logo.png" %}>
     {% browserid_css %}
     {% block head %} {% endblock %}

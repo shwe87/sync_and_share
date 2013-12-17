@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block title %} My shared items {% endblock %}
-{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endblock %}
 <!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
 {% block content %}
 	<div class="shareView">

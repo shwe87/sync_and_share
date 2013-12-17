@@ -30,6 +30,7 @@ import datetime
 from compare import compare
 import itertools
 from django.db import IntegrityError
+from django.template import RequestContext
 
 def get_senders_info(request):
 	info = {}
@@ -65,7 +66,7 @@ def parseData(datasList):
 			pass
 		thisDict['url'] = d.url
 		thisDict['typeOf'] = d.typeOf
-		thisDict['user'] = d.user
+		thisDict['user'] = d.user.email
 		thisList.append(thisDict)
 		#thisList['id'] = t.tabID
 	return thisList
@@ -563,9 +564,9 @@ def share(request):
 				for i in ifShared:
 					print i.typeOf_share
 	if (synced == None and synced_bookmarks == None and synced_tabs == None and synced_history == None):
-		rendered = render(request, 'noShare.html')
+		rendered = render(request, 'noShare.html',context_instance = RequestContext(request))
 	else:
-		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices,'nodes':synced_bookmarks,'history':synced_history,'tabs':synced_tabs})			
+		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices,'nodes':synced_bookmarks,'history':synced_history,'tabs':synced_tabs},context_instance = RequestContext(request))			
 	return rendered
 
 """

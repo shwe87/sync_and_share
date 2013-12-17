@@ -114,6 +114,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django_mobile.middleware.MobileDetectionMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -141,6 +142,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'syncShare',
     'mptt',
+    'django_mobile',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -164,7 +166,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
-SITE_URL = 'http://192.168.1.13:8001'
+SITE_URL = 'http://192.168.1.16:8001'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 

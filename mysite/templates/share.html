@@ -2,7 +2,11 @@
 {% load staticfiles %}
 {% load mptt_tags %}
 {% block title %} Share with {% endblock %}
-{% block head %}<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> {% endblock %}
+{% if flavour == "mobile" %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
 <!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
 {% block content %}
 	<div class="form">

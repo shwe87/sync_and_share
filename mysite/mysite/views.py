@@ -30,6 +30,7 @@ import datetime
 from compare import compare
 import itertools
 from django.db import IntegrityError
+from django.template import RequestContext
 
 def get_senders_info(request):
 	info = {}
@@ -76,7 +77,7 @@ def parseData(datasList):
 # @return a rendered template.
 def main(request):
 	#First check if the request was send from the app:
-	return render(request, 'login.html')
+	return render(request, 'login.html',context_instance = RequestContext(request))
 
 
 def saveData(aData):
@@ -186,7 +187,7 @@ def welcome(request):
 	except ValueError:
 		pass
 	print emails
-	return render(request, 'welcome.html',{'email':request.user.email})
+	return render(request, 'welcome.html',{'email':request.user.email},context_instance = RequestContext(request))
 
 
 def hello():
@@ -563,9 +564,9 @@ def share(request):
 				for i in ifShared:
 					print i.typeOf_share
 	if (synced == None and synced_bookmarks == None and synced_tabs == None and synced_history == None):
-		rendered = render(request, 'noShare.html')
+		rendered = render(request, 'noShare.html',context_instance = RequestContext(request))
 	else:
-		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices,'nodes':synced_bookmarks,'history':synced_history,'tabs':synced_tabs})			
+		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices,'nodes':synced_bookmarks,'history':synced_history,'tabs':synced_tabs},context_instance = RequestContext(request))			
 	return rendered
 
 """
@@ -709,7 +710,7 @@ def viewShared(request):
 	except UserGroup.DoesNotExist:
 		#This user does't belong to any group
 		groups = None
-	return render(request, 'sharedView.html', {'sharedFrom':shared_from_user,'sharedWith':shared_with_user,'sharedGroup':groups})
+	return render(request, 'sharedView.html', {'sharedFrom':shared_from_user,'sharedWith':shared_with_user,'sharedGroup':groups},context_instance = RequestContext(request))
 
 
 @login_required

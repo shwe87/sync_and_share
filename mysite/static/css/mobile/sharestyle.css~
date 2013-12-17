@@ -1,9 +1,16 @@
+@charset "utf-8";
+@viewport {
+	width: 320px auto;
+}
 body{
 	background:#E4DBBF;			/*Yellowish background*/
    	background-repeat: no-repeat;
 	background-attachment: fixed;
         font-family: Palatino,Georgia,Times;
         color: #383127;
+}
+div{
+	width:100%;
 }
 
 div.mainTitle{
@@ -17,7 +24,7 @@ div.mainTitle{
 div.form,div.shareView,div.noShare{
 	text-align: left;
 	/*margin: 0px 150px 20px 150px; /*top right bottom left*/
-       	border:groove #383127 0px; 	
+       	border: 0px; 	
     	border-radius:10px 10px 10px 10px;
         /*padding: 40px 20px 40px 20px;	*/
 }
@@ -100,7 +107,7 @@ span.imageContainer{
 }
 li.small,div.item ul li{
     list-style-type: none;
-    padding-left: 50px;
+    padding-left: 10px;
 }
 
 /*li.showLi{
@@ -124,7 +131,7 @@ li.folder{
 	background-size: 24px 24px;
 	background-repeat:no-repeat;
 	background-position:left center fixed; 
-	padding-left:45px;
+	padding-left:25px;
 	list-style-type:none;
 
 }

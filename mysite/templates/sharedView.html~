@@ -49,6 +49,7 @@
 			</div>
 			{% endif %}
 			
+			{% if s.shared_history.all %}
 			<div class="autoSync">
 			{% for h in s.shared_history.all %}
 				<li>
@@ -57,7 +58,9 @@
 			
 			{% endfor %}			
 			</div>
+			{% endif %}
 			
+			{% if s.shared_tabs.all %}
 			<div class="autoSync">
 			{% for t in s.shared_tabs.all %}
 				<li>
@@ -66,6 +69,7 @@
 			
 			{% endfor %}			
 			</div>
+			{% endif %}
 			
 			
 		{% endfor %}

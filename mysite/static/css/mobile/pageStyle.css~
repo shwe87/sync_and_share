@@ -1,3 +1,8 @@
+@charset "utf-8";
+@viewport {
+	width: 320px auto;
+}
+
 body{
 	background:#E4DBBF;			/*Yellowish background*/
    	background-repeat: no-repeat;
@@ -89,7 +94,7 @@ div.logo{
 div.authentication{
 	border: groove #383127 1px;
 	border-radius:10px 10px 10px 10px;
-	width:45%;
+	width:70%;
 	padding-top: 50px;
 	padding-bottom: 50px;
 	margin-bottom:100px;
