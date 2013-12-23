@@ -11,6 +11,7 @@ exports.removeListener = function removeListener(type, listener) {
 };
 
 function setStarted (if_started){
+		console.log("\t\t\t\tLOCAL STORAGE: Set started to " + if_started);
 		ss.storage.started = if_started;
 }
 exports.setStarted = setStarted;

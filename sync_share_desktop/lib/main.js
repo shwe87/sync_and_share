@@ -30,6 +30,8 @@ const HISTORY_FILE = 'history.json';		//The file with the saved history will be 
 
 
 /*
+ * "2013-12-23T12:04:02.312Z"
+
 tabs.open('www.urjc.es');
 tabs.open('www.gmail.com');
 tabs.open('www.google.com');
@@ -452,6 +454,7 @@ function startDatas(email){
 		}
 		
 		if (email){
+			console.log("MAIN: SET STARTED to true!!");
 			localStorage.setStarted(true);
 			login.removeListener('loggedIn');
 		}
@@ -522,6 +525,7 @@ exports.main = function(options, callbacks) {
 		console.log(options.loadReason);
 		
 		var started = localStorage.getStarted();
+		console.log("MAIN: started = " + started);
 		if (started == true){
 			var registered = localStorage.checkIfRegistered();
 			//login.on('loggedIn',startDatas);

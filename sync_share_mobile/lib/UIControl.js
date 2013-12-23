@@ -107,7 +107,7 @@ function addPageAction(){
 	*/
 	var aOptions = {
 	  title: "Page action",
-	  icon: data.url('myLogo64.png'),
+	  icon: data.url('images/myLogo64.png'),
 	  //clickCallback: function() {
 	  //	
 	   //}

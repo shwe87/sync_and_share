@@ -18,7 +18,8 @@
     {% block head %} {% endblock %}
   </head>
   <body>
-	  <div id="container">
+
+	<div id="container">
    {% if user.is_authenticated %}
 	<div class="info" id="userInfo">
 		<span class="small highlight">{{ user.email }}</span>
@@ -69,7 +70,7 @@
     {% browserid_js %}
     {% block script %} {% endblock %}
     
-     <div class="brand" id="footer"><img src={% static "images/shwetaBrand.png" %} title="by Shweta"/></div>
-    
+    <div class="brand" id="footer"><img src={% static "images/shwetaBrand.png" %} title="by Shweta"/></div>
+ 
   </body>
 </html>

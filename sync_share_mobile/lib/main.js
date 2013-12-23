@@ -225,16 +225,16 @@ function openMenu(msg){
 			console.log("Attached!! " + worker.tab.url);
 			openMenuTabWorker = worker;
 			openMenuTabWorker.port.on('showTabs',function(nothing){
-				handleShowMessage('Tabs clicked!');
+				//handleShowMessage('Tabs clicked!');
 				listSavedTabs();
 				//getAllTabs();
 			});
 			openMenuTabWorker.port.on('showBookmarks',function(nothing){
-				handleShowMessage('Bookmarks clicked!');
+				//handleShowMessage('Bookmarks clicked!');
 				listSavedBookmarks();
 			});
 			openMenuTabWorker.port.on('showHistory',function(nothing){
-				handleShowMessage('History clicked!');
+				//handleShowMessage('History clicked!');
 				listSavedHistory();
 			});	
 			openMenuTabWorker.port.on('share',function(nothing){
