@@ -165,7 +165,7 @@ function getAllBookmarks(){
 		var allBookmarks = new Array();
 		var allThisDeviceBookmarks = bookmarks.getBookmarks();
 		var aBookmark = {}
-		aBookmark.device = {'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()}
+		aBookmark.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};
 		aBookmark.bookmarks = allThisDeviceBookmarks;
 		allBookmarks.push(aBookmark);
 		var allSavedBookmarks = localStorage.getAllSavedBookmarks();
@@ -239,6 +239,15 @@ function getAllTabs(){
 	//aHistory.device = {'device_id':ss.storage.id,'device_name':'this_device'}
 	//aHistory.history = thisHistoryList;
 	//historyList.push(aHistory);
+	var aux = new Array();
+	for (var i=0;i<tabs.length;i++){
+			var auxTab = {'title':tabs[i].title,'url':tabs[i].url};
+			aux.push(auxTab);        
+	}
+	var aTab = new Object();
+	aTab.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};
+	aTab.tabs = aux;
+	tabsList.push(aTab);
 	var allSavedTabs = localStorage.getAllSavedTabs();
 	console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedTabs));
 	if (allSavedTabs != null){
@@ -276,7 +285,7 @@ function getAllHistory(){
 	var historyList = new Array();
 	var thisHistoryList = history.queryHistory();
 	var aHistory= {}
-	aHistory.device = {'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()}
+	aHistory.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};
 	aHistory.history = thisHistoryList;
 	historyList.push(aHistory);
 	var allSavedHistory = localStorage.getAllSavedHistory();
@@ -339,6 +348,7 @@ function openMenu(msg){
 					//console.log('main '+'Here nodeId = '+nodeId);
 					//List the saved tabs:
 					//listSavedTabs();
+					openMenuTabWorker.port.emit('initHiddenRow');
 					getAllTabs();
 					
 				}
