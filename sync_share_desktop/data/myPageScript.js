@@ -83,8 +83,8 @@ self.port.on('initHiddenRow',initHiddenRow);
 
 //Show the saved tabs. Display the elements in the content.
 self.port.on('show',function(toDisplay){
-	console.log("SCRIPT : TO DISPLAY");
-	console.log(toDisplay);
+	//console.log("SCRIPT : TO DISPLAY");
+	//console.log(toDisplay);
 	//console.log(JSON.stringify(elementsToShow));
 	//First clean the table, delete the previous items that were showing:
 	//clean('mainContent');
@@ -100,9 +100,9 @@ self.port.on('show',function(toDisplay){
 		mainContent.appendChild(p);
 	}
 	else{
-		console.log();
+		//console.log();
 		var key = Object.keys(elementsToShow);
-		console.log("SCRIPT : key = " + key);
+		//console.log("SCRIPT : key = " + key);
 		try{
 			if (key == 'msg'){
 				var mainContent = document.getElementById('mainContent');
@@ -215,7 +215,7 @@ self.port.on('showhistory',function(elementsToShow){
 /*Synch foto = https://cdn3.iconfinder.com/data/icons/block/32/sync-512.png*/
 self.port.on('takeAllTabs',function(allTabs){
 	clean('loading');
-	console.log("TAbs " + allTabs.length);
+	//console.log("TAbs " + allTabs.length);
 	//console.log(allHistory);
 	var tabsList = document.getElementById('tabsList');
 	//console.log("History length = " +  allHistory.length);
@@ -225,7 +225,10 @@ self.port.on('takeAllTabs',function(allTabs){
 		tabsList.appendChild(tabsP);
 	}
 	else{
+		var found = false;
+		var this_device = false;
 		for (var j=0;j<allTabs.length;j++){
+			this_device = false;
 			var anItem = document.createElement('DIV');
 			anItem.setAttribute('class','item');
 			var aTab = allTabs[j]
@@ -236,6 +239,15 @@ self.port.on('takeAllTabs',function(allTabs){
 			}
 			catch(e){
 				var device = aTab.device;
+			}
+			if (found == false){
+				try{
+					this_device = device.this_device;
+					found = true;
+				}
+				catch(e){
+						//Do nothing
+				}
 			}
 			var device_name = device.device_name;
 			//console.log(device_name);
@@ -264,18 +276,23 @@ self.port.on('takeAllTabs',function(allTabs){
 					node.appendChild(messageLI);
 				}
 			});
-
-			var text = document.createTextNode(device_name);
+			if (this_device == true){
+					var textToShow = device_name + " (this device)";
+			}
+			else{
+					var textToShow = device_name ;
+			}
+			var text = document.createTextNode(textToShow);
 			aDeviceUL.appendChild(text);
 			for (var i=0;i<tabs.length;i++){
 				var aTabLI = document.createElement('li');
 				aTabLI.setAttribute('class','hidden');
 				//aHistoryLI.setAttribute('class','history');
 				var favQuery = "http://www.google.com/s2/favicons?domain="+tabs[i].url;
-				aTabLI.style.background = "url('"+favQuery+"') no-repeat left top";
+				aTabLI.style.listStyleImage = "url('"+favQuery+"')";
 				aTabLI.style.margin = '0px';
 				/*Padding = Top, Right, Left, Bottom.*/
-				aTabLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
+				//aTabLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
 				var liDiv = makeLiContent(tabs[i].title, tabs[i].url);
 				liDiv.setAttribute('class','tab');
 				aTabLI.appendChild(liDiv);
@@ -295,7 +312,7 @@ self.port.on('takeAllTabs',function(allTabs){
 
 self.port.on('takeAllHistory',function(allHistory){
 	clean('loading');
-	console.log("HISTORY " + allHistory.length);
+	//console.log("HISTORY " + allHistory.length);
 	//console.log(allHistory);
 	var historyList = document.getElementById('historyList');
 	//console.log("History length = " +  allHistory.length);
@@ -305,11 +322,14 @@ self.port.on('takeAllHistory',function(allHistory){
 		historyList.appendChild(historyP);
 	}
 	else{
+		var found = false;
+		var this_device = false;
 		for (var j=0;j<allHistory.length;j++){
+			this_device = false;
 			var anItem = document.createElement('DIV');
 			anItem.setAttribute('class','item');
 			var aHistory = allHistory[j]
-			console.log(aHistory.device);
+			//console.log(aHistory.device);
 			try{
 				var device = JSON.parse(aHistory.device);
 			
@@ -317,8 +337,17 @@ self.port.on('takeAllHistory',function(allHistory){
 			catch(e){
 				var device = aHistory.device;
 			}
+			if (found == false){
+					try{
+							this_device = device.this_device;
+							found = true;
+					}
+					catch(e){
+							//Do nothing
+					}
+			}
 			var device_name = device.device_name;
-			console.log(device_name);
+			//console.log(device_name);
 			var history = aHistory.history;
 			var aDeviceUL = document.createElement('UL');
 			aDeviceUL.setAttribute('class','device');
@@ -336,18 +365,23 @@ self.port.on('takeAllHistory',function(allHistory){
 					}
 				}
 			});
-
-			var text = document.createTextNode(device_name);
+			if (this_device == true){
+					var textToShow = device_name + ' (this device )';
+			}
+			else{
+					var textToShow = device_name;
+			}
+			var text = document.createTextNode(textToShow);
 			aDeviceUL.appendChild(text);
 			for (var i=0;i<history.length;i++){
 				var aHistoryLI = document.createElement('li');
 				aHistoryLI.setAttribute('class','hidden');
 				//aHistoryLI.setAttribute('class','history');
 				var favQuery = "http://www.google.com/s2/favicons?domain="+history[i].url;
-				aHistoryLI.style.background = "url('"+favQuery+"') no-repeat left top";
+				aHistoryLI.style.listStyleImage = "url('"+favQuery+"')";
 				aHistoryLI.style.margin = '0px';
 				/*Padding = Top, Right, Left, Bottom.*/
-				aHistoryLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
+				//aHistoryLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
 				var liDiv = makeLiContent(history[i].title, history[i].url);
 				liDiv.setAttribute('class','history');
 				aHistoryLI.appendChild(liDiv);
@@ -369,13 +403,19 @@ self.port.on('takeAllHistory',function(allHistory){
 
 self.port.on('takeAllBookmarks',function(bookmarksToShow){
 	/*https://cdn3.iconfinder.com/data/icons/block/32/sync-512.png*/
-	console.log("Show all bookmarks");
+	//console.log("Show all bookmarks");
 	//console.log(bookmarksToShow);
+	console.log("Length of bookmarksToShow = " + bookmarksToShow.length);
+	var found = false;
+	var this_device = false;
 	for (var i=0;i<bookmarksToShow.length;i++){
+		this_device = false;
+		console.log("******************************************");
+		//console.log(bookmarksToShow[i]);
 		var anItem = document.createElement('DIV');
 		anItem.setAttribute('class','item');
 		var aBookmark = bookmarksToShow[i];
-		console.log(aBookmark.device);
+		//console.log(aBookmark.device);
 		var bookmarks = aBookmark.bookmarks;
 		try{
 			var device = JSON.parse(aBookmark.device);	
@@ -383,11 +423,26 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 		catch(e){
 			var device = aBookmark.device;
 		}
+		if (found == false){
+				try{
+						this_device = device.this_device;
+						found = true;
+				}
+				catch(e){
+						//Do nothing
+				}
+		}
 		var device_name = device.device_name;
 		var device_id = device.device_id;
 		console.log("********"+device_name+"********");
 		var aDeviceUL = document.createElement('UL');
 		aDeviceUL.setAttribute('class','device');
+		if (this_device == true){
+				var textToShow = device_name + ' (this device)';
+		}
+		else{
+				var textToShow = device_name;
+		}
 		var text = document.createTextNode(device_name);
 		aDeviceUL.appendChild(text);
 		var bookmarksList = document.getElementById('bookmarksList');
@@ -401,15 +456,15 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 				var childClass = child.className;
 				
 				if (child.nodeName != 'HR'){
-					console.log('device: mychild = ' + child.nodeName);
-					console.log('device: mychild before = ' + child.className);
+					//console.log('device: mychild = ' + child.nodeName);
+					//console.log('device: mychild before = ' + child.className);
 					if (childClass == 'hidden'){
 						child.setAttribute('class','shown');
 					}
 					else{
 						child.setAttribute('class','hidden');
 					}
-					console.log("my child after: " + child.className);
+					//console.log("my child after: " + child.className);
 				}
 			}
 		});
@@ -421,10 +476,10 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 			var ifFolder = bookmarks[j].ifFolder;
 			var aBookmark = bookmarks[j];
 			var parentId = bookmarks[j].parentId;
-			console.log(device_name + " " + parentId + "  " + aBookmark.title)
+			//console.log(device_name + " " + parentId + "  " + aBookmark.title)
 			//console.log('takeABookmark received : ' + bookmarks[j].title);
 			if (parentId == 0){
-				console.log(device_name + " " + parentId + "  " + aBookmark.title)
+				//console.log(device_name + " " + parentId + "  " + aBookmark.title)
 				handle_children(aBookmark,bookmarkDiv,device_id);
 			}
 		}
@@ -468,7 +523,7 @@ function searchForSame(searchedUrl, parent, server){
 }*/
 
 function handle_event(event){
-	console.log("I was clicked!!  " + event.target.nodeName);
+	//console.log("I was clicked!!  " + event.target.nodeName);
 	var whatWasClicked = event.target;
 	if (whatWasClicked.nodeName == 'UL'){ //Only when a folder is clicked
 		//console.log(whatWasClicked.children);
@@ -476,7 +531,7 @@ function handle_event(event){
 			//console.log(ULChildren);
 			if (ULChildren != undefined){
 				for (var i=0;i<ULChildren.length;i++){
-					console.log(i+" ULChildren = " + ULChildren[i].nodeName);
+					//console.log(i+" ULChildren = " + ULChildren[i].nodeName);
 					if (ULChildren[i].nodeName != 'HR'){
 						if (ULChildren[i].className == 'hidden'){
 							ULChildren[i].setAttribute('class','shown');
@@ -503,8 +558,8 @@ function handle_children(aBookmark,parentNode,device_name){
 	if (parentId == 0){
 		//One of the root folders
 		var parent = parentNode;
-		console.log("I am a root folder!!!!");
-		console.log("My parent is = " + parent.nodeName + '  ' + parent.className );
+		//console.log("I am a root folder!!!!");
+		//console.log("My parent is = " + parent.nodeName + '  ' + parent.className );
 	}
 	else{
 		var parent = document.getElementById(parentId+device_name);
@@ -522,7 +577,7 @@ function handle_children(aBookmark,parentNode,device_name){
 			bookmarkUL.setAttribute('class','hidden');
 		}
 			//bookmarkUL.setAttribute('class','title');
-			console.log("Create title!!!! "+aBookmark.title);
+			//console.log("Create title!!!! "+aBookmark.title);
 			var bookmarkText = document.createTextNode(aBookmark.title);
 			bookmarkUL.appendChild(bookmarkText);
 			var line = document.createElement('hr');
@@ -533,7 +588,7 @@ function handle_children(aBookmark,parentNode,device_name){
 			bookmarkUL.style.margin = '0px';
 			bookmarkUL.style.padding = '0px 0px 0px 20px';	//Modify only the space between the icon and the title.
 			
-			console.log("Add event Listener to " + aBookmark.title);
+			//console.log("Add event Listener to " + aBookmark.title);
 			if (parentId != 0){
 				bookmarkUL.addEventListener('click',handle_event, false);
 			}
@@ -599,7 +654,7 @@ function isAChildOf(_parent, _child)
 
 
 function createEffectInTable(cellName, selectedType){
-	console.log("\t\t\t\t Creating effect in table " + cellName + "," + selectedType);
+	//console.log("\t\t\t\t Creating effect in table " + cellName + "," + selectedType);
 	var td = document.getElementsByClassName(cellName);
 	
 	//Add an event listener to all the cell "menu"
@@ -637,14 +692,14 @@ function createEffectInTable(cellName, selectedType){
 				}*/
 				//console.log("Clicked on " + clickedElement.nodeName);
 				var clickedChildren = event.target.children;
-				console.log("ClickedChildren length = " + clickedChildren.length );
+				//console.log("ClickedChildren length = " + clickedChildren.length );
 				
 				var whatWasClicked = new Object();
 				if (clickedChildren.length == 0){
 					var parentNode = event.target.parentNode;
 					whatWasClicked.id = parentNode.id;
 					if (event.target.tagName == 'DIV' || event.target.tagName == 'div'){
-						console.log("INNER HTML = " + event.target.innerHTML);
+						//console.log("INNER HTML = " + event.target.innerHTML);
 						whatWasClicked.node = event.target.innerHTML;
 					}
 					
@@ -652,10 +707,10 @@ function createEffectInTable(cellName, selectedType){
 				else{
 					whatWasClicked.id = event.target.id;
 					for each(var child in clickedChildren){
-						console.log('Clicked node name ' + child.nodeName);
-						console.log('Clicked tag name ' + child.tagName);
+						//console.log('Clicked node name ' + child.nodeName);
+						//console.log('Clicked tag name ' + child.tagName);
 						if (child.tagName == 'DIV' || child.tagName == 'div'){
-							console.log("HTML = " + child.innerHTML);
+							//console.log("HTML = " + child.innerHTML);
 							whatWasClicked.node = child.innerHTML;
 						}
 					}
@@ -663,9 +718,9 @@ function createEffectInTable(cellName, selectedType){
 				
 				//whatWasClicked.node = event.target.innerHTML;
 				
-				console.log("CLicked on = " + event.target.id);
+				//console.log("CLicked on = " + event.target.id);
 				self.port.emit('cellClicked',whatWasClicked);
-				console.log("\t\t\t\t cellClicked Sent.");
+				//console.log("\t\t\t\t cellClicked Sent.");
 		
 					
 			},false);
@@ -679,7 +734,7 @@ function createEffectInTable(cellName, selectedType){
 
 //Get the hidden row ready
 function initHiddenRow(){
-	console.log('\t\t\t\t initHiddenRow');
+	//console.log('\t\t\t\t initHiddenRow');
 	var twoOption = document.getElementById('twoOption');
 	twoOption.setAttribute('class','bCell');
 	var oneOption = document.getElementById('oneOption');
@@ -715,7 +770,7 @@ function setOptions(option1, option2){
 
 //Set the loading message with its icon:
 function putLoading(){
-	console.log("\t\t\t\tAdding loading.....");
+	//console.log("\t\t\t\tAdding loading.....");
 	var loading = document.getElementById('loading');
 	if (loading.innerHTML == ''){
 		var loadingIconSpan = document.createElement('span');
@@ -730,7 +785,7 @@ function putLoading(){
 		var loadingText = document.createElement('span');
 		loadingText.innerHTML = 'Loading. Please wait.....';
 		loading.appendChild(loadingText);
-		console.log('\t\t\t\tLoading added complete.\r\n\r\n');
+		//console.log('\t\t\t\tLoading added complete.\r\n\r\n');
 	}
 
 }
