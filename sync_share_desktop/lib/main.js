@@ -598,6 +598,7 @@ exports.main = function(options, callbacks) {
     localStorage.on('showMessage',handleShowMessage);
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save This');
+	contextMenu.addDeleteMenu('Delete This Saved Item.');
     contextMenu.on('contextClicked',handleContextMenu);
     
     //Whenever the bookmark sends us information:

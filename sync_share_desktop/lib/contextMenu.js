@@ -28,4 +28,16 @@ function addContextMenu(toLabel, aContextMenu){
 	}*/
 }
 
+function addDeleteMenu(toLabel, aContextMenu){
+	var myContextMenu = cm.Item({
+			label: toLabel,
+			context: [cm.SelectorContext("div.savedItem"), cm.URLContext(data.url('myPage.html'))],
+			contentScriptFile: data.url('contextMenuDeleteScript.js'),
+			onMessage: function(clickedNode){
+				emit(exports, 'contextClicked', [clickedNode, toLabel]);
+			}
+		});
+		return myContextMenu;	
+}
 exports.addContextMenu = addContextMenu;
+exports.addDeleteMenu = addDeleteMenu;

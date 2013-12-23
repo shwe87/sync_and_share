@@ -96,7 +96,7 @@ self.port.on('show',function(toDisplay){
 	if (elementsToShow == null){
 		var mainContent = document.getElementById('mainContent');
 		var p = document.createElement('p');
-		p.innerHTML = 'Nothing Saved yet!';
+		p.innerHTML = server + ': Nothing Saved yet!';
 		mainContent.appendChild(p);
 	}
 	else{
@@ -123,6 +123,8 @@ self.port.on('show',function(toDisplay){
 						//var rowCell = document.createElement('tr');
 						//var columnCell = document.createElement('td');
 						var mainContent = document.getElementById('mainContent');
+						var div = document.createElement('div');
+						div.setAttribute('class','savedItem');
 						var p1 = document.createElement('p');
 						p1.setAttribute('class','title');
 						var favQuery = "http://www.google.com/s2/favicons?domain="+element.url;
@@ -154,7 +156,8 @@ self.port.on('show',function(toDisplay){
 						p2.appendChild(a);
 						
 						var line = document.createElement('hr');
-						mainContent.appendChild(p2);
+						div.appendChild(p2);
+						mainContent.appendChild(div);
 						mainContent.appendChild(line);
 					}
 				}
