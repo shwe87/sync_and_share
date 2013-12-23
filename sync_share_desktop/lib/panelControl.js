@@ -2,7 +2,7 @@ var { Class } = require("sdk/core/heritage");
 
 var panel = require("sdk/panel");
 var data = require("sdk/self").data;
-var widget = require("sdk/widget");
+//var widget = require("sdk/widget");
 const timer = require('sdk/timers');
 
 var { emit, on, once, off } = require("sdk/event/core");

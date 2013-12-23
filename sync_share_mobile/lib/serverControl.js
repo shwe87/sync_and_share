@@ -197,19 +197,19 @@ function setServer(){
 exports.setServer = setServer;
 
 function save(writeDatas){
-	var message = 'Currently, you are using ';
+	var message = 'Loading.... ';
 	if (chosenServer == DROPBOX){
 		writeDatas.token = dropboxDatas.access_token;
 		dropbox.save(writeDatas);
-		message = message + 'Dropbox.';
+		//message = message + 'Dropbox.';
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
 		writeDatas.token = gapiDatas.access_token;
 		gapi.save(writeDatas);
-		message = message + 'Google-Drive.';
+		//message = message + 'Google-Drive.';
 	}
 	else if (chosenServer == BOTH){
-		message = message + 'Dropbox and Google-Drive.';
+		//message = message + 'Dropbox and Google-Drive.';
 		writeDatas.token = dropboxDatas.access_token;
 		dropbox.save(writeDatas);
 		writeDatas.token = gapiDatas.access_token;
@@ -217,29 +217,29 @@ function save(writeDatas){
 	}
 	else if (chosenServer == NONE){
 		//Do nothing
-		message.msg = message.msg + 'No extra server.'
+		//message.msg = message.msg + 'No extra server.'
 	}
 	myServer.save(writeDatas);
-	message = message + 'If you want to change this, please see the help page or go to the preference page.';
+	//message = message + 'If you want to change this, please see the help page or go to the preference page.';
 	emit(exports, 'showMessage',message);
 
 }
 exports.save = save;
 
 function read(readInfo){
-	var message = 'Currently, you are using ';
+	var message = 'Loading.... ';
 	if (chosenServer == DROPBOX){
 		readInfo.token = dropboxDatas.access_token;
 		dropbox.read(readInfo);
-		message = message + 'Dropbox.';
+		//message = message + 'Dropbox.';
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
 		readInfo.token = gapiDatas.access_token;
 		gapi.read(readInfo);
-		message = message + 'Google-Drive.';
+		//message = message + 'Google-Drive.';
 	}
 	else if (chosenServer == BOTH){
-		message = message + 'Dropbox and Google-Drive.';
+		//message = message + 'Dropbox and Google-Drive.';
 		readInfo.token = dropboxDatas.access_token;
 		dropbox.read(readInfo);
 		readInfo.token = gapiDatas.access_token;
@@ -247,19 +247,20 @@ function read(readInfo){
 	}
 	else if (chosenServer == NONE){
 		//Do nothing
-		message = message + 'No extra server.';
+		//message = message + 'No extra server.';
 		//emit(exports, 'display',null);
 	}
 	myServer.read(readInfo);
-	message = message + 'If you want to change this, please see the help page or go to the preference page.';
+	//message = message + 'If you want to change this, please see the help page or go to the preference page.';
 	emit(exports, 'showMessage',message);
 }
 exports.read = read;
-function handleNotAuthorized(serverName){
+function handleNotAuthorized(toDisplay){
 	console.log("Not authorized!!");
-	var message = {'msg':'Not authorized: Please sign in ' + serverName + ' to view the saved items.'}
-	emit(exports,'display',message);
+	emit(exports,'display',toDisplay);
 }
+
+
 function start(){
 	//Set the server:
 	setServer();

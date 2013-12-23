@@ -1,4 +1,4 @@
-
+@charset "utf-8";
 
 body{
 	background:#E4DBBF;			/*Yellowish background*/
@@ -8,36 +8,7 @@ body{
         color: #383127;
 }
 
-nav.menu a{
-	text-decoration: none;
-}
-nav.menu div, nav.menu a{
-        font-size: small;
-   	color: #DC5B21;				/*Orange*/
-	text-align: center;	
-}
-div.menuBar div{
-	border: groove #70AB8F 1px;
-	border-radius:6px 6px 6px 6px;
-	padding: 5px 0px 5px 0px;	/*top right bottom left*/
-	text-align: center;
-	color: #DC5B21;
-}
 
-div.menuBar div:hover{
-	cursor:pointer;
-	background-color: #eae3cd;
-
-}
-nav.menu div.menuBar{
-	border: none;
-	margin-left: 150px;
-	margin-right: 100px;
-	margin-top: 50px;
-	overflow: hidden;
-	width: 75%;
-
-}
 /*nav.menu div{
 	border: groove #70AB8F 1px;
 	border-radius:6px 6px 6px 6px;
@@ -82,9 +53,13 @@ span.small, div.helpText,li.small,div.small{
 }
 */
 
-div.logo{
+div.logo, div.brand{
+	display:block;
 	margin-top: 60px;
 	margin-bottom: 50px;
+	margin-left: auto;
+	margin-right:auto;
+	text-align:center;
 	/*float:center;*/	
 }
 
@@ -114,5 +89,8 @@ ul.errorlist{
 span.small{
      	font-size: x-small;
 }
+
+
+
 
 

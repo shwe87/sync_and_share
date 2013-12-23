@@ -9,7 +9,7 @@
 
     {% for nodes in bookmarks %}
 <ul>    {% recursetree nodes %}
-
+		{% if node.device.device_id == d.device_id %}
 	    	{% if node.ifFolder %}
 		<li>
 		
@@ -27,6 +27,7 @@
 		        </ul>
 		    {% endif %}
 		</li>
+		{% endif %}
 		
 	
     {% endrecursetree %}</ul>

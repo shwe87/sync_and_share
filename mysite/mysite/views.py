@@ -38,20 +38,40 @@ def get_senders_info(request):
 	try:
 		info['device_id'] = request.META['HTTP_MYID']
 		info['device_name'] = request.META['HTTP_MYNAME']
+		info['device_type'] = request.META['HTTP_TYPE']
 	except KeyError:
 		info['error'] = True
 	return info
 
+@csrf_exempt		
+def register_device(request):
+	response = HttpResponse()
+	print 'register!!!'
+	if (request.user.is_authenticated()):
+		user = request.user
+		info = get_senders_info(request)
+		if (info['error'] == False):
+			device_id = info['device_id']
+			device_name = info['device_name']
+			device_type = info['device_type']
+			try:
+				aDevice = UsersDevice.objects.get(device_id=device_id,user=user,device_type=device_type)
+				response = HttpResponseBadRequest()	#400
+				response['error'] = 'device already exists'
+			except UsersDevice.DoesNotExist:
+				aDevice = UsersDevice(device_id=device_id,device_name=device_name,user=user,device_type=device_type)
+				aDevice.save()
+		else:
+			response = HttpResponseNotAllowed('Invalid headers')
+			response['error'] = 'Invalid headers'
 		
-def check_if_from_app(request):
-	info = {}
-	info['error'] = False
-	try:
-		info['app-id'] = request.META['HTTP_APP_ID']
-	except KeyError:
-		info['error'] = True
-	return info
+	else:
+		response.status_code = 401
+		response['error'] = 'Unauthorized'
+		response.content = 'Unauthorized'
+	return response
 		
+
 
 # @function parseData: Given a query_set (from Sync model), parse it to a list of dict objects.
 # @param datasList {query_set}: contains a list of query_set objects of type Sync.
@@ -243,7 +263,10 @@ def read(request, element):
 				readData = Sync.objects.filter(user=user,typeOf=element)
 				print (len(readData))
 				if (len(readData) > 0):
-					dumped = json.dumps(parseData(readData))
+					toSend = {}
+					toSend[element] = parseData(readData)
+					dumped = json.dumps(toSend)
+					
 					response = HttpResponse(dumped, content_type="application/json")
 				else:
 					response = HttpResponseNotFound()
@@ -301,7 +324,11 @@ def deleteSync(request):
 			print uniqueId
 			try:
 				s = Sync.objects.get(unique=uniqueId)
+				shared = s.shared_set.all()
 				if (s.user == request.user):
+					if (shared.count()):
+						shared.shared.remove(s)
+					
 					s.delete()
 					response = HttpResponse()
 					response.write("OK")
@@ -319,6 +346,15 @@ def deleteSync(request):
 		response.content = 'Unauthorized'
 	return response	
 
+def checkIfEmpty(record):
+	shared = record.shared.all()
+	shared_bookmarks = record.shared_bookmarks.all()
+	shared_history = record.shared_history.all()
+	shared_tabs = record.shared_tabs.all()
+	if (not shared.count() and not shared_bookmarks.count() and not shared_history.count() and not shared_tabs.count()):
+		print "Empty: deleted!!!!"
+		record.delete()
+	
 @login_required
 @csrf_exempt
 def deleteShareFromContent(request):
@@ -338,9 +374,14 @@ def deleteShareFromContent(request):
 				shared_content = Share.objects.get(unique=shareId)
 				shared_from = shared_content.shared_from
 				if (shared_from.email == request.user.email):	#If the user is the owner
-					sync = Sync.objects.get(unique=toDeleteId)
-					print "sync deleted"
-					shared_content.shared.remove(sync)
+					try:
+						sync = Sync.objects.get(unique=toDeleteId)
+						print "sync deleted"
+						shared_content.shared.remove(sync)
+					except Sync.DoesNotExist:
+						response = HttpResponseNotFound()
+						response.write("Not Found")
+					checkIfEmpty(shared_content)
 					#t = shared_content.shared.all()
 					#print "Length of shared.all()"
 					#print len(t)
@@ -367,7 +408,73 @@ def deleteShareFromContent(request):
 	#response= HttpResponse()
 	return response
 	
-
+@login_required
+@csrf_exempt
+def deleteSharedWith(request):
+	print request.user
+	print request.body
+	print request.POST
+	if (request.user.is_authenticated()):
+		if request.method == 'POST':
+			#typeOf = request.POST['typeOf']
+			shareId = request.POST['shareId']
+			toDeleteId = request.POST['toDeleteId']
+			typeOf =request.POST['typeOf']
+			#uniqueId = request.POST['unique']
+			#print uniqueId
+		
+			#Delete an item that the user was sharing with other users.
+			try:
+				shared_content = Share.objects.get(unique=shareId)
+				shared_from = shared_content.shared_from
+				if (shared_from.email == request.user.email):	#If the user is the owner
+					if (typeOf == 'bookmark'):
+						bookmark = Bookmark.objects.get(unique=toDeleteId)
+						print "sync deleted"
+						shared_content.shared_bookmarks.remove(bookmark)
+					elif (typeOf == 'history'):
+						history = History.objects.get(unique=toDeleteId)
+						shared_content.shared_history.remove(history)
+					elif (typeOf == 'tab'):
+						tab = Tab.objects.get(unique=toDeleteId)
+						shared_content.shared_tabs.remove(tab)
+					checkIfEmpty(shared_content)
+					#t = shared_content.shared.all()
+					#print "Length of shared.all()"
+					#print len(t)
+					#if (len(t) is 0):
+					#	print "deleted"
+						#If it is 0, it means, there is nothing to share:
+					#	shared_content.delete()
+					#for h in t:
+					#	print h.title
+					#print "sync deleted 2"
+					response = HttpResponse()
+					response.write("OK")
+				else:
+					response = HttpResponseNotAllowed('You are not the owner')						
+			except Share.DoesNotExist:
+				response = HttpResponseNotFound()
+				response.write("Not Found")		
+			except Bookmark.DoesNotExist:
+				response = HttpResponseNotFound()
+				response.write("Not Found")	
+			except History.DoesNotExist:
+				response = HttpResponseNotFound()
+				response.write("Not Found")	
+			except Tab.DoesNotExist:
+				response = HttpResponseNotFound()
+				response.write("Not Found")	
+					
+		else:
+			response = HttpResponseNotAllowed("Only POST allowed")
+	else:
+		response.status_code= 401
+		response['error'] = 'Unauthorized'
+		response.content = 'Unauthorized'
+	#response= HttpResponse()
+	return response
+	
 
 # @function share: This function is called when the url is /share/. It displays a form so that the user can
 #		   choose what to share, with whom to share, what to do with the synced elements, etc.
@@ -500,8 +607,8 @@ def share(request):
 				for checked in existingGroups:
 					savedGroup = MyGroup.objects.get(unique=checked)
 					saveShared.shared_with_group.add(savedGroup)	
-			response.write("OK")
-			return response
+			rendered = render(request, 'shareCorrect.html',context_instance = RequestContext(request))			
+			return rendered
 	else:
 		
 		# What has this user shared:
@@ -566,7 +673,7 @@ def share(request):
 	if (synced == None and synced_bookmarks == None and synced_tabs == None and synced_history == None):
 		rendered = render(request, 'noShare.html',context_instance = RequestContext(request))
 	else:
-		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices,'nodes':synced_bookmarks,'history':synced_history,'tabs':synced_tabs},context_instance = RequestContext(request))			
+		rendered = render(request, 'share.html', {'form': form,'synced':synced,'groups':groups,'devices':users_devices},context_instance = RequestContext(request))			
 	return rendered
 
 """
@@ -641,8 +748,19 @@ def add(request):
 		s.members.add(u)
 	ug.groups.add(s)
 	return response
+
+@csrf_exempt	
+def viewBookmarks(request):
+	user = request.user
+	try:
+		users_devices = UsersDevice.objects.filter(user=user)
+		print "Users device = " + str(len(users_devices))
+		if not users_devices:
+			users_devices = None
+	except UsersDevice.DoesNotExist:
+		users_devices = None
 	
-	
+	return render(request, 'bookmarks.html', {'devices':users_devices},context_instance = RequestContext(request))	
 	
 	
 @login_required	
@@ -739,25 +857,30 @@ def deleteFromGroup(request):
 				group.delete()
 		except MyGroup.DoesNotExist:
 			response = HttpResponseNotFound()
+		except User.DoesNotExist:
+			response = HttpResponseNotFound()
+		except UserGroup.DoesNotExist:
+			response = HttpResponseNotFound()
 	else:
 		response = HttpResponseNotAllowed("ONLY POST ALLOWED")			
 
 	return response
 
 
-def get_device(owner,device_id,device_name):
+def get_device(owner,device_id,device_name,device_type):
 	createDevice = False
 	try:
-		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner)
+		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,device_type=device_type)
 	except UsersDevice.DoesNotExist:
+		print "Have to create device!!!!"
 		createDevice = True
 	
 	if createDevice:
 		try:
-			thisDevice = UsersDevice(device_id=device_id,user=owner,device_name=device_name)
+			thisDevice = UsersDevice(device_id=device_id,user=owner,device_name=device_name,device_type=device_type)
 			thisDevice.save()
 		except IntegrityError:
-			thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner)
+			thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,device_type=device_type)
 	return thisDevice
 
 
@@ -827,8 +950,9 @@ def addNewBookmarks(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
+			device_type = device_info['device_type']
 			#Guarantee that this device will exist
-			thisDevice = get_device(owner,device_id=device_id,device_name=device_name)
+			thisDevice = get_device(owner,device_id,device_name,device_type)
 			try:
 				parsedData = json.loads(request.body)
 				#sb = getUsersBookmarks(owner,device_id,device_name)
@@ -904,9 +1028,10 @@ def readAllBookmarks(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
+			device_type = device_info['device_type']
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
 			#thisDevice = get_device(owner,device_id,device_name)
-			exclude_this_device = users_all_devices.exclude(device_id=device_id)
+			exclude_this_device = users_all_devices.exclude(device_id=device_id,device_type='mobile')
 			all_devices = []
 			
 			toSend = []
@@ -943,9 +1068,10 @@ def readAllHistory(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
+			device_type = device_info['device_type']
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
 			#thisDevice = get_device(owner,device_id,device_name)
-			exclude_this_device = users_all_devices.exclude(device_id=device_id)
+			exclude_this_device = users_all_devices.exclude(device_id=device_id,device_type='mobile')
 			all_devices = []
 			
 			toSend = []
@@ -981,6 +1107,7 @@ def readAllTabs(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
+			device_type = device_info['device_type']
 			print device_id
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
 			#Give the user the ones that are not from this device:
@@ -1029,7 +1156,8 @@ def addNewHistory(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
-			thisDevice = get_device(owner,device_id=device_id,device_name=device_name)
+			device_type = device_info['device_type']
+			thisDevice = get_device(owner,device_id,device_name,device_type)
 			parsedData = json.loads(request.body)
 			sh = History.objects.filter(owner=owner,device=thisDevice)
 			toDelete = []
@@ -1103,7 +1231,8 @@ def addNewTabs(request):
 			owner = request.user
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
-			thisDevice = get_device(owner,device_id,device_name)		#Get user's device
+			device_type = device_info['device_type']
+			thisDevice = get_device(owner,device_id,device_name,device_type)		#Get user's device
 			parsedData = json.loads(request.body)
 			found = False
 			st = Tab.objects.filter(owner=owner,device=thisDevice)
@@ -1172,6 +1301,7 @@ def changeDeviceName(request):
 		if (info_error == False):
 			owner = request.user
 			device_id = device_info['device_id']
+			device_type = device_info['device_type']
 			new_device_name = device_info['device_name']
 			try:
 				thisDevice = UsersDevice.objects.get(user=request.user,device_id=device_id)

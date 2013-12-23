@@ -55,6 +55,27 @@ function getSyncBookmarks(){
 function getSyncHistory(){
 	return settings.prefs['syncHistory'];
 }
+function setSyncBookmarks(sync){
+	settings.prefs['syncBookmarks'] = sync;
+}
+
+function setSyncHistory(sync){
+	settings.prefs['syncHistory'] = sync;
+}
+
+function setSyncTabs(sync){
+	settings.prefs['syncTabs'] = sync;
+}
+exports.setSyncBookmarks = setSyncBookmarks;
+exports.setSyncHistory = setSyncHistory;
+exports.setSyncTabs = setSyncTabs;
+
+function turnOffSync(){
+	setSyncBookmarks(false);
+	setSyncHistory(false);
+	setSyncTabs(false);	
+}
+exports.turnOffSync = turnOffSync;
 
 function startUp(){
 	settings.on("extraServer", onExtraServerChange);

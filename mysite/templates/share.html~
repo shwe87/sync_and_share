@@ -2,11 +2,13 @@
 {% load staticfiles %}
 {% load mptt_tags %}
 {% block title %} Share with {% endblock %}
+{% block head %}
 {% if flavour == "mobile" %}
-<link href={% static "css/sharestyle_mobile.css" %} rel="stylesheet" type="text/css">
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
 {% else %}
-<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
 {% endif %}
+{% endblock %}
 <!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
 {% block content %}
 	<div class="form">
@@ -68,8 +70,9 @@
 			<div class="device">
 				<ul onclick="showOrHide(event)" class="hiding"> Bookmarks in {{ d.device_name }}
 					<ul class="hidden">
-					    {% recursetree nodes %}
-						{%if node.ifFolder %}
+					    {% recursetree d.bookmark_set.all %}
+					    	
+						{% if node.ifFolder %}
 
 						<li onclick="showOrHideTree(event)" class="folder">
 
@@ -91,6 +94,7 @@
 							</ul>
 						    {% endif %}
 						</li>
+						
 					    {% endrecursetree %}
 					</ul>
 				</ul>
@@ -103,7 +107,7 @@
 		{% for d in devices %}
 			<div class="device">
 				<ul onclick="showOrHide(event)" class="hiding">History in {{ d.device_name }}
-					{% for h in history %}
+					{% for h in d.history_set.all %}
 					<li class="hidden"><label>
 						<input name="shareHistory" type="checkbox" value="{{ h.unique }}" /> 
 						<a href="{{ h.url }}">{{ h.title }}</a>

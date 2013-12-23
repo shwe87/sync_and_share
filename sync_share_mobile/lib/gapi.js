@@ -638,7 +638,12 @@ function read(searchDatas){
 	else{
 		var message = 'Not Signed in!';
 		emit(exports, 'showMessage', message );
-		emit(exports, 'notAuthorized','Google Drive');
+		var toShow = new Object();
+		toShow.data = new Object();
+		toShow.data['msg'] = "You are not signed in Google-Drive. Please sign in!";
+		toShow.element = searchDatas.title.split('.json')[0];
+		toShow.server = 'gapi';
+		emit(exports, 'notAuthorized',toShow);
 		//auth(searchDatas);
 	}
 }

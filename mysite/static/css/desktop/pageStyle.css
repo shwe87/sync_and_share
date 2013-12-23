@@ -1,71 +1,54 @@
 @charset "utf-8";
 
+html,body,#container{
+	height: 100%;
+
+}
+
+body #container{
+	height: auto;
+	min-height: 100%;
+}
+
+#content{
+	padding-bottom: 5em;	
+
+}
 body{
 	background:#E4DBBF;			/*Yellowish background*/
    	background-repeat: no-repeat;
 	background-attachment: fixed;
-        font-family: Palatino,Georgia,Times;
-        color: #383127;
+    font-family: Palatino,Georgia,Times;
+    color: #383127;
 }
 
-nav.menu a{
-	text-decoration: none;
-}
-nav.menu div, nav.menu a{
-        font-size: small;
-   	color: #DC5B21;				/*Orange*/
-	text-align: center;	
-}
-div.menuBar div{
-	border: groove #70AB8F 1px;
-	border-radius:6px 6px 6px 6px;
-	padding: 5px 0px 5px 0px;	/*top right bottom left*/
-	text-align: center;
-	color: #DC5B21;
-}
 
-div.menuBar div:hover{
-	cursor:pointer;
-	background-color: #eae3cd;
-
-}
-nav.menu div.menuBar{
-	border: none;
-	margin-left: 150px;
-	margin-right: 100px;
-	margin-top: 50px;
-	overflow: hidden;
-	width: 75%;
-
-}
 /*nav.menu div{
 	border: groove #70AB8F 1px;
 	border-radius:6px 6px 6px 6px;
 }*/
-div#userInfo, div#toShareFrom, div#viewShare{
-	/*margin-left: 1005px;
-	margin-right: 5px;
-	margin-top: 10px;
-	font-size: x-small;
-	border: groove #70AB8F 1px;
+
+
+div#userInfo{
+	float:left top;
+	margin-left:20px;
+	margin-top: 20px;
+	display:inline-block;
+	border: solid #383127 1px;
 	border-radius:6px 6px 6px 6px;
-	padding: 5px 0px 5px 5px;
-	text-align: center;
-	color: #DC5B21;*/
-	float:left;
-	width:25%;
 }
 
-div#toShareFrom,div#viewShare{
-	margin-right: 100px;
+div.info{
+	padding: 10px 10px 10px 10px;
 }
+
 span.highlight{
 
 	color:#60a282;
 }
 
 span.small, div.helpText,li.small,div.small{
-     	font-size: x-small;
+    font-size: x-small;
 }
 
 /*.menu div{
@@ -82,9 +65,13 @@ span.small, div.helpText,li.small,div.small{
 }
 */
 
-div.logo{
+div.logo, div.brand{
+	display:block;
 	margin-top: 60px;
 	margin-bottom: 50px;
+	margin-left: auto;
+	margin-right:auto;
+	text-align:center;
 	/*float:center;*/	
 }
 
@@ -112,7 +99,19 @@ ul.errorlist{
 }
 
 span.small{
-     	font-size: x-small;
+    font-size: x-small;
 }
+
+#footer{
+	clear:both;
+	position:relative;
+	z-index:10
+	height:5em;
+	margin-top: -3em;
+
+}
+
+
+
 
 

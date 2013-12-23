@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="helpStyle.css"/>
+<link rel="SHORTCUT ICON" href="images/myLogo64.png">
+
+
+<link rel="stylesheet" href="themes/shweta.min.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+
+
+
+
+<title>
+Sync & Share-Menu and Views	
+</title>	
+</head>
+
+<html>
+	
+	<body>	
+        <div data-role="page" id="settings-page">
+			<div data-role="header" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a rel="external" href="help.html" >Settings</a></li>
+							
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Menu</a></li>
+						
+						<li><a rel="external" href="sync.html" data-transition="slidedown">Sync</a></li>
+						
+						<li><a rel="external" href="share.html">Share</a></li>
+						
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Views</a></li>
+					</ul>
+				</div><!-- /navbar -->
+			</div><!-- /header -->
+            
+        <div data-role="content" id="mainContent">
+				<h2 class="contentTitle"><span class="counter"> 2.</span>Menu:</h2>
+				<div class="sectionContent">
+					<!--a href="#popupBasic" data-rel="popup">Open Popup</a>
+
+						<div data-role="popup" id="popupBasic" data-transition="slideup">
+						<p>This is a completely basic popup, no options set.<p>
+					</div-->
+					<DL>
+						<DT class="contentTitle"> 
+							<STRONG><h3>
+							<span class="counter"> 2.1.</span>Where is the <EM>Sync & Share Menu</EM>?</h3>
+							</STRONG>
+						</DT>
+							<DD>
+								<p>
+									The <em>Sync & Share Menu</em> will appear when you are in Firefox and touch your
+									device's menu button.
+								</p>
+							</DD>
+						<DT class="contentTitle"> 
+							<STRONG><h3>
+							<span class="counter"> 2.2.</span>Menu</h3>
+							</STRONG>
+						</DT>
+							<DD>
+								<OL type="a">
+									<LI id="saveAllTabsOption">
+										<DL>
+										<DT>
+										<STRONG><EM><h4>Tabs</h4></EM></STRONG>
+										</DT>
+										<DD>
+											<p> 
+												Click Tabs and view all the synced and saved tabs of all your devices
+											</p>
+										</DD>
+									</LI>
+									<LI>
+										<DT>
+										<STRONG><EM><h4>Bookmarks</h4></EM></STRONG>
+										</DT>
+										<DD>
+											<p>
+												Click Bookmarks and view all the synced and saved bookmarks of all your devices.
+											</p>
+										</DD>
+									</LI>
+									<LI>
+										<DT>
+										<STRONG><EM><h4>History</h4></EM></STRONG>
+										</DT>
+										<DD>
+											<p>
+												Click History and view all the synced and saved history of all your devices.
+											</p>
+										</DD>
+									</LI>
+									<LI>
+										<DT>
+									
+										<STRONG><EM><h4>Options</h4></EM></STRONG>
+										</DT>
+										
+										<DD>
+											<p>
+												Click Options and view the options available.
+											</p>
+											<ol type="i">
+												<li>Save All Tabs
+													<p>
+														Will <a href="sync.html" id="reference">save all the open tabs</a>in your browser.
+													</p>
+												</li>
+												<li> Share
+													<p>
+														Opens a tab with <a rel="external" href="share.html" id="reference">sharing</a>options.
+													</p>
+													
+												</li>
+												<li> Help
+													<p>
+														Opens this page.
+													</p>
+												</li>
+											</ol>
+										</DD>
+									</LI>
+										</DL>
+									</LI>
+									 
+					</DL>
+				</div><!--End of sectionContent-->
+        </div><!-- /content -->
+            
+        
+        <div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div>
+		</div><!-- /page -->
+        <script type="text/javascript">
+			$(document).ready(function(){
+				$( "#popupBasic" ).popup( "open" );
+			});
+		</script>
+    </body>
+
+</html>
+		
+
+
+

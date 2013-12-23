@@ -411,6 +411,89 @@ function delFromGroup(event, groupId){
 	req.send(params);	
 }
 
+function delSharedWith(event, shareId, toDeleteId, typeOf){
+	//alert(shareId);
+	//alert(typeOf);
+	
+	//alert(shareId);
+	//var parentOfParent = parent.parentNode;
+	//var children = parentOfParent.children;
+	//for (var i=0;i<children.length;i++){
+		/*if (children[i].innerHTML == event.target){
+			alert(event.target.nodeName);
+		}*/
+	//}
+	//var typeOf = 'shared_from_content'
+	//alert(typeOf);
+	//alert( uniqueId);
+	//alert(event.target.parentNode.parentNode.parentNode.getAttribute('value'));
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function() {
+	       			//alert(req.responseText);
+		if (req.status == '200'){
+				var node = document.getElementById(toDeleteId);
+	       		//Check if the parent node has anything left:
+	       		var mainParent = document.getElementById('sharedFrom');
+	       		var ifHide = true;
+	       		var children = mainParent.children;
+	       		for (var i=0;i<children.length;i++){
+	       			//alert(children[i].className)
+	       			if (children[i].className != 'hidden'){
+	       				ifHide = false;
+	       			}
+	       		}
+	       		if (ifHide){
+	       			var shareFromTitle = document.getElementById('shareFromTitle');
+	       			shareFromTitle.setAttribute('class','hidden');
+	       		}
+	       		//alert("OK");
+	       		var node = document.getElementById(toDeleteId);
+	       		node.setAttribute('class','hidden');
+	       		var parent = document.getElementById('autoSynced'+typeOf);
+	       		var children = parent.children;
+	       		alert(children.length);
+	       		var allHidden = true; //All is hidden
+	       		for (var j=0;j<children.length;j++){
+						alert(children[j].nodeName);
+						var thisClass = children[j].className;
+						if (thisClass != 'hidden'){
+								allHidden = false;
+								break;
+						}
+				}
+				if (allHidden == true){
+						parent.setAttribute('class','hidden');
+						var parentTitle = document.getElementById('autoSynced'+typeOf+'Title');
+						parentTitle.setAttribute('class','hidden'); 
+				}
+	       		//var parent = node.parentNode;
+	       		//parent.setAttribute('class','hidden');
+	       		//alert(parent.nodeName)
+	       		//alert(node.nodeName + ' ' + node.innerHTML);
+			//alert(parent.nodeName);
+			/*var children = parent.children;
+			for (var i=0;i<children.length;i++){
+				parent.removeChild(children[i]);
+			}
+			parent.setAttribute('class','hidden');*/
+	       			
+	       	}
+	       	else{
+	       		//alert("Something went wrong!!!!! " + req.status);
+	       			//event.target.innerHTML = "Not found. Refresh the page!"
+	       	}
+	    					
+	}
+	url = '/delete/share/with/'; //+ encodeURIComponent(uniqueId);
+	req.open('POST',url,false);
+	req.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	var params = 'shareId=' + encodeURIComponent(shareId);
+	params = params + '&toDeleteId=' + encodeURIComponent(toDeleteId);
+	params = params + '&typeOf=' + encodeURIComponent(typeOf);
+	var params = params.replace(/%20/g, '+')
+	req.send(params);	
+}
+
 
 
 

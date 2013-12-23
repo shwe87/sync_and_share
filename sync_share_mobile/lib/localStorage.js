@@ -5,13 +5,40 @@ exports.removeListener = function removeListener(type, listener) {
   off(exports, type, listener);
 };
 var ss = require("sdk/simple-storage");		//Permanent variables will be saved here, even the bookmarks,history and tabs.
-
+var data = require('sdk/self').data;
 var {Cc, Ci, Cu} = require("chrome");
 
 var myServer = require('./myServer.js');
 var preferences = require('./preferences.js');
+function notify(){
+	var notifications = require("sdk/notifications");
+	notifications.notify({
+		title: "Over quota!",
+		text: "'Space problem! Can save only 5MB of datas! Go to help!",
+		data: "help",
+		onClick: function (data) {
+			tabs.open({
+					url: data.url('help.html')
+			});
+		}
+	});
+}
+function setRegistered(if_registered){
+		ss.storage.registered = if_registered;
+		
+	
+}
+exports.setRegistered = setRegistered;
 
-
+function checkIfRegistered(){
+	if (!ss.storage.registered){
+			return false;
+	}	
+	else{
+			return ss.storage.registered;
+	}
+}
+exports.checkIfRegistered = checkIfRegistered;
 
 
 function setId(){
@@ -59,8 +86,11 @@ function getNowTime(){
 @param listOfBookmarks {Array}: a List of all bookmarks.
 *******************************************************************************************************************************/
 function saveReadBookmarks(listOfBookmarks){
-	ss.storage.bookmarks = listOfBookmarks;
-	ss.storage.lastBookmarkRead = getNowTime();
+	console.log("localstorage: QUOTA = " + ss.quotaUsage);
+	if (ss.quotaUsage < 1){
+		ss.storage.bookmarks = listOfBookmarks;
+		ss.storage.lastBookmarkRead = getNowTime();
+	}
 }
 
 /*******************************************************************************************************************************
@@ -68,17 +98,21 @@ function saveReadBookmarks(listOfBookmarks){
 @param listOfHistory {Array}: a List of all history.
 ********************************************************************************************************************************/
 function saveReadHistory(listOfHistory){
-	ss.storage.history = listOfHistory;
-	ss.storage.lastHistoryRead = getNowTime();
+	if (ss.quotaUsage < 1){
+		ss.storage.history = listOfHistory;
+		ss.storage.lastHistoryRead = getNowTime();
+	}
 }
 /*******************************************************************************************************************************
 @function saveReadTabs: When the server has read all the tabs of all devices of this user, save them.
 @param listOfTabs {Array}: a List of all tabs.
 ********************************************************************************************************************************/
 function saveReadTabs(listOfTabs){
-	console.log("localStorage: Save tabs!!! " + JSON.stringify(listOfTabs));
-	ss.storage.tabs = listOfTabs;
-	ss.storage.lastTabRead = getNowTime();
+	console.log("localstorage: QUOTA = " + ss.quotaUsage);
+	if (ss.quotaUsage < 1){
+		ss.storage.tabs = listOfTabs;
+		ss.storage.lastTabRead = getNowTime();
+	}
 }
 
 function changeDeviceName(deviceName){
@@ -192,12 +226,19 @@ function getAllSavedTabs(){
 
 exports.getAllSavedTabs = getAllSavedTabs;
 
+preferences.on('deviceNameChanged',changeDeviceName);
+
+ss.on('OverQuota',function(){
+	preferences.turnOffSync();
+	var message = {'msg': 'Quota exceeded. Remember this is just a trial version. Unsync some device to make some space.','type':'error'};
+	emit(exports,'showMessage',message);
+});
 
 function startUp(){
 	myServer.on('allBookmarksReadFromServer',saveReadBookmarks);
 	myServer.on('allHistoryReadFromServer',saveReadHistory);
 	myServer.on('allTabsReadFromServer',saveReadTabs);
-	preferences.on('deviceNameChanged',changeDeviceName);
+	
 }
 
 exports.startUp = startUp;

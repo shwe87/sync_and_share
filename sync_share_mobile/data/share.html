@@ -1,35 +1,56 @@
 <!DOCTYPE html>
-<html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="helpStyle.css"/>
+<link rel="SHORTCUT ICON" href="images/myLogo64.png">
+
+<link rel="stylesheet" href="themes/shweta.min.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+
+
+
+
 <title>
-Share
-</title>
+Sync & Share Help Page	
+</title>	
+</head>
 
-<body>
-<div class="logo">
-  	<center><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/><br>
-  	<span class="small">Sync & Share</span><br><br></center>
-</div>
-<br>
-<br>
-<center><div id="loading"></div><center>
-<br>
-<br>
-<center>
-<form action="#" id="theForm">
-<div id="chooseFrom">
-<div id="choosetabs"></div>
-<div id="choosebookmarks"></div>
-<div id="choosehistory"> </div>	
-</div>
-
-<div id="shareWith">
-<p>Write with whom you want to share with:</p>
-<p><input type="email" name="email" required>&nbsp<img id="plusImage" src="http://i42.tinypic.com/2q2n295.jpg" height=15px ></p>
-</div>
-
-<p><input type="SUBMIT" value="Submit!"></p>
-</form>
-</center>
-</body>
+<html>
+	
+	<body>	
+        <div data-role="page" id="settings-page">
+           <div data-role="header" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a rel="external" href="help.html" >Settings</a></li>
+							
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Menu</a></li>
+						
+						<li><a rel="external" href="sync.html">Sync</a></li>
+						
+						<li><a rel="external" href="share.html">Share</a></li>
+						
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Views</a></li>
+					</ul>
+				</div><!-- /navbar -->
+			</div><!-- /header -->
+            
+        <div data-role="content" id="mainContent">
+			
+        </div><!-- /content -->
+            
+        
+        <div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div><!--footer-->
+		</div><!-- /page -->
+        
+    </body>
 
 </html>
+		
+
+

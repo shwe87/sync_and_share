@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>
+Sync & Share
+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="SHORTCUT ICON" href="images/myLogo64.png" type="image/png">
+
+<link rel="stylesheet" href="themes/shweta.min.css" />
+
+
+</head>
+
+<body>
+	<!--TABS-->
+	<div data-role="page" id="tabsPage">
+	  <div data-role="header" data-position="fixed">
+			<div data-role="navbar">
+				<ul>
+					<li id="tab"> <a href="#" class="ui-btn-active ui-state-persist">Tabs</a></li>
+						
+					<li id="bookmark"><a href="#">Bookmarks</a></li>
+					
+					<li id="history"><a href="#">History</a></li>
+					
+					<li id="options"><a href="#">Options</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		 </div><!--End of header!-->
+
+		<div data-role="content">
+			<div class="logo">
+				<div><img src="images/myLogo.png" title="logo by Shweta"/></div>
+				<div><span class="small">Sync & Share</span></div>
+			</div>
+			<!--Start showing items-->
+			<div id="notAuthorized">
+			</div>
+			<!--My site tabs-->
+			<div id="mysitetabsTitle"  data-role="collapsible">
+				 <h3>
+					  Saved Tabs 
+				</h3>
+			
+				<div id="mysitetabsContent">
+				</div>
+			</div>
+			
+			<div id="mysitesyncedtabsTitle" class="title hidden"  data-role="collapsible">
+				<h3> Synced tabs</h3>
+			
+				<div id="mysitesyncedtabsContent"> 
+				</div>
+			</div>
+			
+			<!--Dropbox tabs-->
+			<div id="dropboxtabsTitle" data-role="collapsible">
+				<h3> Saved Tabs in Dropbox </h3>
+			
+				<div id="dropboxtabsContent">
+				</div>
+			</div>
+			
+			<!--Google Drive tabs-->
+			<div id="gapitabsTitle"  data-role="collapsible">
+				<h3> Saved Tabs in Google Drive </h3>
+			
+				<div id="gapitabsContent">
+				</div>
+			</div>	
+		</div><!--End of content-->
+
+		<div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div><!--End of footer-->
+	</div> <!--End of tabsPage-->
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>	
+
+</body>
+
+</html>

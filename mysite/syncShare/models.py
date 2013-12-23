@@ -18,11 +18,17 @@ def validate_type(value):
     		#Raise validation error, if not valid.
         	raise ValidationError(u'%s is not a valid type' % value)	
 
+def validate_device_type(value):
+	valid = ((value == 'mobile') or (value == 'desktop'))
+	if (valid == False):
+		#Raise validation error, if not valid.
+		raise ValidationError(u'%s is not a valid type' % value)
 
 class UsersDevice(models.Model):
 	user = models.ForeignKey(User)
 	device_id = models.TextField(unique=True)
 	device_name = models.TextField()
+	device_type = models.CharField(max_length=7, validators = [validate_device_type])
 	
 	def __unicode__(self):
 		return u'%(user)s has a device %(device)s' %{
@@ -34,7 +40,7 @@ class UsersDevice(models.Model):
 		return json.dumps(self.serializable_object())
 		
 	def serializable_object(self):
-		obj = {'user':self.user.email,'device_id':self.device_id,'device_name':self.device_name}
+		obj = {'user':self.user.email,'device_id':self.device_id,'device_name':self.device_name,'device_type':self.device_type}
 		return obj
 	
 def encode(text):
@@ -44,7 +50,7 @@ def encode(text):
     return text.encode('utf-8')		
 
 class Bookmark(MPTTModel):
-    	itemId = models.IntegerField()
+	itemId = models.IntegerField()
 	title = models.TextField()
 	parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 	parentId = models.IntegerField()

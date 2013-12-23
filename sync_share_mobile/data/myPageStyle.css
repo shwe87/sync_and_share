@@ -2,15 +2,18 @@ body{
 	background:#E4DBBF;			/*Yellowish background*/
    	background-repeat: no-repeat;
 	background-attachment: fixed;
-        font-family: Palatino,Georgia,Times;
+    font-family: Palatino,Georgia,Times;
 
 }
 nav.menu ul li,nav.optionsMenu ul li{
 	display: block;
-        font-size: x-large;
+    font-size: x-large;
    	color: #DC5B21;				/*Orange*/
 	text-align: center;
+}	
 
+li#tab a,li#bookmark a,li#history a,li#options a{
+	text-decoration: none;
 }
 
 
@@ -20,7 +23,7 @@ div.content .item:hover,
 nav.optionsMenu div:hover,
 nav.optionsMenu div:active
 {
-        background:url(http://i44.tinypic.com/207nsr9.jpg);	/*When an item is hovered, a personal background is shown.*/
+        background:#eae3cd;	/*When an item is hovered, a personal background is shown.*/
         border:1px solid #70AB8F;	/*Greenish border*/
 }
 .menu div,.optionsMenu div{
@@ -36,6 +39,13 @@ nav.optionsMenu div:active
 
 }
 
+.hidden{
+	display:none;
+}
+
+.shown{
+	visibility: visible;
+}
 
 
 div#content{      
@@ -43,13 +53,13 @@ div#content{
          margin-right: 0px;
 }
 div.item{
-         border-bottom:solid #383127 1px;
-         margin-left: 0px;
-	 /*text-align: center;*/
-	 padding-top: 10px;
-         padding-bottom: 10px;
-         color: #383127;
-         background: #eae3cd;
+    border-bottom:solid #383127 1px;
+    margin-left: 0px;
+	/*text-align: center;*/
+	padding-top: 10px;
+    padding-bottom: 10px;
+    color: #383127;
+    background:  #E4DBBF;
 }
 
 div.item:first-child{
@@ -62,14 +72,7 @@ a,span.small,div#contentTitle,hr{
 span.small,div.small,a.small{
      	font-size: x-small;
 }
-div.hidden{
 
-	display: none;
-}
-
-div.shown{
-	visibility: visible;
-}
 
 div.title{
     	font-size: x-large;
@@ -83,34 +86,24 @@ hr{
 
 }
 
+
 ul.device{
-	margin-top: 30px;
-	margin-bottom:30px;
-	list-style-type: none;
+	background: url(images/plus-hand.png) no-repeat left top;
+	background-size: 15px 15px;
+	display:block;
+	padding: 0px 0px 0px 20px;
+	margin:0px;
 }
 
-div.wrapper{
-	border:solid #383127 1px;
-        border-radius:6px 6px 6px 6px;
-        background: #eae3cd;
-        margin-left: 0px;
-        margin-right: 0px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-	padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 0px;
-        color: #383127;  
-        box-shadow: 10px 10px 5px #888888;
+div.deviceName{
+	border
+
 }
+
 ul li{
 	list-style-type:none;
 }
-div.deviceName{
-	padding-bottom: 10px;
-	padding-top: 10px;
 
-}
 
 span.imageHolder{
 	padding-right: 5px;
@@ -118,15 +111,27 @@ span.imageHolder{
 .url{
 	text-overflow: ellipsis;
    	display: inline-block;
-    	width: 200px;
-    	white-space: nowrap;
-    	overflow: hidden;
-    	vertical-align: top;
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: top;
+    font-size: x-small;
 
 }
 span.info{
 	margin-left: 5px;
 
+}
+
+div.logo,div#footer{
+	display:block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	text-align:center;
+	border:none;
+		
 }
 
 /*div.deviceWrapper{

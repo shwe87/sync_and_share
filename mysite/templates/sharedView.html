@@ -2,8 +2,11 @@
 {% load staticfiles %}
 {% block title %} My shared items {% endblock %}
 {% block head %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<link href={% static "css/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% if flavour == "mobile" %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
 {% endblock %}
 <!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
 {% block content %}
@@ -16,14 +19,18 @@
 				<div class="item">
 					<ul onclick="showOrHide(event)" class="hiding" id="{{ h.unique }}">
 					You are sharing 
+						<span class="favicon">
+							<img src="http://www.google.com/s2/favicons?domain={{ h.url }}">
+						</span>
 						<a href="{{ h.url }}" >{{ h.title }}</a> 
 					with:
-						<span clas="imageContainer"><img onclick="delSharedFromContent(event,'{{ s.unique }}', '{{ h.unique }}')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
+						<span clas="imageContainer">
+							<img onclick="delSharedFromContent(event,'{{ s.unique }}', '{{ h.unique }}')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
 						</span>
 						{% if s.typeOf_share == "email" %}
 							{% for w in s.shared_with_emails.all %}
 								<li class="hidden" >
-								<span class="small sharedWithEmail"> {{ w.email }} </span>
+								<span class="small sharedWith"> {{ w.email }} </span>
 								<!--span clas="imageContainer" >
 									<img class="image" src={% static "images/cross.png" %} title="Stop sharing this with this user" height="15px" onclick="delShareFromUser(event ,'{{ s.unique }}','{{ w.email }}','{{ h.unique }}')"-->
 								</span>
@@ -33,7 +40,7 @@
 						{% if s.typeOf_share == "group" %}
 							{% for w in s.shared_with_group.all %}
 								<li class="hidden">
-								<span class="small sharedWithGroup"> {{ w.groupName }}</span>
+								<span class="small sharedWith"> {{ w.groupName }}</span>
 								</li>
 							{% endfor %}
 						{% endif %}
@@ -42,10 +49,21 @@
 				</div>
 			{% endfor %}
 			{% if s.shared_bookmarks.all %}
-			<div class="autoSync">
+			<div id="autoSyncedbookmarkTitle">
+				Shared Bookmarks
+				<span class="imageContainer"><img src="/static/images/bookmarks.png" height="15px" title="bookmarks"></span>
+			</div>
+			<div class="autoSync" id="autoSyncedbookmark">
+			
 			{% for b in s.shared_bookmarks.all %}
-				<li>
-					<a href="{{ b.url }}">{{ b.title }}</a><span class="small">{{ b.device.device_name}}</span>
+				<li id="{{ b.unique }}">
+					<span class="favicon">
+						<img src="http://www.google.com/s2/favicons?domain={{ b.url }}">
+					</span><a href="{{ b.url }}">{{ b.title }}</a>
+					<span class="small deviceName">from {{ b.device.device_name}}</span>
+					<span clas="imageContainer">
+						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ b.unique }}','bookmark')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
+					</span>
 				</li>
 			
 			{% endfor %}
@@ -53,10 +71,22 @@
 			{% endif %}
 			
 			{% if s.shared_history.all %}
-			<div class="autoSync">
+			<div id="autoSyncedhistoryTitle">
+				Shared History
+				<span class="imageContainer">
+					<img src="/static/images/history.png" height="15px" title="history"></span>
+			</div>	
+			<div class="autoSync" id="autoSyncedhistory">
 			{% for h in s.shared_history.all %}
-				<li>
-					<a href="{{ h.url }}">{{ h.title }}</a><span class="small">{{ h.device.device_name }}</span>
+				<li id="{{ h.unique }}">
+					<span class="favicon">
+						<img src="http://www.google.com/s2/favicons?domain={{ h.url }}">
+						</span>
+					<a href="{{ h.url }}">{{ h.title }}</a>
+					<span class="small deviceName">from {{ h.device.device_name }}</span>
+					<span clas="imageContainer">
+						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ h.unique }}','history')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
+					</span>
 				</li>
 			
 			{% endfor %}			
@@ -64,10 +94,23 @@
 			{% endif %}
 			
 			{% if s.shared_tabs.all %}
-			<div class="autoSync">
+			<div id="autoSyncedtabTitle">
+				Shared tabs
+				<span class="imageContainer">
+					<img src="/static/images/tabs.png" height="15px" title="tabs"></span>
+			</div>
+			<div class="autoSync" id="autoSyncedtab">
+				
 			{% for t in s.shared_tabs.all %}
-				<li>
-					<a href="{{ t.url }}">{{ t.title }}</a><span class="small">{{ t.device.device_name }}</span>
+				<li id=" {{ t.unique }}">
+					<span class="favicon">
+						<img src="http://www.google.com/s2/favicons?domain={{ t.url }}">
+					</span>
+					<a href="{{ t.url }}">{{ t.title }}</a>
+					<span class="small deviceName">from {{ t.device.device_name }}</span>
+					<span clas="imageContainer">
+						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ t.unique }}','tab')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
+					</span>
 				</li>
 			
 			{% endfor %}			
@@ -87,7 +130,11 @@
 			<div class="item">
 			<ul onclick="showOrHide(event)" class="hiding" value="{{ s.unique }}">The user <span class="highlight">{{ s.shared_from.email }}</span> is sharing with you: <br> 
 			{% for h in s.shared.all %}
-					<li class="hidden"><a href="{{ h.url }}">{{ h.title }}</a></li>	
+					
+					<li class="hidden">
+						<span class="favicon"><img src="http://www.google.com/s2/favicons?domain={{ h.url }}"></span>
+						<a href="{{ h.url }}">{{ h.title }}</a>
+					</li>	
 			{% endfor %}
 
 			</ul>
@@ -112,7 +159,12 @@
 			{% for sh in s.share_set.all %}
 				{% if sh.shared.all %}
 					{% for t in sh.shared.all %}
-					<li class="hidden"><a href="{{ t.url }}">	{{ t.title }} </a></li>
+					<li class="hidden">
+						<span class="favicon">
+							<img src="http://www.google.com/s2/favicons?domain={{ t.url }}">
+						</span>
+						<a href="{{ t.url }}">	{{ t.title }} </a>
+						</li>
 				
 					{% endfor %}
 				{% else %}

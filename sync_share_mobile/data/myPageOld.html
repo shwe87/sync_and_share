@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>
+Sync & Share
+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="SHORTCUT ICON" href="images/myLogo64.png">
+
+<link rel="stylesheet" href="themes/shweta.min.css" />
+<link rel="stylesheet" href="myPageStyle.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+<script src="myPageScript.js"></script>
+</head>
+<body>
+<!--div data-role="page" id="settings-page">
+           <div data-role="header" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a rel="external" href="help.html" >Settings</a></li>
+							
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Menu</a></li>
+						
+						<li><a rel="external" href="sync.html">Sync</a></li>
+						
+						<li><a rel="external" href="share.html">Share</a></li>
+						
+						<li><a rel="external" href="menu.html" class="ui-btn-active ui-state-persist">Views</a></li>
+					</ul>
+				</div><!-- /navbar -->
+			<!--/div><!-- /header -->
+            
+        <!--div data-role="content" id="mainContent">
+			
+        </div><!-- /content -->
+            
+        
+        <!--div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div><!--footer-->
+		<!--/div><!-- /page -->
+        
+<center>
+<div class="logo">
+<center><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/><br>
+<span class="small">Sync & Share</span>
+</center>
+
+</div>
+</div>
+<nav class="menu">
+	<ul>
+		<li id="tab"><a href="#mainContent"><div id="tabCell">Tabs</div></a></li>
+		<br><br>
+		<li id="bookmark"><a href="#mainContent"><div id="bookmarkCell">Bookmarks</div></a></li>
+		<br><br>
+		<li id="history"><a href="#mainContent"><div id="historyCell">History</div></a></li>
+		<br><br>
+		<li id="options"><a href="#optionsContent"><div id="optionCell">Options</div></a></li>
+		<br><br>
+	</ul>
+</nav>
+
+</center>
+
+<div id="optionsContent" class="hidden">
+<nav class="optionsMenu">
+	<ul>
+		<li id="saveTabs"><div id="saveTabsCell">Save all open tabs</div></li>
+		<br><br>
+		<li id="share"><div id="shareCell">Share Options</div></li>
+		<br><br>
+		<li id="help"><div id="helpCell">Help</div></li>
+		<br><br>
+		
+		<!--li id="history"><div id="historyCell">History</div></li>
+		<br><br>
+		<li id="options"><div id="optionCell">Options</div></li>
+		<br><br-->
+	</ul>
+</nav>
+
+
+
+
+</div>
+<div id="mainContent" class="hidden">
+<div id="contentTitle"></div>
+<!--div id="mysiteContent"-->
+<div id="showtabsContent">
+	<div id="mysitetabsTitle" class="title hidden"  data-role="collapsible">
+		 <h3>
+			 <hr>Saved Tabs<span class="small info">(click to hide/show)</span><hr>
+		</h3>
+	</div>
+	<div id="mysitetabsContent" class="content">
+	</div>
+	
+	<div id="dropboxtabsTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Saved Tabs in Dropbox<hr></h3>
+	</div>
+	<div id="dropboxtabsContent" class="content">
+	
+	</div>
+	
+	<div id="gapitabsTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Saved Tabs in Google Drive<hr></h3>
+	</div>
+	<div id="gapitabsContent" class="content">
+	
+	</div>
+	<div id="mysitesyncedtabsTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Synced tabs<span class="small info">(click to hide/show)</span><hr></h3>
+	</div>
+	<div id="mysitesyncedtabsContent" class="content hidden"> 
+	
+	</div>
+	
+	
+	
+</div>	
+
+
+
+<!--/div-->
+
+
+
+<!--div id="dropboxContent"-->
+<div id="showbookmarksContent">
+        
+    <div id="mysitebookmarksTitle" class="title hidden"  data-role="collapsible">
+		<h3>
+			<hr>Saved Bookmarks<span class="small info">(click to hide/show)</span><hr>
+		</h3>
+	</div>
+	<div id="mysitebookmarksContent" class="content">
+	
+	</div>
+	<div id="mysitesyncedbookmarksTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Synced bookmarks<span class="small info">(click to hide/show)</span><hr></h3>
+	</div>
+	<div id="mysitesyncedbookmarksContent" class="content hidden"> 
+	
+	</div>
+	
+	<div id="dropboxbookmarksTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Saved Bookmarks in Dropbox<hr></h3>
+	</div>
+	<div id="dropboxbookmarksContent" class="content">
+	
+	</div>
+	
+	<div id="gapibookmarksTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Saved Bookmarks in Google Drive<hr></h3>
+	</div>
+	<div id="gapibookmarksContent" class="content">
+	
+	</div>
+	
+  <!--div class="item">
+  <p id="title">A title</p>
+  <a href="http://www.urjc.es">www.urjc.es</a>
+  </div-->
+
+</div>
+<!--div id="gapiContent"-->
+<div id="showhistoryContent">
+	
+	<div id="mysitehistoryTitle" class="title hidden"  data-role="collapsible">
+		<h3>
+			<hr>Saved History<span class="small info">(click to hide/show)</span><hr>
+		</h3>
+	</div>
+	<div id="mysitehistoryContent" class="content">
+	
+	</div>
+	
+	<div id="mysitesyncedhistoryTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Synced History<span class="small info">(click to hide/show)</span><hr></h3>
+	</div>
+	<div id="mysitesyncedhistoryContent" class="content hidden"> 
+	
+	</div>
+	
+	<div id="dropboxhistoryTitle" class="title hidden"  data-role="collapsible">
+		<h3><hr>Saved History in Dropbox<hr></h3>
+	</div>
+	<div id="dropboxhistoryContent" class="content">
+	
+	</div>
+	
+	<div id="gapihistoryTitle" class="title hidden"  data-role="collapsible">
+		<hr>Saved History in Google Drive<hr>
+	</div>
+	<div id="gapihistoryContent" class="content">
+	
+	</div>
+
+</div>
+</div>
+</body>
+
+</html>

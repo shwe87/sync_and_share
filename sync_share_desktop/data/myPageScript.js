@@ -72,6 +72,8 @@ self.port.on('getTableReady',function(element){
 	//}
 	
 });
+
+
 self.port.on('clean',function(msg){
 	clean(msg);
 
@@ -80,13 +82,16 @@ self.port.on('clean',function(msg){
 self.port.on('initHiddenRow',initHiddenRow);
 
 //Show the saved tabs. Display the elements in the content.
-self.port.on('show',function(elementsToShow){
-	console.log("Script: display elementToShow = " + JSON.stringify(elementsToShow));
+self.port.on('show',function(toDisplay){
+	console.log("SCRIPT : TO DISPLAY");
+	console.log(toDisplay);
 	//console.log(JSON.stringify(elementsToShow));
 	//First clean the table, delete the previous items that were showing:
 	//clean('mainContent');
 	//var tabsTable = document.getElementById('tabsTable');
 	clean('loading');
+	var server = toDisplay.server;
+	var elementsToShow = toDisplay.data;
 
 	if (elementsToShow == null){
 		var mainContent = document.getElementById('mainContent');
@@ -95,7 +100,7 @@ self.port.on('show',function(elementsToShow){
 		mainContent.appendChild(p);
 	}
 	else{
-		
+		console.log();
 		var key = Object.keys(elementsToShow);
 		console.log("SCRIPT : key = " + key);
 		try{
@@ -120,12 +125,34 @@ self.port.on('show',function(elementsToShow){
 						var mainContent = document.getElementById('mainContent');
 						var p1 = document.createElement('p');
 						p1.setAttribute('class','title');
-						p1.innerHTML = element.title;
+						var favQuery = "http://www.google.com/s2/favicons?domain="+element.url;
+						var span = document.createElement('span');
+						span.setAttribute('class','favicon');
+						var favA = document.createElement('img');
+						favA.setAttribute('src',favQuery);
+						span.appendChild(favA);
+						p1.appendChild(span);
+						var text = document.createTextNode(element.title);
+						var img = document.createElement('img');
+						img.setAttribute('class','serverLogo');
+						var image = 'images/'+server+'.png';
+						img.setAttribute('src',image);
+						img.setAttribute('title','saved in ' + server);
+						p1.appendChild(text);
+						p1.appendChild(img);
 						mainContent.appendChild(p1);
 						//document.insertBefore(image,p1);
 						var p2 = document.createElement('p');
 						p2.setAttribute('class','url');
-						p2.innerHTML = element.url;
+						
+						var a = document.createElement('a');
+						a.setAttribute('href',element.url);
+						a.setAttribute('class','urlContainer');
+						var text = document.createTextNode(element.url);
+						a.appendChild(text);
+						
+						p2.appendChild(a);
+						
 						var line = document.createElement('hr');
 						mainContent.appendChild(p2);
 						mainContent.appendChild(line);
@@ -372,15 +399,24 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 			for (var k=0;k<children.length;k++){
 				var child = children[k];
 				var childClass = child.className;
-				if (childClass == 'hidden'){
-					child.setAttribute('class','shown');
-				}
-				else{
-					child.setAttribute('class','hidden');
+				
+				if (child.nodeName != 'HR'){
+					console.log('device: mychild = ' + child.nodeName);
+					console.log('device: mychild before = ' + child.className);
+					if (childClass == 'hidden'){
+						child.setAttribute('class','shown');
+					}
+					else{
+						child.setAttribute('class','hidden');
+					}
+					console.log("my child after: " + child.className);
 				}
 			}
 		});
 		
+		var bookmarkDiv = document.createElement('DIV');
+		bookmarkDiv.setAttribute('class','hidden');
+		aDeviceUL.appendChild(bookmarkDiv);
 		for (var j=0;j<bookmarks.length;j++){
 			var ifFolder = bookmarks[j].ifFolder;
 			var aBookmark = bookmarks[j];
@@ -389,7 +425,7 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 			//console.log('takeABookmark received : ' + bookmarks[j].title);
 			if (parentId == 0){
 				console.log(device_name + " " + parentId + "  " + aBookmark.title)
-				handle_children(aBookmark,aDeviceUL,device_id);
+				handle_children(aBookmark,bookmarkDiv,device_id);
 			}
 		}
 		
@@ -406,8 +442,30 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 
 
 /*************FUNCTIONS****************/
-
-
+/*
+function searchForSame(searchedUrl, parent, server){
+	/*
+	 * <p class="url"><a class="urlContainer" href="searchedUrl">"searchedURl"</a></p>
+	 * var p2 = document.createElement('p');
+						p2.setAttribute('class','url');
+						
+						var a = document.createElement('a');
+						a.setAttribute('src',element.url);
+						var text = document.createTextNode(element.url);
+						a.appendChild(text);
+						
+						p2.appendChild(a);
+	 * */
+/*	var same = 
+	var allUrls = parent.getElementsByClassName('urlContainer');
+	for (var i=0;i<allUrls.length;i++){
+			
+		
+	
+	}
+	
+	
+}*/
 
 function handle_event(event){
 	console.log("I was clicked!!  " + event.target.nodeName);
@@ -418,42 +476,53 @@ function handle_event(event){
 			//console.log(ULChildren);
 			if (ULChildren != undefined){
 				for (var i=0;i<ULChildren.length;i++){
-					//console.log(i+" ULChildren = " + ULChildren[i].innerHTML);
-					if (ULChildren[i].className == 'hidden'){
-						ULChildren[i].setAttribute('class','showLi');
-					}
-					else if(ULChildren[i].className == 'showLi'){
-						ULChildren[i].setAttribute('class','hidden');
+					console.log(i+" ULChildren = " + ULChildren[i].nodeName);
+					if (ULChildren[i].nodeName != 'HR'){
+						if (ULChildren[i].className == 'hidden'){
+							ULChildren[i].setAttribute('class','shown');
+						}
+						else if(ULChildren[i].className == 'shown'){
+							ULChildren[i].setAttribute('class','hidden');
+						}
 					}
 				}
 			}
 	}
 
-
+	// this ought to keep the parent node from getting the click.
+	event.stopPropagation();
 }
+
+
+
 
 
 function handle_children(aBookmark,parentNode,device_name){
 	var ifFolder = aBookmark.ifFolder;
 	var parentId = aBookmark.parentId;
-	if (parentNode != null){
+	if (parentId == 0){
 		//One of the root folders
 		var parent = parentNode;
+		console.log("I am a root folder!!!!");
+		console.log("My parent is = " + parent.nodeName + '  ' + parent.className );
 	}
 	else{
 		var parent = document.getElementById(parentId+device_name);
 	}
 	
-	var item = document.getElementById(aBookmark.itemId+device_name);
-	if (!item){
+	//var item = document.getElementById(aBookmark.itemId+device_name);
+	//if (!item){
 		if (ifFolder){
 			var children = aBookmark.children;
 			//console.log("Add " + aBookmark.title + " as folder!");
 			//var aDiv = document.createElement('div');
 			var bookmarkUL = document.createElement('ul');
 			bookmarkUL.setAttribute('id',aBookmark.itemId+device_name);
+			if (parentId != 0 ){
 			bookmarkUL.setAttribute('class','hidden');
+		}
 			//bookmarkUL.setAttribute('class','title');
+			console.log("Create title!!!! "+aBookmark.title);
 			var bookmarkText = document.createTextNode(aBookmark.title);
 			bookmarkUL.appendChild(bookmarkText);
 			var line = document.createElement('hr');
@@ -466,12 +535,13 @@ function handle_children(aBookmark,parentNode,device_name){
 			
 			console.log("Add event Listener to " + aBookmark.title);
 			if (parentId != 0){
-				//bookmarkUL.addEventListener('click',clickEnter(handle_event),true);
+				bookmarkUL.addEventListener('click',handle_event, false);
 			}
 			parent.appendChild(bookmarkUL);
 			if (children){
 			
 				for (var j=0;j<children.length;j++){
+					//console.log("Handle my children " + aBookmark.title);
 						handle_children(children[j], null, device_name);
 				}
 			
@@ -484,7 +554,7 @@ function handle_children(aBookmark,parentNode,device_name){
 			var ifMain = (parentId == 2 || parentId == 3 || parentId == 5);
 			//console.log("IS FROM PARENT ID = " + ifMain);
 			if(ifMain == false){
-				//bookmarkLI.setAttribute('class','hidden');
+				bookmarkLI.setAttribute('class','hidden');
 			}
 
 			var liDiv = makeLiContent(aBookmark.title,aBookmark.url);
@@ -500,7 +570,7 @@ function handle_children(aBookmark,parentNode,device_name){
 			
 				
 			}
-		}
+		//}
 }
 
 
@@ -606,6 +676,7 @@ function createEffectInTable(cellName, selectedType){
 	}
 }
 
+
 //Get the hidden row ready
 function initHiddenRow(){
 	console.log('\t\t\t\t initHiddenRow');
@@ -672,7 +743,7 @@ function makeLiContent(title, url){
 	//Make the div element.
 	var div = document.createElement('div');
 	
-	var imageSpan = document.createElement('span');
+	/*var imageSpan = document.createElement('span');
 	imageSpan.setAttribute('class','hidden');
 	var image = document.createElement('img');
 	image.setAttribute('title','Click to save.');
@@ -680,7 +751,7 @@ function makeLiContent(title, url){
 	image.setAttribute('width','15px');
 	image.setAttribute('height','15px');
 	imageSpan.appendChild(image);
-	div.appendChild(imageSpan);
+	div.appendChild(imageSpan);*/
 	
 	//Make the title and add it to the div
 	var titleSpan = document.createElement('span');
@@ -702,7 +773,7 @@ function makeLiContent(title, url){
 	line.setAttribute('class','liLine');
 	div.appendChild(line);
 	
-	div.addEventListener('mouseover',function(event){
+	/*div.addEventListener('mouseover',function(event){
 		//console.log('Hovered over ' + event.target.nodeName);		
 		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
 		if (DIVChildren != undefined){
@@ -716,9 +787,9 @@ function makeLiContent(title, url){
 			}
 		}
 			
-	});
+	});*/
 	
-	div.addEventListener('mouseout',function(event){
+	/*div.addEventListener('mouseout',function(event){
 		//console.log(event.target.parentNode);
 		
 		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
@@ -733,7 +804,7 @@ function makeLiContent(title, url){
 			}
 		}
 			
-	});
+	});*/
 	return div;
 }
 

@@ -10,8 +10,13 @@ const preferences = require("./preferences.js");
 const myServer = require("./myServer.js");	//The server implemented by me.
 const localStorage = require("./localStorage.js");
 const login = require('./dialog.js');
+const share = require('./share.js');
+
 /****************************************Global Variables**************************************************************/
-var openMenuTabWorker;				//This worker will be attached to the addon html page.			
+var openMenuTabWorker;				//This worker will be attached to the addon html page.		
+var openTabsWorker;
+var openBookmarksWorker;
+var openHistoryWorker;	
 var authenticated = false;			//If the user is authenticated or not.
 /********************************************Constantes*****************************************************************/
 const TABS_FILE = 'tabs.json';			//The file with all the saved tabs will be named this way in the server
@@ -19,18 +24,7 @@ const BOOKMARKS_FILE = 'bookmarks.json';	//The file with the saved bookmarks wil
 const HISTORY_FILE = 'history.json';		//The file with the saved history will be named this way in the server.
 
 var {Cc, Ci, Cu} = require("chrome");
-/*const xulControl = require('./xulControl.js');*/
 
-
-/*
-tabs.open('www.urjc.es');
-tabs.open('www.gmail.com');
-tabs.open('www.google.com');
-tabs.open('www.mozilla.org');
-tabs.open('www.hotmail.com');
-tabs.open('www.facebook.com');
-tabs.open('http://www.urjc.es/alumnos/');
-*/
 
 function showErrorMessage(){
         var message = 'An error has ocurred!';
@@ -47,10 +41,13 @@ function showErrorMessage(){
 *************************************************************************************************************************/
 function handleDisplay(toShowDatas){
 	try{
+		//openMenuTabWorker.port.emit('show',toShowDatas);
+		var element = toShowDatas.element;
 		openMenuTabWorker.port.emit('show',toShowDatas);
+		
 	}
 	catch(e){
-		//console.log("ERROR = " + e.toString());
+		console.log("ERROR = " + e.toString());
 		showErrorMessage();
 	}
 }
@@ -92,8 +89,10 @@ function listSavedTabs(){
 		console.log("MAIN: read");
 		server.read(newData);
 		console.log("Going to call getAllTabs");
+
 		getAllTabs();
 	}catch(e){
+		console.log("ERROR = " + e.toString());
 		showErrorMessage();
 	}
 	
@@ -102,13 +101,18 @@ function getAllTabs(){
 	console.log('main '+'Getting tabs....');
 	var tabsList = new Array();
 	var allSavedTabs = localStorage.getAllSavedTabs();
-	console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedTabs));
-	console.log("MAIN: Got from localStorage = " + allSavedTabs.length);
+	
 	if (allSavedTabs != null){
+		console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedTabs));
+		console.log("MAIN: Got from localStorage = " + allSavedTabs.length);
 		var tabsList = tabsList.concat(allSavedTabs);
 		console.log('main '+tabsList.length);
 	}
+	else{
+			tabsList = null;
+	}
 	try{	
+		
 		openMenuTabWorker.port.emit('takeAllTabs',tabsList);
 	}catch(e){
 		console.log('main '+"getAllTabs: ERROR! " + e.toString());
@@ -125,9 +129,10 @@ function listSavedBookmarks(){
 		var newData = new Object();
 		newData.title = BOOKMARKS_FILE;
 		server.read(newData);
+
 		getAllBookmarks();
 	}catch(e){
-
+		console.log("ERROR = " + e.toString());
 		showErrorMessage();
 	}
 
@@ -136,11 +141,15 @@ function getAllBookmarks(){
 	console.log('main '+'Getting bookmarks....');
 	var bookmarksList = new Array();
 	var allSavedBookmarks = localStorage.getAllSavedBookmarks();
-	console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedBookmarks));
-	console.log("MAIN: Got from localStorage = " + allSavedBookmarks.length);
+	
 	if (allSavedBookmarks != null){
+		console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedBookmarks));
+		console.log("MAIN: Got from localStorage = " + allSavedBookmarks.length);
 		var bookmarksList = bookmarksList.concat(allSavedBookmarks);
 		console.log('main '+ bookmarksList.length);
+	}
+	else{
+			bookmarksList = null;
 	}
 	try{	
 		openMenuTabWorker.port.emit('takeAllBookmarks',bookmarksList);
@@ -159,9 +168,10 @@ function listSavedHistory(){
 		var newData = new Object();
 		newData.title = HISTORY_FILE;
 		server.read(newData);
+
 		getAllHistory();
 	}catch(e){
-
+		console.log("ERROR = HISTORY = " + e.toString());
 		showErrorMessage();
 	}
 
@@ -170,13 +180,18 @@ function getAllHistory(){
 	console.log('main '+'Getting history....');
 	var historyList = new Array();
 	var allSavedHistory = localStorage.getAllSavedHistory();
-	console.log("MAIN: Got from localStorage history" + JSON.stringify(allSavedHistory));
-	console.log("MAIN: Got from localStorage history = " + allSavedHistory.length);
+	//
 	if (allSavedHistory != null){
+		console.log("MAIN: Got from localStorage history" + JSON.stringify(allSavedHistory));
+		console.log("MAIN: Got from localStorage history = " + allSavedHistory.length);
 		var historyList = historyList.concat(allSavedHistory);
 		console.log('main '+ historyList.length);
 	}
+	else{
+		historyList = null;
+	}
 	try{	
+		
 		openMenuTabWorker.port.emit('takeAllHistory',historyList);
 	}catch(e){
 		console.log('main '+"getAllHistory: ERROR! " + e.toString());
@@ -194,14 +209,20 @@ function openMenu(msg){
 		url: data.url('myPage.html')
 	});
 	
+
+	//arrayOfStyle.push("http://code.jquery.com/mobile/1.4.0-rc.1/jquery.mobile.structure-1.4.0-rc.1.min.css");
+	//console.log(data.url("myPage.html")+"*");
+	
 	
 	pageModify = pageMod.PageMod({
+		//(?P<element>[\w]+)
 		include: data.url('myPage.html'),
-		contentStyleFile: data.url('myPageStyle.css'),
+		//contentStyleFile:  arrayOfStyle,
+		contentStyleFile: [data.url('myPageStyle.css'),data.url("themes/shweta.min.css"),data.url("jquery.mobile.structure-1.4.0-rc.1.min.css" )],
 		contentScriptWhen: 'ready',
-		contentScriptFile: data.url('myPageScript.js'),
+		contentScriptFile: [data.url('myPageScript.js'),data.url("jquery-1.10.2.min.js"),data.url("jquery.mobile-1.4.0-rc.1.min.js")],
 		onAttach: function onAttach(worker) {
-			
+			console.log("Attached!! " + worker.tab.url);
 			openMenuTabWorker = worker;
 			openMenuTabWorker.port.on('showTabs',function(nothing){
 				handleShowMessage('Tabs clicked!');
@@ -217,10 +238,13 @@ function openMenu(msg){
 				listSavedHistory();
 			});	
 			openMenuTabWorker.port.on('share',function(nothing){
-				tabs.open('http://192.168.1.16:8001/share/');
+				share.openShare();
 			});
 			openMenuTabWorker.port.on('saveTabs',function(nothing){
 				saveTabs(tabs);
+			});
+			openMenuTabWorker.port.on('help',function(nothing){
+				tabs.open(data.url('help.html'));
 			});
 	  	}
 	});
@@ -232,30 +256,29 @@ function openMenu(msg){
 }
 
 function startDatas(email){
-	console.log("LOGGED IN!!!");
-	//localStorage.handleDatas(email);
-	localStorage.startUp();
-	myServer.startUp();
+		console.log("LOGGED IN!!!");
+		//localStorage.handleDatas(email);
 	
-	//myServer.getAll();
-	localStorage.handleDatas(email);
-	login.removeListener('loggedIn');
+	
+		var registered = localStorage.checkIfRegistered();
+		if (registered == false){
+			myServer.on('registered',function(if_registered){
+				localStorage.startUp();
+				myServer.startUp();
+				localStorage.handleDatas(email);
+				myServer.removeListener('registered');
+			});
+			myServer.registerMe();
+		}
+		
+		if (email){
+			login.removeListener('loggedIn');
+		}
+		
 	
 }
 
-function notify(){
-	var notifications = require("sdk/notifications");
-notifications.notify({
-  title: "Jabberwocky",
-  text: "'Twas brillig, and the slithy toves",
-  data: "did gyre and gimble in the wabe",
-  onClick: function (data) {
-    console.log(data);
-    // console.log(this.data) would produce the same result.
-  }
-});
 
-}
 
 
 //var windows = require("sdk/window/utils");
@@ -264,7 +287,6 @@ exports.main = function(options, callbacks) {
     //windows.getMostRecentBrowserWindow().alert(options.loadReason);
     //Start the server control:
 	//handleShowMessage("Start!");
-    notify();
     preferences.startUp();
     server.start();
     UIControl.startup();
@@ -278,15 +300,23 @@ exports.main = function(options, callbacks) {
     
     }
     else{
-    	myServer.startUp();
-    	localStorage.setId();
-    	localStorage.handleDatas(null);
+		localStorage.setId();
+    	var registered = localStorage.checkIfRegistered();
+		if (registered){
+			//localStorage.setId();
+			localStorage.startUp();
+			myServer.startUp();
+			localStorage.handleDatas(null);
+		}
+		else{
+			startDatas(null);
+		}
     }
     
     
     
     myServer.on('showMessage',handleShowMessage);
-    myServer.on('display',handleDisplay);
+    //myServer.on('display',handleDisplay);
     
     
     

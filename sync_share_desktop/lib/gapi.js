@@ -232,9 +232,13 @@ function handleSearchFile(fileData){
 			startUpload(fileData);
 		}
 		else{
-			//Just to download, but there is nothing.
-			console.log('GAPI:  '+"Nothing saved!!!");                            
-                        emit(exports, 'display',null);
+			//Just to show, but there is nothing.
+			console.log('GAPI:  '+"Nothing saved!!!");
+			var toDisplay = new Object();
+			toDisplay.server = 'gapi';
+			toDisplay.element = fileName.split('.json')[0];
+			toDisplay.data = null;                            
+            emit(exports, 'display',toDisplay);
 			
 		}			
 	}
@@ -338,7 +342,7 @@ function uploadFile(uploadData){
 				uploadData.resumable_sesion_uri = resumable_sesion;
 				//var elementToSave = uploadData[3];
 				var message = {};
-				message.msg = 'Correctly Saved!';
+				message.msg = 'Google Drive: Correctly Saved!';
 				message.type = 'correct';
 				/*uploadData.msg = 'Correctly Saved!';
 				uploadData.msgType = 'correct';*/
@@ -603,7 +607,11 @@ function handleDownloadCompleted(downloadData){
 		}catch(e){
 			console.log('GAPI:  '+"ERROR!");
 		}*/
-		emit(exports,'display',downloadedData);
+		var toDisplay = new Object();
+		toDisplay.server = 'gapi';
+		toDisplay.element = title.split('.json')[0];
+		toDisplay.data = downloadedData;
+		emit(exports,'display',toDisplay);
 	
 	}
 
@@ -656,7 +664,7 @@ function read(searchDatas){
 	}
 	else{
 		var message = {};
-		message.msg = 'Not Signed in!';
+		message.msg = 'Google Drive: Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
 		emit(exports, 'notAuthorized','Google Drive');

@@ -1,92 +1,28 @@
-/*http://visionwidget.com/ajax-gif-loader-generators.html
-LOADING ICON = https://drive.google.com/file/d/0B-QM_tizf_jpQUNpeUR1V05TWmM/edit?usp=sharing
-SYNCING ICON = https://drive.google.com/file/d/0B-QM_tizf_jpQUNpeUR1V05TWmM/edit?usp=sharing
-
-HISTORY_ICON from = http://www.softicons.com/free-icons/toolbar-icons/fatcow-hosting-icons-by-fatcow/clock-history-frame-icon
-TAB_ICON from = http://www.softicons.com/free-icons/toolbar-icons/iconza-orange-icons-by-turbomilk/tab-icon
-DROPBOX ICON = http://i39.tinypic.com/2pyt4xk.jpg
-Bookmark = http://i39.tinypic.com/2lmvqdl.jpg
-GOOGLE_DRIVE = http://i39.tinypic.com/24mgxt5.jpg
-HISTORY_ICON = <http://i40.tinypic.com/b5jyqa.jpg
-SHWETA = http://i42.tinypic.com/27x31jm.jpg
-Syncing = http://i42.tinypic.com/103trti.jpg
-tab = http://i39.tinypic.com/mry2i9.jpg
-loading = http://i43.tinypic.com/1zq8vop.jpg
-*/
-
-
-
-
-
-/*TABS_ICON = http://i43.tinypic.com/2z4jvkk.jpg*/
-//As soon as the page loads, create the effect in the main table:
-
-/*
-<body>
-<center>
-<div class="logo">
-<center><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/><br>
-<span class="small">Sync & Share</span>
-</center>
-
-</div>
-</div>
-<nav class="menu">
-	<ul>
-		<li id="tab"><div id="tabCell" onClick="alert('Hello')">Tabs</div></li>
-		<br><br>
-		<li id="bookmark"><div id="bookmarkCell" onClick="alert('Hello')">Bookmarks</div></li>
-		<br><br>
-		<li id="history"><div id="historyCell" onClick="alert('Hello')">History</div></li><br><br>
-	</ul>
-</nav>
-
-</center>
-<div id="contentTitle"><hr>Saved Tabs:<hr></div>
-<div id="content">
-  <div class="item">
-  <p id="title">A title</p>
-  <a href="http://www.urjc.es">www.urjc.es</a>
-  </div>
-<div class="item">
-  <p id="title">A title</p>
-  <a href="http://www.urjc.es">www.urjc.es</a>
-  </div>
-<div class="item">
-  <p id="title">A title</p>
-  <a href="http://www.urjc.es">www.urjc.es</a>
-  </div>
-<div class="item">
-  <p id="title">A title</p>
-  <a href="http://www.urjc.es">www.urjc.es</a>
-  </div>
-
-</div>
-*/
-
-
 startUp();
+
+
 //Show the saved tabs. Display the elements in the content.
-self.port.on('show',function(toShow){
-	console.log("To show!!!");
-	//console.log(JSON.stringify(elementsToShow));
-	//First clean the table, delete the previous items that were showing:
-	//clean('mainContent');
-	//var tabsTable = document.getElementById('tabsTable');
-	showMainContent();
-	var data = toShow.data;
-	var element = toShow.element;
-	var server = toShow.server;
-	var toClean = server+element+'Content';
-	console.log("SHOW " + JSON.stringify(toShow));
-	//window.alert("To CLEAN " + toClean);
-	clean(toClean);
+self.port.on('show',function(toDisplay){
+	//console.log("To show!!!");
+	//clean('loading');
+	//console.log(toDisplay);
+	var server = toDisplay.server;
+	var data = toDisplay.data;
+	var element = toDisplay.element;
+
 	if (data == null){
-	        showTitle(element, server);
-	        createItem('Nothing saved yet!', null, server,true, element);
+		console.log("TO SHOW " + toDisplay.element+" is NULL!!!!");
+		showOnlyThis(server,element);
+		clean(server+element+'Content');
+		var mainContent = document.getElementById(server+element+'Content');
+		var p = document.createElement('p');
+		p.innerHTML = 'Nothing Saved yet!';
+		mainContent.appendChild(p);
 	}
 	else{
 		var key = Object.keys(data);
+		var element = toDisplay.element;
+		showOnlyThis(server,element);
 		try{
 			var all = data[key];
 			console.log("Sent from " + server+" = " + JSON.stringify(all));
@@ -98,44 +34,60 @@ self.port.on('show',function(toShow){
 				createTitle('Saved History');
 			}*/
 			//window.alert(key);
-			showTitle(key, server);
-			try{
-				all = JSON.parse(all);
+			if (key == 'msg'){
+				
+				handle_main_content(server,element);
+				console.log("HERE");
+				console.log(server+element+'Content');
+				var mainContent = document.getElementById(server+element+'Content');
+				console.log("Going to write in = " + server+element+'Content');
+				var p = document.createElement('p');
+				p.innerHTML = data[key];
+				mainContent.appendChild(p);
 			}
-			catch(e){
-				//nothing
-				console.log("SCRIPT: Can't parse");
-			}
-			//createTitle('Saved ' + element);
-			console.log("SCRIPT: all length = " + all.length);
-			if (all.length == 0){
-				createItem('Nothing saved yet!', null, server,true, element);
-				//window.alert("Nothing saved!");
-		
-			}else{
-				console.log("SCRIPT: all mas de cero ");
-				for (var l=0;l<all.length;l++){
-					console.log("SCRIPT title: " + all[l].title);
-					//var rowCell = document.createElement('tr');
-					//var columnCell = document.createElement('td');
-					createItem(all[l].title, all[l].url, server,false, element);
-					/*var content = document.getElementById('content');
-					var div = document.createElement('div');
-					div.setAttribute('class','item');
-					var p = document.createElement('p');
-					p.setAttribute('id','title');
-					p.innerHTML = element.title;
-					div.appendChild(p);
-					//document.insertBefore(image,p1);
-					var a = document.createElement('a');
-					a.setAttribute('href',element.url);
-					a.innerHTML = element.url;
-					div.appendChild(a),
-					content.appendChild(div);*/
+			else{
+				//clea(element+'Content');
+				//showTitle(key, server);
+				console.log(server+element+'Content');
+				handle_main_content(server,element);
+				try{
+					all = JSON.parse(all);
+				}
+				catch(e){
+					//nothing
+					console.log("SCRIPT: Can't parse");
+				}
+				//createTitle('Saved ' + element);
+				console.log("SCRIPT: all length = " + all.length);
+				if (all == null ||  all.length == 0){
+					createItem('Nothing saved yet!', null, server,true, element);
+					//window.alert("Nothing saved!");
+			
+				}else{
+					console.log("SCRIPT: all mas de cero ");
+					for (var l=0;l<all.length;l++){
+						console.log("SCRIPT title: " + all[l].title);
+						//var rowCell = document.createElement('tr');
+						//var columnCell = document.createElement('td');
+						createItem(all[l].title, all[l].url, server,false, element);
+						/*var content = document.getElementById('content');
+						var div = document.createElement('div');
+						div.setAttribute('class','item');
+						var p = document.createElement('p');
+						p.setAttribute('id','title');
+						p.innerHTML = element.title;
+						div.appendChild(p);
+						//document.insertBefore(image,p1);
+						var a = document.createElement('a');
+						a.setAttribute('href',element.url);
+						a.innerHTML = element.url;
+						div.appendChild(a),
+						content.appendChild(div);*/
+					}
 				}
 			}
 		}catch(e){
-			console.log("ERROR!!!");
+			console.log("ERROR!!! " + e.toString());
 			//window.alert('ERROR!');
 		}
 	}
@@ -144,22 +96,32 @@ self.port.on('show',function(toShow){
 });
 
 self.port.on('takeAllTabs',function(allTabs){
-	showMainContent();
+	//showMainContent();
 	var server = 'mysite';
 	var element = 'tabs';
 	var toClean = server+'synced'+element+'Content';
 	//window.alert("To CLEAN " + toClean);
-	clean(toClean);
+	//clean(toClean);
+	showOnlyThis(server,element);
 	//hideOthers(element);
 	if (allTabs == null){
-		showTitle(element, server+'synced');
+		console.log("TABSS NOT NULL!!!!");
+		handle_main_content(server+'synced',element);
+		//showTitle(element, server+'synced');
+		//console.log("SCRIPT: bookmarks: Show title = " + server+element+'synced' );
 		//createItem(title, url, server, nothing, element)
-	        createItem('Nothing synced yet!', null, server+'synced',true, element);	
+	     //createItem('Nothing synced yet!', null, server+'synced',true, element);	
+	    var mainContent = document.getElementById(server+'synced'+element+'Content');
+		var p = document.createElement('p');
+		p.innerHTML = 'Nothing Saved yet!';
+		mainContent.appendChild(p);
 	}
 	else{
-		showTitle(element, server+'synced');
-		var thisTitle = document.getElementById(server+'synced'+element+'Title');
-		thisTitle.addEventListener('click',function(event){
+		console.log("TABS NOT NULL");
+		//showTitle(element, server+'synced');
+		handle_main_content(server,element);
+		//var thisTitle = document.getElementById(server+'synced'+element+'Title');
+		/*thisTitle.addEventListener('click',function(event){
 			var node = event.target;
 			var nodeId = node.id;
 			var thisContentId = nodeId.split('Title')[0]+'Content';	//mysitesyncedtabs, 
@@ -172,14 +134,16 @@ self.port.on('takeAllTabs',function(allTabs){
 			else{
 				thisContent.setAttribute('class','hidden');
 			}
-		});
+		});*/
 		var content = document.getElementById(server+'synced'+element+'Content');
 		for (var j=0;j<allTabs.length;j++){
 			//var deviceWrapper = document.createElement('DIV');
-			var aWrapper = document.createElement('DIV');
-			aWrapper.setAttribute('class','wrapper');
-			var div = document.createElement('DIV');
-			
+			//var aWrapper = document.createElement('DIV');
+			//aWrapper.setAttribute('class','wrapper');
+			var ul = document.createElement('ul');
+			ul.setAttribute('class','device');
+			//var div = document.createElement('div');
+			//div.setAttribute('class','deviceName');
 			var aTab = allTabs[j];
 			try{
 				var device = JSON.parse(aTab.device);
@@ -187,34 +151,46 @@ self.port.on('takeAllTabs',function(allTabs){
 			catch(e){
 				var device = aTab.device;
 			}
+
 			var device_name = device.device_name;
+			//var span = document.createElement('span');
+			//span.setAttribute('class','imageOfDevice');
+			//div.appendChild(span);
+			var h3 = document.createElement('h3');
 			var text = document.createTextNode('Tabs from ' + device_name);
-			div.setAttribute('class','deviceName');
-			div.appendChild(text);
-			div.addEventListener('click',function(event){
+			//div.setAttribute('class','hiding ');
+			h3.appendChild(text);
+			//div.setAttribute('data-role','collapsible');
+			
+			//div.appendChild(h5);
+			ul.appendChild(h3);
+			//div.attr('data-role','collapsible');
+			//console.log("DIV CLASS = " + div.className);
+			//console.log(div.innerHTML);
+			ul.addEventListener('click',function(event){
 			    var n = event.target;
 			    var e = n.nextSibling;
 			    while (e) {
-				var s = e.nodeName;
-				if (s == 'DIV'){
-				    var thisClass = e.className;
-				    var splitItem = thisClass.split('item')
-				    if (splitItem.length > 1){
-					var splitted = thisClass.split('hidden');
-					if (splitted.length > 1){
-					    e.setAttribute('class',splitted[0] + ' shown');
-					}
-					else{
-					  e.setAttribute('class',splitted[0]+' hidden');
-					}
-				    }
+					var s = e.nodeName;
+					if (s == 'DIV'){
+						var thisClass = e.className;
+						var splitItem = thisClass.split('item')
+						if (splitItem.length > 1){
+						var splitted = thisClass.split('hidden');
+						if (splitted.length > 1){
+							e.setAttribute('class',splitted[0] + ' shown');
+						}
+						else{
+						  e.setAttribute('class',splitted[0]+' hidden');
+						}
+						}
 				  
-				}
-				e = e.nextSibling;
+					}
+					e = e.nextSibling;
 			    }
 
 			});
-			aWrapper.appendChild(div);
+			//aWrapper.appendChild(div);
 			var tabs = aTab.tabs;
 			for (var i=0;i<tabs.length;i++){
 				var tabDIV = document.createElement('DIV');
@@ -237,11 +213,13 @@ self.port.on('takeAllTabs',function(allTabs){
 				var a = document.createElement('a');
 				a.setAttribute('href',url);
 				a.innerHTML = url;
+				a.setAttribute('class','url');
 				tabDIV.appendChild(a);	
-				aWrapper.appendChild(tabDIV);	
+				ul.appendChild(tabDIV);
+				//aWrapper.appendChild(tabDIV);	
 	
 		      }
-		      content.appendChild(aWrapper);
+		      content.appendChild(ul);
 			
 			
 		
@@ -252,7 +230,7 @@ self.port.on('takeAllTabs',function(allTabs){
 });
 self.port.on('takeAllBookmarks',function(bookmarksToShow){
 	/*https://cdn3.iconfinder.com/data/icons/block/32/sync-512.png*/
-	showMainContent();
+	//showMainContent();
 	console.log("Show all bookmarks");
 	var server = 'mysite';
 	var element = 'bookmarks';
@@ -260,17 +238,26 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 	console.log("SCRIPT: bookmarks to clean = " + toClean);
 	//window.alert("To CLEAN " + toClean);
 	clean(toClean);
+	showOnlyThis(server,element);
 	//hideOthers(element);
 	if (bookmarksToShow == null){
-		showTitle(element, server+'synced');
+		console.log("BOOKMARKS NOT NULL!!!!");
+		handle_main_content(server+'synced',element);
+		//showTitle(element, server+'synced');
 		//console.log("SCRIPT: bookmarks: Show title = " + server+element+'synced' );
 		//createItem(title, url, server, nothing, element)
-	        createItem('Nothing synced yet!', null, server+'synced',true, element);	
+		var mainContent = document.getElementById(server+'synced'+element+'Content');
+		var p = document.createElement('p');
+		p.innerHTML = 'Nothing Saved yet!';
+		mainContent.appendChild(p);
+	    // createItem('Nothing synced yet!', null, server+'synced',true, element);	
 	}
 	else{
-		showTitle(element,server+'synced');
-		var thisTitle = document.getElementById(server+'synced'+element+'Title');
-		thisTitle.addEventListener('click',function(event){
+		console.log("BOOKMARKS LENGTH = " + bookmarksToShow.length);
+		//showTitle(element,server+'synced');
+		handle_main_content(server+'synced',element);
+		//var thisTitle = document.getElementById(server+'synced'+element+'Title');
+		/*thisTitle.addEventListener('click',function(event){
 			var node = event.target;
 			var nodeId = node.id;
 			var thisContentId = nodeId.split('Title')[0]+'Content';	//mysitesyncedtabs, 
@@ -285,66 +272,81 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 			else{
 				thisContent.setAttribute('class','hidden');
 			}
-		});
+		});*/
 		//console.log(bookmarksToShow);
 		for (var i=0;i<bookmarksToShow.length;i++){
-			var anItem = document.createElement('DIV');
-			anItem.setAttribute('class','wrapper');
-			var aBookmark = bookmarksToShow[i];
-			console.log(aBookmark.device);
-			var bookmarks = aBookmark.bookmarks;
-			try{
-				var device = JSON.parse(aBookmark.device);	
-			}
-			catch(e){
-				var device = aBookmark.device;
-			}
-			var device_name = device.device_name;
-			var device_id = device.device_id;
-			//console.log("********"+device_name+"********");
-			var aDeviceUL = document.createElement('UL');
-			aDeviceUL.setAttribute('class','item');
-			var text = document.createTextNode('Bookmarks from ' + device_name);
-			aDeviceUL.appendChild(text);
-			var bookmarksList = document.getElementById('mysitesyncedbookmarksContent');
-			anItem.appendChild(aDeviceUL);
-			bookmarksList.appendChild(anItem);
-			aDeviceUL.addEventListener('click',function(event){
-				var node = event.target;
-				var children = node.children;
-				for (var k=0;k<children.length;k++){
-					var child = children[k];
-					var childClass = child.className;
+		//var anItem = document.createElement('DIV');
+		//anItem.setAttribute('class','item');
+		var aBookmark = bookmarksToShow[i];
+		console.log(aBookmark.device);
+		var bookmarks = aBookmark.bookmarks;
+		try{
+			var device = JSON.parse(aBookmark.device);	
+		}
+		catch(e){
+			var device = aBookmark.device;
+		}
+		var device_name = device.device_name;
+		var device_id = device.device_id;
+		console.log("********"+device_name+"********");
+		var aDeviceUL = document.createElement('UL');
+		aDeviceUL.setAttribute('class','device');
+		//var div = document.createElement('div');
+		//div.setAttribute('class','deviceName');
+		var text = document.createTextNode(device_name);
+		var h3 = document.createElement('h3');
+		h3.appendChild(text);
+		//div.appendChild(text);
+		aDeviceUL.appendChild(h3);
+		var bookmarksList = document.getElementById(server+'synced'+element+'Content');
+		//anItem.appendChild(aDeviceUL);
+		bookmarksList.appendChild(aDeviceUL);
+		aDeviceUL.addEventListener('click',function(event){
+			var node = event.target;
+			var children = node.children;
+			console.log(node.innerHTML);
+			for (var k=0;k<children.length;k++){
+				var child = children[k];
+				var childClass = child.className;
+				console.log('device: mychild = ' + child.nodeName);
+				if (child.nodeName != 'HR' && child.nodeName != 'H3'){
+					//console.log('device: mychild = ' + child.nodeName);
+					console.log('device: mychild before = ' + child.className);
 					if (childClass == 'hidden'){
 						child.setAttribute('class','shown');
 					}
 					else{
 						child.setAttribute('class','hidden');
 					}
-				}
-			});
-		
-			for (var j=0;j<bookmarks.length;j++){
-				var ifFolder = bookmarks[j].ifFolder;
-				var aBookmark = bookmarks[j];
-				var parentId = bookmarks[j].parentId;
-				console.log(device_name + " " + parentId + "  " + aBookmark.title)
-				//console.log('takeABookmark received : ' + bookmarks[j].title);
-				if (parentId == 0){
-					console.log(device_name + " " + parentId + "  " + aBookmark.title)
-					handle_children(aBookmark,aDeviceUL,device_id);
+					console.log("my child after: " + child.className);
 				}
 			}
+		});
+		
+		var bookmarkDiv = document.createElement('DIV');
+		bookmarkDiv.setAttribute('class','hidden');
+		aDeviceUL.appendChild(bookmarkDiv);
+		for (var j=0;j<bookmarks.length;j++){
+			var ifFolder = bookmarks[j].ifFolder;
+			var aBookmark = bookmarks[j];
+			var parentId = bookmarks[j].parentId;
+			console.log(device_name + " " + parentId + "  " + aBookmark.title)
+			//console.log('takeABookmark received : ' + bookmarks[j].title);
+			if (parentId == 0){
+				console.log(device_name + " " + parentId + "  " + aBookmark.title)
+				handle_children(aBookmark,bookmarkDiv,device_id);
+			}
+		}
 		
 		
 		
-		}	
+	}	
 	}
 });
 
 self.port.on('takeAllHistory',function(allHistory){
-	showMainContent();
-	console.log("HISTORY " + allHistory.length);
+	//showMainContent();
+	//console.log("HISTORY " + allHistory.length);
 	var server = 'mysite';
 	var element = 'history';
 	var toClean = server+'synced'+element+'Content';
@@ -354,16 +356,25 @@ self.port.on('takeAllHistory',function(allHistory){
 	//console.log(allHistory);
 	var historyList = document.getElementById('mysitesyncedhistoryContent');
 	//console.log("History length = " +  allHistory.length);
-	showTitle(element, server+'synced');
-	if (allHistory.length == 0 || allHistory == null){
-		showTitle(element, server+'synced');
+	//showTitle(element, server+'synced');
+	showOnlyThis(server,element);
+	if (allHistory == null){
+		console.log("HISTORY NULL!!!!");
+		handle_main_content(server+'synced',element);
+		//showTitle(element, server+'synced');
 		//createItem(title, url, server, nothing, element)
-	        createItem('Nothing synced yet!', null, server+'synced',true, element);	
+		var mainContent = document.getElementById(server+'synced'+element+'Content');
+		var p = document.createElement('p');
+		p.innerHTML = 'Nothing Saved yet!';
+		mainContent.appendChild(p);
+	    //createItem('Nothing synced yet!', null, server+'synced',true, element);	
 	}
 	else{
-		showTitle(element, server+'synced');
-		var thisTitle = document.getElementById(server+'synced'+element+'Title');
-		thisTitle.addEventListener('click',function(event){
+		//showTitle(element, server+'synced');
+		console.log("HISTORY NOT NULL!!!!");
+		handle_main_content(server+'synced',element);
+		//var thisTitle = document.getElementById(server+'synced'+element+'Title');
+		/*thisTitle.addEventListener('click',function(event){
 			var node = event.target;
 			var nodeId = node.id;
 			var thisContentId = nodeId.split('Title')[0]+'Content';	//mysitesyncedtabs, 
@@ -377,14 +388,17 @@ self.port.on('takeAllHistory',function(allHistory){
 			else{
 				thisContent.setAttribute('class','hidden');
 			}
-		});
+		});*/
 		var content = document.getElementById(server+'synced'+element+'Content');
 		for (var j=0;j<allHistory.length;j++){
 			//var deviceWrapper = document.createElement('DIV');
-			var aWrapper = document.createElement('DIV');
-			aWrapper.setAttribute('class','wrapper');
-			var div = document.createElement('DIV');
+			//var aWrapper = document.createElement('DIV');
+			//aWrapper.setAttribute('class','wrapper');
+			var ul = document.createElement('ul');
 			
+			ul.setAttribute('class','device');
+			//var div = createElement('div');
+			//div.setAttribute('class','deviceName');
 			var aHistory = allHistory[j];
 			try{
 				var device = JSON.parse(aHistory.device);
@@ -393,10 +407,17 @@ self.port.on('takeAllHistory',function(allHistory){
 				var device = aHistory.device;
 			}
 			var device_name = device.device_name;
+			
 			var text = document.createTextNode('History from ' + device_name);
-			div.setAttribute('class','deviceName');
-			div.appendChild(text);
-			div.addEventListener('click',function(event){
+			//div.setAttribute('class','deviceName');
+			
+			var h3 = document.createElement('h3');
+			h3.appendChild(text);
+			//div.appendChild(h3);
+			ul.appendChild(h3);
+			//div.setAttribute('data-role','collapsible');
+			//div.attr('data-role','collapsible');
+			ul.addEventListener('click',function(event){
 			    var n = event.target;
 			    var e = n.nextSibling;
 			    while (e) {
@@ -419,7 +440,7 @@ self.port.on('takeAllHistory',function(allHistory){
 			    }
 
 			});
-			aWrapper.appendChild(div);
+			//aWrapper.appendChild(div);
 			var history = aHistory.history;
 			for (var i=0;i<history.length;i++){
 				var historyDIV = document.createElement('DIV');
@@ -428,9 +449,9 @@ self.port.on('takeAllHistory',function(allHistory){
 				var url = history[i].url;
 				var p = document.createElement('p');
 				p.setAttribute('id','title');
-				var span = document.createElement("SPAN");
+				var span = document.createElement("span");
 				span.setAttribute('class','imageHolder');
-				var img = document.createElement('IMG');
+				var img = document.createElement('img');
 				var favicon = "http://www.google.com/s2/favicons?domain="+url;
 				img.setAttribute('src',favicon);
 				span.appendChild(img);
@@ -440,17 +461,20 @@ self.port.on('takeAllHistory',function(allHistory){
 				historyDIV.appendChild(p);
 				//document.insertBefore(image,p1);
 				var a = document.createElement('a');
+				a.setAttribute('class','url');
 				a.setAttribute('href',url);
 				a.innerHTML = url;
-				historyDIV.appendChild(a);	
-				aWrapper.appendChild(historyDIV);	
+				historyDIV.appendChild(a);
+				ul.appendChild(historyDIV);
+				//aWrapper.appendChild(historyDIV);	
 	
 		      }
-		      content.appendChild(aWrapper);
+		      content.appendChild(ul);
 			
 			
 		
 		}
+		console.log(content.innerHTML);
 	}
 
 
@@ -463,18 +487,22 @@ function startUp(){
 	var tabsCell = document.getElementById('tab');
 	if (tabsCell){
 		tabsCell.addEventListener('click',function(event){
+			hideOptions();
 			self.port.emit('showTabs',null);
 		});
 	}
 	var bookmarksCell = document.getElementById('bookmark');
 	if (bookmarksCell){
 		bookmarksCell.addEventListener('click',function(event){
+			console.log("Bookmark clicked!!");
+			hideOptions();
 			self.port.emit('showBookmarks',null);
 		});
 	}
 	var historyCell = document.getElementById('history');
 	if (historyCell){
 		historyCell.addEventListener('click',function(event){
+			hideOptions();
 			self.port.emit('showHistory',null);
 		});
 	}
@@ -498,24 +526,30 @@ function startUp(){
 			self.port.emit('saveTabs',null);
 		});
 	}
+	var help = document.getElementById('help');
+	if (help){
+		help.addEventListener('click',function(event){
+			self.port.emit('help',null);
+		});
+	}
 
 }
 
 
-function showMainContent(){
+function hideOptions(){
 	var optionsContent = document.getElementById('optionsContent');
 	optionsContent.setAttribute('class','hidden');
-	var mainContent = document.getElementById('mainContent');
-	mainContent.setAttribute('class','shown');
+	
 }
 
 
 function showOptions(){
 	var optionsContent = document.getElementById('optionsContent');
 	optionsContent.setAttribute('class','shown');
-	var mainContent = document.getElementById('mainContent');
-	mainContent.setAttribute('class','hidden');
+	//var mainContent = document.getElementById('mainContent');
+	//mainContent.setAttribute('class','hidden');
 }
+
 
 function showTitle(element, server){
 	var titleToShow = server+element+'Title';
@@ -548,6 +582,7 @@ function createLi(title,url,parent){
 	div.appendChild(p);
 	//document.insertBefore(image,p1);
 	var a = document.createElement('a');
+	a.setAttribute('class','url');
 	a.setAttribute('href',url);
 	a.innerHTML = url;
 	div.appendChild(a);		
@@ -561,7 +596,7 @@ function createLi(title,url,parent){
 function createItem(title, url, server, nothing, element){
 	//var theServer = server+'Content';
 	var toPutIn = server+element+'Content';
-	console.log("SCRIPT: To put in = " + toPutIn);
+	console.log("\t\t SCRIPT: CreateItem = To put in = " + toPutIn);
 	var content = document.getElementById(toPutIn);
 	var div = document.createElement('div');
 	div.setAttribute('class','item');
@@ -594,47 +629,56 @@ function handle_event(event){
 	console.log("I was clicked!!  " + event.target.nodeName);
 	var whatWasClicked = event.target;
 	if (whatWasClicked.nodeName == 'UL'){ //Only when a folder is clicked
-		//console.log(whatWasClicked.children);
+		console.log(whatWasClicked.children);
 		var ULChildren = event.target.children;	//The third child is the LI elements
-			//console.log(ULChildren);
+			console.log(ULChildren);
 			if (ULChildren != undefined){
 				for (var i=0;i<ULChildren.length;i++){
-					//console.log(i+" ULChildren = " + ULChildren[i].innerHTML);
-					if (ULChildren[i].className == 'hidden'){
-						ULChildren[i].setAttribute('class','showLi');
-					}
-					else if(ULChildren[i].className == 'showLi'){
-						ULChildren[i].setAttribute('class','hidden');
+					console.log(i+" ULChildren = " + ULChildren[i].nodeName);
+					if (ULChildren[i].nodeName != 'HR'){
+						if (ULChildren[i].className == 'hidden'){
+							ULChildren[i].setAttribute('class','shown');
+						}
+						else if(ULChildren[i].className == 'shown'){
+							ULChildren[i].setAttribute('class','hidden');
+						}
 					}
 				}
 			}
 	}
 
-
+	// this ought to keep the parent node from getting the click.
+	event.stopPropagation();
 }
+
 
 
 function handle_children(aBookmark,parentNode,device_name){
 	var ifFolder = aBookmark.ifFolder;
 	var parentId = aBookmark.parentId;
-	if (parentNode != null){
+	if (parentId == 0){
 		//One of the root folders
 		var parent = parentNode;
+		console.log("I am a root folder!!!!");
+		console.log("My parent is = " + parent.nodeName + '  ' + parent.className );
 	}
 	else{
 		var parent = document.getElementById(parentId+device_name);
 	}
 	
-	var item = document.getElementById(aBookmark.itemId+device_name);
-	if (!item){
+	//var item = document.getElementById(aBookmark.itemId+device_name);
+	//if (!item){
 		if (ifFolder){
 			var children = aBookmark.children;
 			//console.log("Add " + aBookmark.title + " as folder!");
 			//var aDiv = document.createElement('div');
 			var bookmarkUL = document.createElement('ul');
 			bookmarkUL.setAttribute('id',aBookmark.itemId+device_name);
-			bookmarkUL.setAttribute('class','hidden');
+			if (parentId != 0 ){
+				bookmarkUL.setAttribute('class','hidden');
+			}
 			//bookmarkUL.setAttribute('class','title');
+			console.log("Create title!!!! "+aBookmark.title);
 			var bookmarkText = document.createTextNode(aBookmark.title);
 			bookmarkUL.appendChild(bookmarkText);
 			var line = document.createElement('hr');
@@ -647,12 +691,13 @@ function handle_children(aBookmark,parentNode,device_name){
 			
 			console.log("Add event Listener to " + aBookmark.title);
 			if (parentId != 0){
-				//bookmarkUL.addEventListener('click',clickEnter(handle_event),true);
+				bookmarkUL.addEventListener('click',handle_event, false);
 			}
 			parent.appendChild(bookmarkUL);
 			if (children){
 			
 				for (var j=0;j<children.length;j++){
+					//console.log("Handle my children " + aBookmark.title);
 						handle_children(children[j], null, device_name);
 				}
 			
@@ -665,35 +710,15 @@ function handle_children(aBookmark,parentNode,device_name){
 			var ifMain = (parentId == 2 || parentId == 3 || parentId == 5);
 			//console.log("IS FROM PARENT ID = " + ifMain);
 			if(ifMain == false){
-				//bookmarkLI.setAttribute('class','hidden');
+				bookmarkLI.setAttribute('class','hidden');
 			}
-			var liDiv = document.createElement('DIV');
-			var title = aBookmark.title;
-			var url = aBookmark.url;
-			//Make the title and add it to the div
-			var titleSpan = document.createElement('span');
-			titleSpan.setAttribute('class','title');
-			titleSpan.innerHTML = title;
-			liDiv.appendChild(titleSpan);
-	
-			//Make the url and add it to the div
-			var urlP = document.createElement('p');
-			var urlA = document.createElement('a');
-			urlA.setAttribute('href',url);
-			urlA.innerHTML = url;
-			urlA.setAttribute('class','url');
-			urlP.appendChild(urlA);
-			liDiv.appendChild(urlP);
-	
-			//Make the line and add it to the div.
-			var line = document.createElement('hr');
-			line.setAttribute('class','liLine');
-			liDiv.appendChild(line);
+
+			var liDiv = makeLiContent(aBookmark.title,aBookmark.url);
 			bookmarkLI.appendChild(liDiv);
 			liDiv.setAttribute('class','bookmark');
 		
 			var favQuery = "http://www.google.com/s2/favicons?domain="+aBookmark.url;
-			bookmarkLI.style.background = "url('"+favQuery+"') no-repeat left top";
+			bookmarkLI.style.listStyleImage = "url('"+favQuery+"') no-repeat left top";
 			bookmarkLI.style.margin = '0px';
 			/*Padding = Top, Right, Left, Bottom.*/
 			bookmarkLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
@@ -701,7 +726,79 @@ function handle_children(aBookmark,parentNode,device_name){
 			
 				
 			}
+		//}
+}
+
+//Function that makes the <li> element's content, will be a div with two <p>
+function makeLiContent(title, url){
+	//Always a link, never a folder.
+	//Make the div element.
+	var div = document.createElement('div');
+	
+	/*var imageSpan = document.createElement('span');
+	imageSpan.setAttribute('class','hidden');
+	var image = document.createElement('img');
+	image.setAttribute('title','Click to save.');
+	image.setAttribute('src',SYNC_ICON);
+	image.setAttribute('width','15px');
+	image.setAttribute('height','15px');
+	imageSpan.appendChild(image);
+	div.appendChild(imageSpan);*/
+	
+	//Make the title and add it to the div
+	var titleSpan = document.createElement('span');
+	titleSpan.setAttribute('class','title');
+	titleSpan.innerHTML = title;
+	div.appendChild(titleSpan);
+	
+	//Make the url and add it to the div
+	var urlP = document.createElement('p');
+	var urlA = document.createElement('a');
+	urlA.setAttribute('class','url');
+	urlA.setAttribute('href',url);
+	urlA.innerHTML = url;
+	urlA.setAttribute('class','url');
+	urlP.appendChild(urlA);
+	div.appendChild(urlP);
+	
+	//Make the line and add it to the div.
+	/*var line = document.createElement('hr');
+	line.setAttribute('class','liLine');
+	div.appendChild(line);*/
+	
+	/*div.addEventListener('mouseover',function(event){
+		//console.log('Hovered over ' + event.target.nodeName);		
+		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
+		if (DIVChildren != undefined){
+			for (var i=0;i<DIVChildren.length;i++){
+				//console.log(i+" DIVChildren = " + DIVChildren[i].className);
+				if (DIVChildren[i].className == 'hidden'){
+					//console.log("IMG = " + DIVChildren[i].innerHTML);
+					DIVChildren[i].className = 'show';
+				}
+				
+			}
 		}
+			
+	});*/
+	
+	/*div.addEventListener('mouseout',function(event){
+		//console.log(event.target.parentNode);
+		
+		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
+		if (DIVChildren != undefined){
+			for (var i=0;i<DIVChildren.length;i++){
+				//console.log(i+" DIVChildren = " + DIVChildren[i].className);
+				if (DIVChildren[i].className == 'show'){
+					//console.log("IMG = " + DIVChildren[i].innerHTML);
+					DIVChildren[i].className = 'hidden';
+				}
+				
+			}
+		}
+			
+	});*/
+	return div;
 }
 
 
@@ -728,6 +825,48 @@ function isAChildOf(_parent, _child)
    return _child === _parent;
 }
 
+function handle_main_content(server,element){
+		console.log("Clean = " + server+element+'Content');
+		clean(server+element+'Content');
+		if (element == 'tabs'){
+				var toHide = document.getElementById('bookmarksContent');
+				toHide.setAttribute('class','hidden');
+				var toHide = document.getElementById('historyContent');
+				toHide.setAttribute('class','hidden');
+				console.log("\t\t\t\t Show " + server+element+'Content');
+				var toShow = document.getElementById('tabsContent');
+				toShow.setAttribute('class','shown');
+				
+		}
+		else if(element == 'bookmarks'){
+				var toHide = document.getElementById('tabsContent');
+				toHide.setAttribute('class','hidden');
+				var toHide = document.getElementById('historyContent');
+				toHide.setAttribute('class','hidden');
+				console.log("\t\t\t\t Show " + server+element+'Content');
+				var toShow = document.getElementById('bookmarksContent');
+				toShow.setAttribute('class','shown');
+		}
+		else if(element == 'history'){
+				var toHide = document.getElementById('bookmarksContent');
+				toHide.setAttribute('class','hidden');
+				var toHide = document.getElementById('tabsContent');
+				toHide.setAttribute('class','hidden');
+				console.log("\t\t\t\t Show " + server+element+'Content');
+				var toShow = document.getElementById('historyContent');
+				toShow.setAttribute('class','shown');
+		}
+		//console.log("CLEANED AND SHOWING");
+	
+	
+}
+
+function showOnlyThis(server,element){
+		console.log("\t\t\t\t Show Only " + element+'Of'+server);
+		var toShow = document.getElementById(element+'Of'+server);
+		toShow.setAttribute('class','shown');
+
+}
 
 
 

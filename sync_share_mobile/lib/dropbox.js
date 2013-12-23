@@ -379,19 +379,19 @@ function write(datas){
 			//console.log("SAVE DATA TEXT = " + response.text);	
 			if (response.status == '200'){
 				datas.success = true;
-				message = 'Correctly Saved!';
+				message = 'Dropbox: Correctly Saved!';
 				/*uploadData.msg = 'Correctly Saved!';
 				uploadData.msgType = 'correct';*/
 							
 			}
 			else if(response.status == '401'){
 				ifContinue = false;
-				message = 'Not Signed in!';
+				message = 'Dropbox: Not Signed in!';
 				auth(datas);
 			}
 			else{	
 				datas.success = false;
-				message = 'Save failed!';	
+				message = 'Dropbox: Save failed!';	
 				handleResponse(response);			
 			}
 			//console.log("SAVE = " + message.msg);
@@ -412,8 +412,11 @@ function read(readDatas){
 		getData(readDatas);	//If read only show.
 	}
 	else{
-		var message = 'Not Signed in!';
-		emit(exports, 'showMessage', message);
+		{
+		var message = {};
+		message.msg = 'Dropbox: Not Signed in!';
+		message.type = 'error';
+		emit(exports, 'showMessage', message );
 		emit(exports, 'notAuthorized','Dropbox');
 		//auth(readDatas);
 	}

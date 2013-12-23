@@ -6,6 +6,18 @@ self.on('click',function(node,data){
 	nodeToSend.className = node.className;	//Will be bookmark or history.
 	for each(var child in allChildren){
 		console.log('Script context:  '+'Context className ' + child.className);
+		console.log('SCRIPT CONTEXT: ' + 'nodeName: ' + child.nodeName);
+		if (child.nodeName == 'P'){
+				var moreChild = child.children;
+				for(var j=0;j<moreChild.length;j++){
+					console.log('SCRIPT CONTEXT: ' + 'nodeName: ' + moreChild[j].className);
+					if(moreChild[j].className == 'url'){
+							nodeToSend.url = moreChild[j].innerHTML;
+							self.postMessage(nodeToSend);
+							break;
+					}
+				}
+		}
 		if (child.className == 'title'){
 			nodeToSend.title = child.innerHTML;
 		}

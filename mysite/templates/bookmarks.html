@@ -7,8 +7,8 @@
 {% for d in devices %}
 {{ d.device_name }}
 
-    {% for nodes in bookmarks %}
-<ul>    {% recursetree nodes %}
+   
+<ul>    {% recursetree d.bookmark_set.all %}
 		{% if node.device.device_id == d.device_id %}
 	    	{% if node.ifFolder %}
 		<li>
@@ -31,7 +31,7 @@
 		
 	
     {% endrecursetree %}</ul>
-    {% endfor %}
+    
 
 {% endfor %}
 {% endblock %}

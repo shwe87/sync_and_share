@@ -1,12 +1,20 @@
+html,body{
+	margin:0;
+	padding:0;
+}
 table,body{
     background:#E4DBBF;			/*Yellowish background*/
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-family: Palatino,Georgia,Times;
     color: #383127;
+    height: 100%;
 }
 
 table{
+	margin-left:auto;
+	margin-right:auto;
+	margin-bottom: 80px;
     border-spacing: 0; 
     border-collapse:separate;
     width:90%; 
@@ -17,9 +25,14 @@ table{
 }
 
 div.logo{
+	display:block;
+	margin-left: auto;
+	margin-right: auto;
 	margin-top: 30px;
 	margin-bottom: 30px;
-	/*float:center;*/	
+	text-align:center;
+	
+	
 }
 
 span.small{
@@ -27,10 +40,7 @@ span.small{
 }
 
 
-table,body{
-    height:100%;
 
-}
 
 /*table{
    font-family: Palatino,Georgia,Times;
@@ -153,15 +163,24 @@ hr{
 	margin: 0cm 0cm 0cm 0.25cm;
 }
 */
+span.favicon{
+	padding-right: 5px;
+}
+p.title,p.url{
+	margin:0px;
+}
+p.url {
+	padding-left: 10px;
+}
 .url{
-	font-size: small;
+	font-size: x-small;
 	color:#383127; 
 	text-overflow: ellipsis;
    	display: inline-block;
-    	width: 275px;
-    	white-space: nowrap;
-    	overflow: hidden;
-    	vertical-align: top;
+    width: 275px;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: top;
 	
 }
 
@@ -175,6 +194,9 @@ hr{
 li.showLi{
 	display: list-item;	
 }
+.shown{
+	visibility: visible;
+}
 
 span.show{
 	display: inline;
@@ -187,13 +209,13 @@ span.show{
 
 }
 #tabsCellDiv{
-	background: url(http://i39.tinypic.com/mry2i9.jpg) no-repeat left;
+	background: url(images/tabs.png) no-repeat left;
 	background-size: 20px 20px;
 	
 }
 
 #bookmarksCellDiv{
-	background: url(http://i39.tinypic.com/2lmvqdl.jpg) no-repeat left;
+	background: url(images/bookmarks.png) no-repeat left;
 	background-size: 20px 20px;
 	
 
@@ -201,7 +223,7 @@ span.show{
 }
 
 #historyCellDiv{
-	background: url(http://i40.tinypic.com/b5jyqa.jpg) no-repeat left;
+	background: url(images/history.png) no-repeat left;
 	background-size: 20px 20px;
 	
 	
@@ -234,6 +256,21 @@ ul.device{
 	margin-top: 10px;
 	margin-bottom:10px;
 }
+
+img.serverLogo{
+	width:15px;
+	height:15px;
+	padding-left: 5px;
+}
+
+
+ul.device div{
+	padding-top: 20px;
+}
+
+
+
+
 
 
 

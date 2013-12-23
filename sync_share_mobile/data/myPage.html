@@ -1,124 +1,180 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head profile="http://www.w3.org/2005/10/profile">
 <meta charset="UTF-8">
 <title>
-Synch & Share
+Sync & Share
 </title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="icon" type="image/png"  href="images/myLogo64.png">
+
+<
 </head>
+
 <body>
 
-<center>
-<div class="logo">
-<center><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/><br>
-<span class="small">Sync & Share</span>
-</center>
+	<div data-role="page" id="optionsPage">
+		  <div data-role="header" data-position="fixed">
+			<div data-role="navbar">
+				<ul>
+					<li id="tab"><a href="#">Tabs</a></li>
+						
+					<li id="bookmark"><a href="#">Bookmarks</a></li>
+					
+					<li id="history"><a href="#">History</a></li>
+					
+					<li id="options"><a href="#" class="ui-btn-active ui-state-persist">Options</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		 </div><!--End of header!-->
 
-</div>
-</div>
-<nav class="menu">
-	<ul>
-		<li id="tab"><div id="tabCell">Tabs</div></li>
-		<br><br>
-		<li id="bookmark"><div id="bookmarkCell">Bookmarks</div></li>
-		<br><br>
-		<li id="history"><div id="historyCell">History</div></li>
-		<br><br>
-		<li id="options"><div id="optionCell">Options</div></li>
-		<br><br>
-	</ul>
-</nav>
-
-</center>
-<div id="optionsContent" class="hidden">
-<nav class="optionsMenu">
-	<ul>
-		<li id="saveTabs"><div id="saveTabsCell">Save all open tabs</div></li>
-		<br><br>
-		<li id="share"><div id="shareCell">Share Options</div></li>
-		<br><br>
-		<!--li id="history"><div id="historyCell">History</div></li>
-		<br><br>
-		<li id="options"><div id="optionCell">Options</div></li>
-		<br><br-->
-	</ul>
-</nav>
-
-
-
-
-</div>
-<div id="mainContent" class="hidden">
-<div id="contentTitle"></div>
-<div id="mysiteContent">
-	 <div id="mysitetabsTitle" class="title hidden"><hr>Saved Tabs<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitetabsContent" class="content">
-	</div>
-	<div id="mysitesyncedtabsTitle" class="title hidden"><hr>Synced tabs<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitesyncedtabsContent" class="content hidden"> 
+		<div data-role="content">
+			<div class="logo">
+				<div><img src="images/myLogo.png" title="logo by Shweta"/></div>
+				<div><span class="small">Sync & Share</span></div>
+			</div>
+			<div id="mainContent">
+				<div id="optionsContent">
+					<nav class="optionsMenu">
+						<ul>
+							<li id="saveTabs"><div id="saveTabsCell">Save all open tabs</div></li>
+							<br><br>
+							<li id="share"><div id="shareCell">Share Options</div></li>
+							<br><br>
+							<li id="help"><div id="helpCell">Help</div></li>
+							<br><br>
+						</ul>
+					</nav><!--End of nav-->
+				</div><!--End of optionsContent-->
+				<!--TABS-->
+				
+				<div id="tabsContent" class="hidden">
+					<div id="tabsOfmysite" class="hidden">
+						<div id="mysitetabsTitle"  data-role="collapsible">
+							 <h3>
+								  Saved Tabs 
+							</h3>
+						
+							<div id="mysitetabsContent">
+							</div>
+						</div>
+						
+						<div id="mysitesyncedtabsTitle" data-role="collapsible">
+								<h3> Synced tabs</h3>
+							
+								<div id="mysitesyncedtabsContent"> 
+								</div>
+						</div>
+					</div><!--End of tabsOfmysite-->
+						
+					<!--Dropbox tabs-->
+					<div id="tabsOfdropbox" class="hidden">
+							<div id="dropboxtabsTitle" data-role="collapsible">
+								<h3> Saved Tabs in Dropbox </h3>
+							
+								<div id="dropboxtabsContent">
+								</div>
+							</div>
+					</div><!--End of tabsOfdropbox-->
+					
+					<!--Google Drive tabs-->
+					<div id="tabsOfgapi" class="hidden">
+							<div id="gapitabsTitle"  data-role="collapsible">
+								<h3> Saved Tabs in Google Drive </h3>
+							
+								<div id="gapitabsContent">
+								</div>
+							</div>	
+					</div><!--End of tabsOfgapi-->
+				</div><!--End of tabsContent-->
+				<!--My site history-->
+				<div id="historyContent" class="hidden">
+					<div id="historyOfmysite" class="hidden">
+						<div id="mysitehistoryTitle" data-role="collapsible">
+							<h3>
+								 Saved History 
+							</h3>
+						
+							<div id="mysitehistoryContent">
+							</div>
+						
+						</div>
+						<div id="mysitesyncedhistoryTitle"  data-role="collapsible">
+							<h3> Synced History </h3>
+						
+							<div id="mysitesyncedhistoryContent"> 
+							</div>
+						</div>
+					</div><!--End of historyOfmysite-->
+					
+					<!--Dropbox history-->
+					<div id="historyOfdropbox" class="hidden">
+						<div id="dropboxhistoryTitle"  data-role="collapsible">
+							<h3> Saved History in Dropbox </h3>
+						
+							<div id="dropboxhistoryContent">
+							</div>
+						</div>
+					</div><!--End of historyOfdropbox-->
+					<!--Google Drive history-->
+					<div id="historyOfgapi" class="hidden">
+						<div id="gapihistoryTitle"  data-role="collapsible">
+							<h3> Saved History in Google Drive</h3>
+						
+							<div id="gapihistoryContent">
+							</div>
+						</div>	
+					</div><!--End of historyOfdropbox-->
+				</div> <!--End of historyContent-->
+				<!--My site bookmarks-->
+				<div id="bookmarksContent" class="hidden">
+					<div id="bookmarksOfmysite" class="hidden">
+						<div id="mysitebookmarksTitle"  data-role="collapsible">
+							<h3>
+								 Saved Bookmarks 
+							</h3>
+							<div id="mysitebookmarksContent">
+							</div>
+						</div>
+						<div id="mysitesyncedbookmarksTitle"  data-role="collapsible">
+							<h3> Synced bookmarks </h3>
+						
+							<div id="mysitesyncedbookmarksContent"> 
+							</div>
+						
+						</div>
+					</div><!--End of bookmarksOfmysite-->
+					
+					<!--Dropbox tabs-->
+					<div id="bookmarksOfdropbox" class="hidden">
+						<div id="dropboxbookmarksTitle"  data-role="collapsible">
+							<h3> Saved Bookmarks in Dropbox </h3>
+						
+							<div id="dropboxbookmarksContent">
+							</div>
+						</div>
+					</div><!--End of bookmarksOfdropbox-->
+					<!--Google Drive tabs-->
+					<div id="bookmarksOfgapi" class="hidden">
+						<div id="gapibookmarksTitle" data-role="collapsible">
+							<h3> Saved Bookmarks in Google Drive </h3>
+						
+							<div id="gapibookmarksContent">
+							</div>
+						</div>
+					</div><!--End of bookmarksOfgapi-->
+				</div><!--End of bookmarksContent-->
+			</div><!--End of mainContent-->
+			
+			
+		</div><!--End of content-->
+		
+		<div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div><!--End of footer-->
+		
+	</div> <!--End of Page-->
 	
-	</div>
 	
-	
-	<div id="mysitebookmarksTitle" class="title hidden"><hr>Saved Bookmarks<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitebookmarksContent" class="content">
-	
-	</div>
-	<div id="mysitesyncedbookmarksTitle" class="title hidden"><hr>Synced bookmarks<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitesyncedbookmarksContent" class="content hidden"> 
-	
-	</div>
-	<div id="mysitehistoryTitle" class="title hidden"><hr>Saved History<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitehistoryContent" class="content">
-	
-	</div>
-	<div id="mysitesyncedhistoryTitle" class="title hidden"><hr>Synced History<span class="small info">(click to hide/show)</span><hr></div>
-	<div id="mysitesyncedhistoryContent" class="content hidden"> 
-	
-	</div>
-
-
-
-</div>
-
-
-
-<div id="dropboxContent">
-        <div id="dropboxtabsTitle" class="title hidden"><hr>Saved Tabs in Dropbox<hr></div>
-	<div id="dropboxtabsContent" class="content">
-	
-	</div>
-	<div id="dropboxbookmarksTitle" class="title hidden"><hr>Saved Bookmarks in Dropbox<hr></div>
-	<div id="dropboxbookmarksContent" class="content">
-	
-	</div>
-	<div id="dropboxhistoryTitle" class="title hidden"><hr>Saved History in Dropbox<hr></div>
-	<div id="dropboxhistoryContent" class="content">
-	
-	</div>
-  <!--div class="item">
-  <p id="title">A title</p>
-  <a href="http://www.urjc.es">www.urjc.es</a>
-  </div-->
-
-</div>
-<div id="gapiContent">
-	<div id="gapitabsTitle" class="title hidden"><hr>Saved Tabs in Google Drive<hr></div>
-	<div id="gapitabsContent" class="content">
-	
-	</div>
-	<div id="gapibookmarksTitle" class="title hidden"><hr>Saved Bookmarks in Google Drive<hr></div>
-	<div id="gapibookmarksContent" class="content">
-	
-	</div>
-	<div id="gapihistoryTitle" class="title hidden"><hr>Saved History in Google Drive<hr></div>
-	<div id="gapihistoryContent" class="content">
-	
-	</div>
-
-</div>
-</div>
 </body>
-
 </html>

@@ -1,5 +1,5 @@
 var data = require("sdk/self").data;
-var LOGIN_URL = 'http://127.0.0.1:8000/login/';
+var LOGIN_URL = 'http://127.0.0.1:8001/login/';
 var alreadyOpen = false;
 var tabs = require('sdk/tabs');
 var { emit, on, once, off } = require("sdk/event/core");

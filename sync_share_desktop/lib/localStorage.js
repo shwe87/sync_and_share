@@ -10,6 +10,36 @@ exports.removeListener = function removeListener(type, listener) {
   off(exports, type, listener);
 };
 
+function setStarted (if_started){
+		ss.storage.started = if_started;
+}
+exports.setStarted = setStarted;
+
+function getStarted(){
+		if (!ss.storage.started){
+				return false;
+		}
+		else{
+				return ss.storage.started;
+		}
+}
+exports.getStarted = getStarted;
+function setRegistered(if_registered){
+		ss.storage.registered = if_registered;
+		
+	
+}
+exports.setRegistered = setRegistered;
+
+function checkIfRegistered(){
+	if (!ss.storage.registered){
+			return false;
+	}	
+	else{
+			return ss.storage.registered;
+	}
+}
+exports.checkIfRegistered = checkIfRegistered;
 
 function setId(){
 	if (!ss.storage.id){
@@ -70,8 +100,11 @@ function updateHistorySentTime(time){
 @param listOfBookmarks {Array}: a List of all bookmarks.
 *******************************************************************************************************************************/
 function saveReadBookmarks(listOfBookmarks){
-	ss.storage.bookmarks = listOfBookmarks;
-	ss.storage.lastBookmarkRead = getNowTime();
+	console.log("localstorage: QUOTA = " + ss.quotaUsage);
+	if (ss.quotaUsage < 1){
+		ss.storage.bookmarks = listOfBookmarks;
+		ss.storage.lastBookmarkRead = getNowTime();
+	}
 }
 
 /*******************************************************************************************************************************
@@ -79,17 +112,22 @@ function saveReadBookmarks(listOfBookmarks){
 @param listOfHistory {Array}: a List of all history.
 ********************************************************************************************************************************/
 function saveReadHistory(listOfHistory){
-	ss.storage.history = listOfHistory;
-	ss.storage.lastHistoryRead = getNowTime();
+	console.log("localstorage: QUOTA = " + ss.quotaUsage);
+	if (ss.quotaUsage < 1){
+		ss.storage.history = listOfHistory;
+		ss.storage.lastHistoryRead = getNowTime();
+	}
 }
 /*******************************************************************************************************************************
 @function saveReadTabs: When the server has read all the tabs of all devices of this user, save them.
 @param listOfTabs {Array}: a List of all tabs.
 ********************************************************************************************************************************/
 function saveReadTabs(listOfTabs){
-	console.log("localstorage: Save read tabs = " + JSON.stringify(listOfTabs));
-	ss.storage.tabs = listOfTabs;
-	ss.storage.lastTabRead = getNowTime();
+	console.log("localstorage: QUOTA = " + ss.quotaUsage);
+	if (ss.quotaUsage < 1){
+		ss.storage.tabs = listOfTabs;
+		ss.storage.lastTabRead = getNowTime();
+	}
 }
 
 function changeDeviceName(deviceName){
@@ -229,15 +267,20 @@ exports.getAllSavedTabs = getAllSavedTabs;
 
 
 
+preferences.on('deviceNameChanged',changeDeviceName);
 
-
+ss.on('OverQuota',function(){
+	preferences.turnOffSync();
+	var message = {'msg': 'Quota exceeded. Remember this is just a trial version. Unsync some device to make some space.','type':'error'};
+	emit(exports,'showMessage',message);
+});
 function startUp(){
 	myServer.on('allBookmarksSavedInServer',updateBookmarksSentTime);
 	myServer.on('allHistorySavedInServer',updateHistorySentTime);
 	myServer.on('allBookmarksReadFromServer',saveReadBookmarks);
 	myServer.on('allHistoryReadFromServer',saveReadHistory);
 	myServer.on('allTabsReadFromServer',saveReadTabs);
-	preferences.on('deviceNameChanged',changeDeviceName);
+	
 }
 exports.startUp = startUp;
 

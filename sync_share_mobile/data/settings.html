@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="helpStyle.css"/>
+
+<link rel="stylesheet" href="themes/shwetaCss.min.css" />
+
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0-rc.1/jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.0-rc.1/jquery.mobile-1.4.0-rc.1.min.js"></script>
+<title>
+Sync & Share Help Page	
+</title>	
+</head>
+
+<html>
+	
+	<body>	
+        <div data-role="page" id="settings-page">
+            <div data-role="header" data-position="fixed">
+			<div data-role="navbar">
+				<ul>
+					<li><a rel="external" href="settings.html" class="ui-btn-active ui-state-persist">Settings</a></li>
+						
+					<li><a rel="external" href="menu.html">Menu</a></li>
+					
+					<li><a rel="external" href="sync.html">Sync</a></li>
+					
+					<li><a rel="external" href="share.html">Share</a></li>
+					
+					<li><a rel="external" href="menu.html">Views</a></li>
+				</ul>
+			</div><!-- /navbar -->
+			</div><!-- /header -->
+            
+        <div data-role="content" id="mainContent">
+				<h2 class="contentTitle"><span class="counter"> 1.</span>Settings:</h2>
+					<div class="sectionContent">
+						
+						<DL>
+							<DT class="contentTitle"> <STRONG><h3>
+								<span class="counter"> 1.1.</span>How to go to preferences panel?</h3></STRONG><br>
+							</DT>
+								<DD>
+									<p>There are two ways to go to the preference panel:</p>
+									<div class="subSectionContent">
+										<OL type="a">
+											<LI><h4>From Sync & Share Menu</h4>
+												
+												<OL type="i">
+													<LI>Touch your device's menu button</LI>
+													<LI>Touch <EM>Sync & Share Menu</EM>.</LI>
+													<LI>Choose <EM>Options</EM>.
+													<p>The add-ons manager tab will be opened. <span class="small">See it in 
+													<a href="#addonFoto" id="reference">this picture<span></a>
+													 </p>
+													</LI>
+													
+													<LI>Click <EM>Extensions</EM>(if not opened automatically).</LI>
+													<LI>Search <EM>Sync & Share</EM> among all the add-ons.</LI>
+													<LI>Click on <EM>Preferences</EM>.
+													</LI>
+													
+												</OL>
+												<div class="fotoWrapper">
+													<div id="settingsFoto" class="foto">
+													</div>
+													<div class="fotoTitle">
+														Picture 1.1. Tools > Sync & Share Menu > Settings Menu.
+													</div>
+												</div>
+												
+											</LI>
+											 
+											<LI><h4>From Add-ons Menu</h4>
+												
+												<OL type="i">
+													<LI>Touch your device's menu button</LI>
+													<LI>Click <EM>Add-ons</EM>.
+													<p>The add-ons manager tab will be opened.</p></LI>
+													<LI>Click <EM>Extensions</EM>(if not opened automatically).</LI>
+													<LI>Search <EM>Sync & Share</EM> among all the add-ons.</LI>
+													<LI>Click on <EM>Preferences</EM>.</LI>
+													<div class="fotoWrapper">
+														<div id="addonFoto">
+														</div>
+														<div class="fotoTitle">
+															Picture 1.2. Tools > Add-ons manager.
+														</div>
+													</div>
+													
+												</OL>
+											</LI>
+											 
+
+										</OL>
+									</div><!--End of subsectionContent-->
+								</DD>
+							<DT class="contentTitle"><STRONG><h3><span class="counter">1.2.</span>Preferences</h3></STRONG></DT>
+								<DD>
+									<div class="subSectionContent">
+										<OL type="a">
+											<div class="fotoWrapper">
+												<img id="preferences" class="picture" src="images/preferences.png" title="Preference panel">
+												<div class="fotoTitle">
+													Picture 1.3. Preference panel.
+												</div>
+											</div>
+											
+											<LI id="autoSyncOptions"> 
+											<DL>
+											<DT><STRONG><h4>Auto sync: Tabs & Bookmarks & History.</h4></STRONG> </DT>
+												<DD>
+												<p>Check these options to let the add-on auto sync your tabs, your bookmarks and your history. This means that all 
+												the open tabs in your browser will be sent to the server, so that you can 
+												view and reach them from another device or from any other places.</p>  
+												<UL>
+													<LI> Tabs: Everytime you open a new tab or close a tab, the add-on will update your browser's tabs situation.</LI>
+													<LI> Bookmarks: Your other devices' bookmarks will be saved in this device, so that you can 
+													<a rel="external" href="menu.html" id="reference">view</a> or save them from this device. </LI>
+													<LI> History: Your other devices' history will be saved in this device, so that you can 
+													<a rel="external" href="menu.html" id="reference">view</a> or save them from this device.  </LI> 
+												</UL>
+												<p>You can uncheck any of these options if you no longer want them to be synced automatically as explained above.
+												You can save/sync the items independently as desired. Please see the <a href="sync.html#saveManuallyContent" id="reference">Save Manually</a>
+												section.</p>
+												</DD>
+											</DL>
+											
+											</LI>
+										
+										
+											<LI>
+											<DL>
+											<DT><STRONG> <EM><h4> Name this device as </h4></EM></STRONG></DT>
+												<DD>
+												<p>Name the device you are using as you like. It is advisable to name each device differently so that you can
+												recognize your items by your device name. Don't forget to press the <EM> Save device name </EM> button to save
+												your changes!</p>
+												</DD>
+												
+											</DL>
+											</LI>
+										
+											<LI id="extraServersOption">
+											<DL>
+											<DT><STRONG> <EM> <h4>Extra Server </h4></EM></STRONG></DT>
+												<DD>
+												<p>You can also save your items manually in other servers: 
+												<STRONG><EM>Dropbox & Google Drive</EM>.</STRONG>
+												Choose the option you like most.</p>
+												</DD>
+												
+											</DL>
+											</LI>
+										</OL>
+									</div> <!--End of subsectionContent-->
+								</DD>
+						</DL>
+					</div><!--End of sectionContent-->	
+        </div><!-- /content -->
+            
+        
+        <div data-role="footer" id="footer">
+			<img src="images/shwetaBrand.png">
+		</div>
+		</div><!-- /page -->
+        
+    </body>
+
+</html>
+		
+
+

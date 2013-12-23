@@ -9,9 +9,7 @@ body{
         font-family: Palatino,Georgia,Times;
         color: #383127;
 }
-div{
-	width:100%;
-}
+
 
 div.mainTitle{
     	font-size: x-large;
@@ -40,6 +38,8 @@ div.textInput{
         margin-bottom:50px;
         margin-top: 50px;
         margin-right: 20px;
+        
+
 }
 
 div.item,div.share,div.syncError,div.shareError,div.autoSync{
@@ -51,7 +51,10 @@ div.item,div.share,div.syncError,div.shareError,div.autoSync{
 	 padding-top: 10px;
          padding-bottom: 10px;
          padding-left: 20px;
-         color: #383127;       
+         color: #383127; 
+         width: auto;
+         position:relative;
+               
 }
 
 div.item,div.share,div.textInput{
@@ -82,7 +85,7 @@ span.small, div.helpText,li.small{
         border-radius:6px 6px 6px 6px;
         margin-bottom:10px;
         background: #70AB8F;
-        padding: 10px 20px 10px 20px;	/*top right bottom left*/
+        padding: 10px 0px 10px 0px;	/*top right bottom left*/
 	margin-top: 30px;
 	font-size: large;
 	cursor: pointer;
@@ -114,31 +117,49 @@ li.small,div.item ul li{
 	display: list-item;
 }*/
 
+ul li{
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 0px;
+
+}
+
 ul.hiding{
 	background-image:url(/static/images/arrow-right.png);
 	background-repeat:no-repeat;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	/*position: absolute;*/
 }
 
 ul.showing{
 	background-image:url(/static/images/arrow-down.png);
 	background-repeat:no-repeat;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	/*position: absolute;*/
 }
 
 li.folder{
-	background-image:url(/static/images/folder.png);
+	/*background-image:url(/static/images/folder.png);
 	background-size: 24px 24px;
 	background-repeat:no-repeat;
-	background-position:left center fixed; 
-	padding-left:25px;
-	list-style-type:none;
+	background-position:left center fixed;*/ 
+	list-style-image:url(/static/images/folder.png);
 
 }
 
 li.notFolder{
-
+	text-overflow: ellipsis;
+   	display: inline-block;
+    	width: 300px;
+    	white-space: nowrap;
+    	overflow: hidden;
+    	vertical-align: top;
 	list-style-type: none;
+	margin-left:0px;
+	padding-left:0px;
+	
 }
 
 

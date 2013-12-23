@@ -20,6 +20,7 @@ const localStorage = require('./localStorage.js');
 var openMenuTabWorker;				//This worker will be attached to the addon html page.
 var myContextMenu;				//This is the context menu that will be displayed when a user right clicks a bookmark or a history in this addon html page.
 var panelMessage;				//This is the panel where all the messages will be displayed to the user.
+var panelHelp;					//This is the panel that will control the first messages.
 var authenticated = false;			//If the user is authenticated or not.
 /********************************************Constantes*****************************************************************/
 const TABS_FILE = 'tabs.json';			//The file with all the saved tabs will be named this way in the server
@@ -425,27 +426,39 @@ function handleContextMenu(clickedDetails){
 
 
 function startDatas(email){
-	console.log("LOGGED IN!!!");
-	//localStorage.handleDatas(email);
-	localStorage.startUp();
-	myServer.startUp();
+		console.log("LOGGED IN!!!");
+		//localStorage.handleDatas(email);
 	
-	localStorage.handleDatas(email);
-	login.removeListener('loggedIn');
+	
+		var registered = localStorage.checkIfRegistered();
+		if (registered == false){
+			myServer.on('registered',function(if_registered){
+				localStorage.startUp();
+				myServer.startUp();
+				localStorage.handleDatas(email);
+				myServer.removeListener('registered');
+			});
+			myServer.registerMe();
+		}
+		
+		if (email){
+			login.removeListener('loggedIn');
+		}
+		
 	
 }
 
 function notify(){
-	var notifications = require("sdk/notifications");
-notifications.notify({
-  title: "Jabberwocky",
-  text: "'Twas brillig, and the slithy toves",
-  data: "did gyre and gimble in the wabe",
-  onClick: function (data) {
-    console.log(data);
-    // console.log(this.data) would produce the same result.
-  }
-});
+		var notifications = require("sdk/notifications");
+		notifications.notify({
+			title: "Jabberwocky",
+			text: "'Twas brillig, and the slithy toves",
+			data: "did gyre and gimble in the wabe",
+			onClick: function (data) {
+				console.log(data);
+				// console.log(this.data) would produce the same result.
+			}
+		});
 
 }
 
@@ -463,31 +476,41 @@ exports.main = function(options, callbacks) {
     //Start the preferences mode on:
     localStorage.setId();
     //Create the panel:
+    console.log(options.loadReason);
     panelMessage = panel.Panel();
     if (options.loadReason == 'install'){
-    	localStorage.setDeviceName('username-machine');
+		console.log("INSTALL!!!!!");
+    	localStorage.setDeviceName(preferences.getDeviceName());
     	//localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
     	
-    
     }
     else{
-    	//localStorage.setId();
-    	localStorage.startUp();
-    	myServer.startUp();
-    	localStorage.handleDatas(null);
+		console.log(options.loadReason);
+		var registered = localStorage.checkIfRegistered();
+		if (registered == true){
+			//localStorage.setId();
+			localStorage.startUp();
+			myServer.startUp();
+			localStorage.handleDatas(null);
+		}
+		else{
+			console.log("Not registered!!!!");
+			startDatas(null);
+		}
+    	
     }
     
     
- 
+ /*
     var wiki = require("sdk/widget").Widget({
   	id: "window",
   	label: "Window",
  	 content: "Save all",
  	 onClick: function(){
  	 	myServer.saveAll();
- 	 	myServer.readAll();
+ 	 	//myServer.readAll();
  	 	//notify();
  	 	/*var tabsList = new Array();
  	 	for each (var tab in tabs){				
@@ -502,9 +525,9 @@ exports.main = function(options, callbacks) {
   		myServer.readAllHistory();
   		myServer.readAllTabs();*/
   	//panel.show();
-  	}
+  	//}
 	//wikiPanel.contentURL = "https://en.m.wikipedia.org/"; 
-	});
+	//});
     
    // myServer.on('updateBookmarks',updateBookmarks);
     //myServer.on('updateHistory',updateHistory);
@@ -524,9 +547,10 @@ exports.main = function(options, callbacks) {
     xulControl.on('saveAllTabsClicked',saveTabs);
     //The module xulControl informs us when the open menu item is clicked.
     xulControl.on('openMenuClicked',openMenu);
-    //The module xulControl informs us when the share menu is clicked.
-    xulControl.on('shareClicked', share.openShare);
+
+
     
+    localStorage.on('showMessage',handleShowMessage);
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save this');
     contextMenu.on('contextClicked',handleContextMenu);

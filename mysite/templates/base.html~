@@ -1,8 +1,10 @@
 {% load browserid %}
 {% load staticfiles %}
+<!DOCTYPE html>
 <html>
   <title>{% block title%}  {% endblock %}</title>
   <head>
+  	<meta charset="UTF-8">
 	  {% if flavour == "mobile" %}
 	<link href={% static "css/mobile/pageStyle.css" %} rel="stylesheet" type="text/css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -59,6 +61,8 @@
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     {% browserid_js %}
     {% block script %} {% endblock %}
-    
+    <footer>
+     <div class="brand"><img src={% static "images/shwetaBrand.png" %} title="by Shweta"/></div>
+    </footer>
   </body>
 </html>

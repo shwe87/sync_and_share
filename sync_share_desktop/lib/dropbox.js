@@ -166,7 +166,11 @@ function handleOnlyShow(showData){
 	else{
 		downloadedData = null;
 	}
-	emit(exports,'display',downloadedData);
+	var toDisplay = new Object();
+	toDisplay.server = 'dropbox';
+	toDisplay.element = title.split('.json')[0];
+	toDisplay.datas = downloadedData;
+	emit(exports,'display',toDisplay);
 	
 	
 
@@ -380,7 +384,7 @@ function write(datas){
 			console.log('DROPBOX:  '+"SAVE DATA TEXT = " + response.text);	
 			if (response.status == '200'){
 				datas.success = true;
-				message.msg = 'Correctly Saved!';
+				message.msg = 'Dropbox: Correctly Saved!';
 				message.type = 'correct';
 				/*uploadData.msg = 'Correctly Saved!';
 				uploadData.msgType = 'correct';*/
@@ -394,7 +398,7 @@ function write(datas){
 			}
 			else{	
 				datas.success = false;
-				message.msg = 'Save failed!';
+				message.msg = 'Dropbox: Save failed!';
 				message.type = 'error';	
 				handleResponse(response);			
 			}

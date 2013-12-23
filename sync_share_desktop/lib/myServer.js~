@@ -13,13 +13,14 @@ var timer = require('sdk/timers');
 var dialog = require('./dialog.js');
 var localStorage = require('./localStorage.js');
 
-var URL = 'http://127.0.0.1:8001';
+var URL = 'http://192.168.1.16:8001';
 var SAVE_URL = URL+'/save/';
 var READ_URL = URL+'/read/';
 var READ_ALL_BOOKMARKS = URL + '/read/all/bookmarks/';
 var READ_ALL_HISTORY = URL + '/read/all/history/';
 var READ_ALL_TABS = URL + '/read/all/tabs/';
 var CHANGE_DEVICE_NAME = URL + '/change/device/name/';
+const REGISTER = URL + '/register/';
 var bookmarksList = new Array();
 
 const INTERVAL_MS = 30*60*1000;	//In milliseconds 30 minutes
@@ -479,6 +480,16 @@ function changeDeviceName(new_device_name){
 
 }
 
+funcion registerMe(){
+	console.log("MY SERVER: Register me");
+	var register = Request({
+		url: C
+	
+	});
+
+
+}
+
 /*********************************************************************************************************************************
 @function saveAll: Save everything, bookmarks and history at once. (Depends on user's preferences). The tabs will be saved automatically, depending on the events trigered by the tabs module.
 *********************************************************************************************************************************/
@@ -493,7 +504,7 @@ function saveAll(){
 	}
 	console.log("MY SERVER : Save all called");
 }
-
+exports.saveAll = saveAll;
 /*********************************************************************************************************************************
 @function getAll: Get all the history, bookmarks and tabs that this user has synced from the server. (Depends on the user's preferences).
 *********************************************************************************************************************************/

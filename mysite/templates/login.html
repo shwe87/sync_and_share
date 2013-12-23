@@ -8,12 +8,20 @@
         Sync & Share uses Mozilla Persona for authentication.
         </div>
         {% if user.is_authenticated %}
-          <div class="small"> You are already signed in as: <span class="highlight">{{ user.email }}</span></div>
+          <div class="small info" id="signedInInfo"> You are already signed in as: <span class="highlight">{{ user.email }}</span></div>
          {% comment %} {% browserid_logout text='Logout' link_class='browserid-logout'%} {% endcomment %}
         {% else %}
-          <div class="error">Not signed in. Please press the button to sign in:</div>
+          <div class="error info">Not signed in. Please press the button to sign in:</div>
           {% browserid_login text='Mozilla Persona Login' color='orange' %}
-          <div class="small">After you sign in, you can go to settings.</div>
+          <div class="small info" id="settingsInfo">
+			After you sign in, you can go to settings.
+			 {% if flavour == "mobile" %}
+			    If you are using the add-on click the menu button of your device > <em>Sync & Share</em> 
+			    for more details.
+			 {% else %}
+				If you are using the add-on click the <EM>Sync & Share</EM> icon below in the Add-on bar.
+			{% endif %}
+          </div>
         {% endif %}
       </div>
 

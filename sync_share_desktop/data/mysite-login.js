@@ -6,6 +6,7 @@ if (email != null){
 			var splitted = useremail.split('@');
 			if (splitted.length > 1){
 				//console.log("Logged in with = " + useremail);
+				console.log("MY SITE SCRIPT: " + useremail);
 				self.port.emit('takeEmail',useremail);
 			}
 		}

@@ -16,10 +16,11 @@ const myServer = require("./myServer.js");	//The server implemented by me.
 const preferences = require("./preferences.js");//Module used to access the user's preferences for this add-on.
 const login = require('./dialog.js');		//Module to control when the user logins in my server.
 const localStorage = require('./localStorage.js');
+const helpPanel = require('./panelWithWidget.js');
 /****************************************Global Variables**************************************************************/
 var openMenuTabWorker;				//This worker will be attached to the addon html page.
 var myContextMenu;				//This is the context menu that will be displayed when a user right clicks a bookmark or a history in this addon html page.
-var panelMessage;				//This is the panel where all the messages will be displayed to the user.
+var panelHelp;					//This is the panel that will control the first messages.
 var authenticated = false;			//If the user is authenticated or not.
 /********************************************Constantes*****************************************************************/
 const TABS_FILE = 'tabs.json';			//The file with all the saved tabs will be named this way in the server
@@ -86,6 +87,7 @@ function saveTabs(tabsToSave){
 	message.msg = 'Loading...';
 	message.type = 'info';
 	handleShowMessage(message);
+	console.log(tabsToSave);
 	//Get the favicon icon:
 	var dataToSave = new Array();
 	for each (var tabToSave in tabsToSave){				
@@ -113,7 +115,7 @@ function listSavedTabs(){
 	try{
 		console.log('main '+'main '+'listSavedTabs: Sending getTableReady');
 		openMenuTabWorker.port.emit('getTableReady','tabs');
-		console.log('main '+'main '+'listSavedTabs: gapi.getData');
+		//console.log('main '+'main '+'listSavedTabs: gapi.getData');
 		var newData = new Object();
 		newData.title = TABS_FILE;
 		server.read(newData);
@@ -304,6 +306,8 @@ function getAllHistory(){
 
 
 }
+
+
 var pageModify;
 //Open the tab with the menu:
 function openMenu(msg){
@@ -324,7 +328,6 @@ function openMenu(msg){
 			console.log('main '+openMenuTabWorker.tab.title);
 			openMenuTabWorker.port.emit('start','Bookmarks');
 			openMenuTabWorker.port.on('cellClicked',function(clickedElement){
-				
 				var nodeName = clickedElement.node;
 				var nodeId = clickedElement.id;
 				console.log('main '+'cellClicked received = ' + clickedElement.node + ','+clickedElement.id);
@@ -407,6 +410,7 @@ function handleContextMenu(clickedDetails){
 	/*console.log('main '+"LABEL " + contextLabel);*/
 	var newData = new Object();
 	var dataToSave = [clickedNode];
+	console.log("DATA = " + JSON.stringify(dataToSave));
 	if ( clickedNode.className == 'bookmark'){
 		newData.title = BOOKMARKS_FILE;
 		newData.dataToSave = dataToSave;
@@ -414,6 +418,11 @@ function handleContextMenu(clickedDetails){
 	}
 	else if (clickedNode.className == 'history'){
 		newData.title = HISTORY_FILE;
+		newData.dataToSave = dataToSave;
+		server.save(newData);
+	}
+	else if (clickedNode.className == 'tab'){
+		newData.title = TABS_FILE;
 		newData.dataToSave = dataToSave;
 		server.save(newData);
 	}
@@ -425,37 +434,61 @@ function handleContextMenu(clickedDetails){
 
 
 function startDatas(email){
-	console.log("LOGGED IN!!!");
-	//localStorage.handleDatas(email);
-	localStorage.startUp();
-	myServer.startUp();
+		//console.log("LOGGED IN!!!");
+		//localStorage.handleDatas(email);
+		if (email != null){
+				console.log("LOGGED IN!!");
+		}
 	
-	localStorage.handleDatas(email);
-	login.removeListener('loggedIn');
+		var registered = localStorage.checkIfRegistered();
+		if (registered == false){
+			myServer.on('registered',function(if_registered){
+				localStorage.startUp();
+				myServer.startUp();
+				localStorage.handleDatas(email);
+				myServer.removeListener('registered');
+			});
+			myServer.registerMe();
+		}
+		
+		if (email){
+			localStorage.setStarted(true);
+			login.removeListener('loggedIn');
+		}
+		
 	
 }
 
 function notify(){
-	var notifications = require("sdk/notifications");
-notifications.notify({
-  title: "Jabberwocky",
-  text: "'Twas brillig, and the slithy toves",
-  data: "did gyre and gimble in the wabe",
-  onClick: function (data) {
-    console.log(data);
-    // console.log(this.data) would produce the same result.
-  }
-});
+		var notifications = require("sdk/notifications");
+		notifications.notify({
+			title: "Jabberwocky",
+			text: "'Twas brillig, and the slithy toves",
+			data: "did gyre and gimble in the wabe",
+			onClick: function (data) {
+				console.log(data);
+				// console.log(this.data) would produce the same result.
+			}
+		});
 
 }
 
+function syncAll(){
+	
+		myServer.saveAll();
+		myServer.getAll();
+		
+}
 
 //var windows = require("sdk/window/utils");
+var system = require("sdk/system");
 
 exports.main = function(options, callbacks) {
     //windows.getMostRecentBrowserWindow().alert(options.loadReason);
     /*Lets save some permanent datas of this add-on in the database provided*/
     console.log(" MAIN: Loading reason = " + options.loadReason);
+    panelMessage = panel.Panel();
+    helpPanel.startUp();
     preferences.startUp();
     //Start the server control:
     server.start();
@@ -463,24 +496,55 @@ exports.main = function(options, callbacks) {
     //Start the preferences mode on:
     localStorage.setId();
     //Create the panel:
-    panelMessage = panel.Panel();
+    console.log(options.loadReason);
+    //handleShowMessage(options.loadReason);
     if (options.loadReason == 'install'){
-    	localStorage.setDeviceName('username-machine');
+		console.log("INSTALL!!!!!");
+		if ('USERNAME' in system.env) {
+			var user = system.env.USERNAME;
+			console.log(system.env.USERNAME);
+		}
+		else if ('USER' in system.env){
+			var user = system.env.USER;
+			console.log(system.env.USER);
+		}
+		else {
+				var user = 'username';
+		}
+		preferences.setDeviceName(user+'-desktop');
+    	localStorage.setDeviceName(preferences.getDeviceName());
     	//localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
     	
-    
     }
     else{
-    	//localStorage.setId();
-    	localStorage.startUp();
-    	myServer.startUp();
-    	localStorage.handleDatas(null);
+		console.log(options.loadReason);
+		
+		var started = localStorage.getStarted();
+		if (started == true){
+			var registered = localStorage.checkIfRegistered();
+			//login.on('loggedIn',startDatas);
+			if (registered == true){
+				//localStorage.setId();
+				localStorage.startUp();
+				myServer.startUp();
+				localStorage.handleDatas(null);
+			}
+			else{
+				console.log("Not registered!!!!");
+				startDatas(null);
+			}
+		}
+		else{
+				login.loginDialog();
+				login.on('loggedIn',startDatas);
+		}
+    	
     }
     
     
- 
+ /*
     var wiki = require("sdk/widget").Widget({
   	id: "window",
   	label: "Window",
@@ -502,9 +566,9 @@ exports.main = function(options, callbacks) {
   		myServer.readAllHistory();
   		myServer.readAllTabs();*/
   	//panel.show();
-  	}
+  	//}
 	//wikiPanel.contentURL = "https://en.m.wikipedia.org/"; 
-	});
+	//});
     
    // myServer.on('updateBookmarks',updateBookmarks);
     //myServer.on('updateHistory',updateHistory);
@@ -524,17 +588,18 @@ exports.main = function(options, callbacks) {
     xulControl.on('saveAllTabsClicked',saveTabs);
     //The module xulControl informs us when the open menu item is clicked.
     xulControl.on('openMenuClicked',openMenu);
-    //The module xulControl informs us when the share menu is clicked.
-    xulControl.on('shareClicked', share.openShare);
+	xulControl.on('syncAllNowClicked',syncAll);
+
     
+    localStorage.on('showMessage',handleShowMessage);
     //Whenever the context menu is clicked:
-    contextMenu.addContextMenu('Save this');
+    contextMenu.addContextMenu('Save This');
     contextMenu.on('contextClicked',handleContextMenu);
     
     //Whenever the bookmark sends us information:
     //bookmarks.on('take',takeABookmark);
     myServer.on('showMessage',handleShowMessage);
-    myServer.on('display',handleDisplay);
+    //myServer.on('display',handleDisplay);
    
     server.on('showMessage', handleShowMessage);
     server.on('display',handleDisplay);

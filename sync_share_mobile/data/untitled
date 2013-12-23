@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>
+Sync & Share
+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="SHORTCUT ICON" href="images/myLogo64.png" type="image/png">
+
+<link rel="stylesheet" href="themes/shweta.min.css" />
+<link rel="stylesheet" href="myPageStyle.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+</head>
+
+<body>
+
+
+</body>
+
+</html>

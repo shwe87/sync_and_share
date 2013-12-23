@@ -1,8 +1,11 @@
-var data = require("sdk/self").data;
-var LOGIN_URL = 'http://192.168.1.16:8001';
-var alreadyOpen = false;
-var tabs = require('sdk/tabs');
 var { emit, on, once, off } = require("sdk/event/core");
+var data = require("sdk/self").data;
+var tabs = require('sdk/tabs');
+var constants = require('./constants.js');
+const LOGIN_URL = constants.LOGIN_URL;
+var alreadyOpen = false;
+
+
 
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
@@ -32,6 +35,7 @@ function checkIfOpen(){
 
 
 function loginDialog(){
+	console.log("Dialog = " + LOGIN_URL);
 	try{
 		var if_open = checkIfOpen();
 		if (if_open == false){
@@ -55,8 +59,12 @@ function loginDialog(){
 				}
 			});
 			alreadyOpen = true;
-			
-			
+	
+		}
+		else{
+				if (thisTab){
+					thisTab.activate();
+				}
 		}
 	}catch(e){
 		console.log('dialog:  '+e.toString());

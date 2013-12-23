@@ -13,7 +13,7 @@ function addContextMenu(toLabel, aContextMenu){
 	//if (aContextMenu == undefined || aContextMenu == null){
 		var myContextMenu = cm.Item({
 			label: toLabel,
-			context: [cm.SelectorContext("div"), cm.URLContext(data.url('myPage.html'))],
+			context: [cm.SelectorContext("div.tab,div.history,div.bookmark"), cm.URLContext(data.url('myPage.html'))],
 			contentScriptFile: data.url('contextMenuScript.js'),
 			onMessage: function(clickedNode){
 				emit(exports, 'contextClicked', [clickedNode, toLabel]);

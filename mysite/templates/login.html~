@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% load browserid %}
 {% block title %} Log in {% endblock %}
-{% block head %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/> 
-{% endblock %}
+
 {% block content %}
 	<div class="authentication">
         <div class="message small">
@@ -15,7 +13,7 @@
         {% else %}
           <div class="error">Not signed in. Please press the button to sign in:</div>
           {% browserid_login text='Mozilla Persona Login' color='orange' %}
-          <div class="small">After you sign in, you can go to settings.</div>
+          <div class="small" id="settingsInfo">After you sign in, you can go to settings.</div>
         {% endif %}
       </div>
 

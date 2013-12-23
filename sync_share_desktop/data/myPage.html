@@ -1,74 +1,58 @@
 <!DOCTYPE html>
 <html>
-<title>
-Synch & Share
-</title>
 
+<head>
+<meta charset="utf-8"> 
+<title>
+Sync & Share
+</title>
+<link rel="stylesheet" href="themes/shwetaCss.min.css" />
+<link rel="SHORTCUT ICON" href="images/myLogo64.png">
+
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0-rc.1/jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.0-rc.1/jquery.mobile-1.4.0-rc.1.min.js"></script>
+</head>
 <body>
-<center>
+
+	
   <div class="logo">
-  	<div><img src="http://i43.tinypic.com/2lka2s2.jpg" title="logo by Shweta"/></div>
+  	<div><img src="images/myLogo.png" title="logo by Shweta"/></div>
   	<div><span class="small">Sync & Share</span></div>
   </div>
-</center>
-<br>
-<br>
-<center><div id="loading"></div><center>
-<br>
-<br>
-<center>
+
+
+	<div id="loading"></div>
+
+
+
 <table id="mainTable">
-<!--tr>
-<td id="header" colspan="2">Header</td>
-</tr-->
-<tr id="hiddenRow" class="hideAndShow" style="display:none">
-	<th class="invisible"></th>
-	<th id="oneOption" class="bCell"><div id="oneOptionDiv">Bookmarks</div></th>
-	<th id="twoOption" class="bCell"><div id="twoOptionDiv">Saved Bookmarks</div></th>
-<tr>
-<tr>
-<th id="tabsCell" class="cell selected"><div id="tabsCellDiv">Tabs</div></th>
-	<td id="mainContent" class="content" rowspan="4" colspan="2">
-		
-		<!--table id="tabsTable"  style="display:table">
-			
-		</table>
+	<!--tr>
+	<td id="header" colspan="2">Header</td>
+	</tr-->
+	<tr id="hiddenRow" class="hideAndShow" style="display:none">
+		<th class="invisible"></th>
+		<th id="oneOption" class="bCell"><div id="oneOptionDiv">Bookmarks</div></th>
+		<th id="twoOption" class="bCell"><div id="twoOptionDiv">Saved Bookmarks</div></th>
+	<tr>
+	<tr>
+	<th id="tabsCell" class="cell selected"><div id="tabsCellDiv">Tabs</div></th>
+		<td id="mainContent" class="content" rowspan="4" colspan="2">
 
-		<!--table id="bookmarksTable" style="display:none">
-			<tr>
-			<td id="allBookmarks" class="bCell bSelected">Bookmarks</td>
-			<td id="savedBookmarks" class="bCell">Saved Bookmarks</td>	
-			</tr>
-			
-			<tr id="bookmarksContent" colspan="2">
-				<ul id="bookmarksList"> 
-				</ul>
-			</tr>			
-		</table-->
+		</td>
+	</tr>
 
-		<!--table id="historyTable" style="display:none">
-			<tr>
-			<td id="allHistory" class="bCell bSelected">History</td>
-				<td id="historyContent" class="content" rowspan="2">Content</td>
-			</tr>
-			<tr>
-			<td id="savedHistory" class="bCell">Saved History</td>
-			</tr>
-		</table-->
+	<tr>
+	<th id="bookmarksCell" class="cell"><div id="bookmarksCellDiv">Bookmarks</div></th>
 
-	</td>
-</tr>
+	</tr>
+	<tr>
+	<th id="historyCell" class="cell"><div id="historyCellDiv">History</div></th>
 
-<tr>
-<th id="bookmarksCell" class="cell"><div id="bookmarksCellDiv">Bookmarks</div></th>
-
-</tr>
-<tr>
-<th id="historyCell" class="cell"><div id="historyCellDiv">History</div></th>
-
-</tr>
+	</tr>
 </table> 
-</center>
+
 </body>
 
 </html>
