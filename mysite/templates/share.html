@@ -69,7 +69,7 @@
 		{% for d in devices %}
 			{% if d.device_type == "desktop" %}
 			<div class="device">
-				<ul onclick="showOrHide(event)" class="hiding"> Bookmarks in {{ d.device_name }}
+				<ul onclick="showOrHide(event)" class="hiding"> Bookmarks in <span class="highlight">{{ d.device_name }}</span>
 					<ul class="hidden">
 					    {% recursetree d.bookmark_set.all %}
 					    	
@@ -107,13 +107,14 @@
 	<div id="syncHistory" class="autoSync">
 		<div class="mainTitle">History</div>
 		{% for d in devices %}
-			{% if d.device_type == "desktop "%}
+			{% if d.device_type == "desktop" %}
 			<div class="device">
-				<ul onclick="showOrHide(event)" class="hiding">History in {{ d.device_name }}
+				<ul onclick="showOrHide(event)" class="hiding">History in <span class="highlight">{{ d.device_name }}</span>
 					{% for h in d.history_set.all %}
 					<li class="hidden"><label>
 						<input name="shareHistory" type="checkbox" value="{{ h.unique }}" /> 
 						<a href="{{ h.url }}">{{ h.title }}</a>
+						<span class="small dateInfo"> Last visited: {{ h.time | date:"D d M Y" }} & visited: {{ h.visited }} times.</span>
 					</label>
 					</li>
 					{% endfor %}
@@ -129,8 +130,11 @@
 	<div id="syncTabs" class="autoSync">
 		<div class="mainTitle">Tabs</div>
 		{% for d in devices %}
+			
 			<div class="device">
-				<ul onclick="showOrHide(event)" class="hiding">Tabs in {{ d.device_name }}
+				{% if d.tab_set.all %}
+				<ul onclick="showOrHide(event)" class="hiding">Tabs in <span class="highlight">{{ d.device_name }}</span>
+				
 					{% for t in d.tab_set.all %}
 					<li class="hidden">
 					<label>
@@ -141,8 +145,13 @@
 					{% endfor %}
 				
 				
+				
 				</ul>
+				{% else %}
+				<p> No tabs synced from <span class="highlight">{{ d.device_name }}</span></p>
+				{% endif %}
 			</div>
+			
 		
 		
 		{% endfor %}

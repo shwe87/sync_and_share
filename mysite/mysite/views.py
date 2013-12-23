@@ -111,9 +111,9 @@ def saveData(aData):
 	try:	#See if this data was already saved
 		#savedData = Sync.objects.filter(user=user,typeOf=typeOf,url=url)#.filter(typeOf=typeOf).filter(url=url)
 		savedData = Sync.objects.get(user=user,typeOf=typeOf,url=url)
-		print(savedData.title)
-		print(savedData.url)
-		print(savedData.typeOf)
+		#print(savedData.title)
+		#print(savedData.url)
+		#print(savedData.typeOf)
 		datas['exists'] = True
 		datas['savedData'] = savedData
 		#savedType = savedData.objects.filter(typeOf=typeOf)
@@ -133,7 +133,7 @@ def saveData(aData):
 		datas['exists'] = False
 		savedData = Sync(user=user,title=title,url=url,typeOf=typeOf,unique=str(uuid.uuid4()))
 		savedData.save()
-		print (savedData.id)
+		#print (savedData.id)
 		datas['savedData'] = savedData
 	return datas
 
@@ -186,13 +186,13 @@ def welcome(request):
 	c = t.render(Context({'email':request.user.email}))
 	#t.render(c)
 	response.write(c)"""
-	print request.user.email
-	emails = []
-	emails.append('shweta87.work@gmail.com')
-	emails.append('parihu@gmail.com')
-	emails.append('parihu@gmail.com')
-	emails = sorted(set(emails))
-	print "EMAILS"
+	#print request.user.email
+	#emails = []
+	#emails.append('shweta87.work@gmail.com')
+	#emails.append('parihu@gmail.com')
+	#emails.append('parihu@gmail.com')
+	#emails = sorted(set(emails))
+	#print "EMAILS"
 	"""thisUser = User.objects.get(email=request.user.email)
 	shared = Share.objects.filter(shared_from=thisUser)
 	if shared:
@@ -200,14 +200,14 @@ def welcome(request):
 		for s in shared:
 			s.shared_with_emails.remove("asdfkdskf")
 	"""	
-	try:
-		toRemove = str(request.user.email)
-		emails.remove(toRemove)
-		
-	except ValueError:
-		pass
-	print emails
-	return render(request, 'welcome.html',{'email':request.user.email},context_instance = RequestContext(request))
+	
+	user = request.user;
+	bookmarks = user.bookmark_set.all().order_by('-addedDate')[:5]
+	history = user.history_set.all().order_by('-addedDate')[:5]
+	tabs = user.tab_set.all().order_by('-addedDate')[:5]
+	shared = user.shared_from_set.all().order_by('-addedDate')[:5]
+	savedItems = user.sync_set.all().order_by('-addedDate')[:5] 
+	return render(request, 'welcome.html',{'bookmarks':bookmarks,'history':history,'tabs':tabs,'shared':shared,'savedItems':savedItems},context_instance = RequestContext(request))
 
 
 def hello():
@@ -217,11 +217,13 @@ def hello():
 #Without csrf_exempt the response sent to the add-on wasn't the desired one by us.
 def save(request, element):
 	response = HttpResponse()
-	print (element)
-	print (request.body)
+	#print (element)
+	#print (request.body)
 	#print (request.META)
 	if (request.user.is_authenticated()):
+		print "Save received!! from "
 		try:
+			print request.body
 			#Validate the element passed: Valid only tabs,bookmarks or history.
 			validate_type(element)
 			parsedData = json.loads(request.body)	#parse the incoming data to json type.
@@ -255,6 +257,7 @@ def read(request, element):
 	response = HttpResponse()
 	#thisUser = User.objects.get(username='shweta')
 	if (request.user.is_authenticated()):
+		print "Read received"
 		#Get the table's entry:
 		try:
 			validate_type(element)
@@ -289,7 +292,7 @@ def read(request, element):
 def save_group(user, groupName, members ):
 	try:
 		ug = UserGroup.objects.get(user=user)	#This has to be unique.
-		print ug.groups.all()			#All the groups that the user is in
+		#print ug.groups.all()			#All the groups that the user is in
 	except UserGroup.DoesNotExist:
 		#No groups associated with the user.			
 		ug = UserGroup(user=user)		#Create one
@@ -491,6 +494,7 @@ def share(request):
 	try:
 		#first of all, try to fetch the user's manually synced tabs.
 		synced = Sync.objects.filter(user=user)
+		print "Synced = " + str(len(synced))
 		if not synced:					#If it doesn't filter anything
 			synced = None
 	except Sync.DoesNotExist:				#If this user hasn't synced anything yet.
@@ -523,6 +527,7 @@ def share(request):
 	#User's all synced tabs from all devices	
 	try:
 		synced_tabs = Tab.objects.filter(owner=user)
+		print "Synced tabs = " + str(synced_tabs.count())
 		if not synced_tabs:
 			synced_tabs = None
 	except Tab.DoesNotExist:
@@ -777,11 +782,11 @@ def viewShared(request):
 			for s in shared_from_user:
 				t = s.shared.all()
 				b = s.shared_bookmarks.all()
-				print len(b)
+				print "Shared bookmarks " + str(len(b))
 				h = s.shared_history.all()
-				print len(h)
+				print "Shared history = "  + str(len(h))
 				ta = s.shared_tabs.all()
-				print len(ta)
+				print "Shared tabs " + str(len(ta))
 				"""if (len(t) > 0):
 					print "NOT NONE!!!"
 					#ifNone = False
@@ -804,10 +809,10 @@ def viewShared(request):
 	try:
 		shared_with_user = thisUser.shared_with_emails_set.all()	#Share object
 		if shared_with_user:
-			print "YES"
+			#print "YES"
 			print shared_with_user
 			for su in shared_with_user:
-				print "UNIQUE = " + su.unique
+				#print "UNIQUE = " + su.unique
 				#su.shared_with_emails.remove(thisUser)	
 				sh = su.shared.all()
 				#for h in sh:
@@ -1029,9 +1034,14 @@ def readAllBookmarks(request):
 			device_id = device_info['device_id']
 			device_name = device_info['device_name']
 			device_type = device_info['device_type']
+			print "Without excluded bookmarks "
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
+			print users_all_devices.count()
 			#thisDevice = get_device(owner,device_id,device_name)
-			exclude_this_device = users_all_devices.exclude(device_id=device_id,device_type='mobile')
+			exclude_this_device = users_all_devices.exclude(device_id=device_id)
+			exclude_this_device = exclude_this_device.exclude(device_type='mobile')
+			print "WITH EXCLUDED Bookmarks : "
+			print exclude_this_device.count()
 			all_devices = []
 			
 			toSend = []
@@ -1046,6 +1056,7 @@ def readAllBookmarks(request):
 						bookmarksList.append(b.serialize_to_json())
 					a_device['bookmarks'] = bookmarksList
 					toSend.append(a_device)
+				print toSend
 			response = HttpResponse(json.dumps(toSend),content_type='application/json')
 		else:
 			response = HttpResponseNotAllowed('Invalid headers')
@@ -1071,7 +1082,8 @@ def readAllHistory(request):
 			device_type = device_info['device_type']
 			users_all_devices = UsersDevice.objects.filter(user=request.user)
 			#thisDevice = get_device(owner,device_id,device_name)
-			exclude_this_device = users_all_devices.exclude(device_id=device_id,device_type='mobile')
+			exclude_this_device = users_all_devices.exclude(device_id=device_id)
+			exclude_this_device = exclude_this_device.exclude(device_type='mobile')
 			all_devices = []
 			
 			toSend = []

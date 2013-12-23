@@ -89,7 +89,7 @@ function saveTabs(tabsToSave){
 	message.msg = 'Loading...';
 	message.type = 'info';
 	handleShowMessage(message);
-	console.log(tabsToSave);
+	//console.log(tabsToSave);
 	//Get the favicon icon:
 	var dataToSave = new Array();
 	for each (var tabToSave in tabsToSave){				
@@ -166,10 +166,11 @@ function getAllBookmarks(){
 		var allThisDeviceBookmarks = bookmarks.getBookmarks();
 		var aBookmark = {}
 		aBookmark.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};
+		console.log(aBookmark.device);
 		aBookmark.bookmarks = allThisDeviceBookmarks;
 		allBookmarks.push(aBookmark);
 		var allSavedBookmarks = localStorage.getAllSavedBookmarks();
-		console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedBookmarks));
+		//console.log("MAIN: Got from localStorage " + JSON.stringify(allSavedBookmarks));
 		if (allSavedBookmarks != null){
 			//allBookmarks.push(ss.storage.bookmarks);
 			var allBookmarks = allBookmarks.concat(allSavedBookmarks);
@@ -239,6 +240,10 @@ function getAllTabs(){
 	//aHistory.device = {'device_id':ss.storage.id,'device_name':'this_device'}
 	//aHistory.history = thisHistoryList;
 	//historyList.push(aHistory);
+	var aux = new Array();
+	for each(var thisDeviceTab in tabs){
+		aux.push(thisDeviceTab);	
+	}
 	var aux = new Array();
 	for (var i=0;i<tabs.length;i++){
 			var auxTab = {'title':tabs[i].title,'url':tabs[i].url};
@@ -341,7 +346,7 @@ function openMenu(msg){
 			openMenuTabWorker.port.on('cellClicked',function(clickedElement){
 				var nodeName = clickedElement.node;
 				var nodeId = clickedElement.id;
-				console.log('main '+'cellClicked received = ' + clickedElement.node + ','+clickedElement.id);
+				console.log('MAIN: cellClicked received = ' + nodeName + ','+nodeId);
 				if (nodeId == 'tabsCell'){
 					console.log('main clicked = tabsCell');
 					//console.log('main '+'Here nodeName = '+nodeName);
@@ -353,6 +358,7 @@ function openMenu(msg){
 					
 				}
 				else if (nodeName == 'Tabs'){
+					console.log("\t\t\tTABS CLICKED: " + nodeId);
 					getAllTabs();
 				}
 				else if (nodeName == 'Saved Tabs'){
@@ -409,7 +415,14 @@ function openMenu(msg){
 
 
 }
-
+function handleDeleteContext(nodeToDelete){
+	var serverName = nodeToDelete.server;
+	var url = nodeToDelete.url;
+	var element = nodeToDelete.element;
+	console.log("Delete from = " + serverName + " , "+ url + ' , ' + element);
+	server.del(serverName,url,element);
+	
+}
 
 
 //Handle the context menu:
@@ -510,10 +523,11 @@ exports.main = function(options, callbacks) {
     localStorage.setId();
     //Create the panel:
     console.log(options.loadReason);
+    localStorage.setDeviceName(preferences.getDeviceName());
     //handleShowMessage(options.loadReason);
     if (options.loadReason == 'install'){
 		console.log("INSTALL!!!!!");
-		if ('USERNAME' in system.env) {
+		/*if ('USERNAME' in system.env) {
 			var user = system.env.USERNAME;
 			console.log(system.env.USERNAME);
 		}
@@ -524,8 +538,8 @@ exports.main = function(options, callbacks) {
 		else {
 				var user = 'username';
 		}
-		preferences.setDeviceName(user+'-desktop');
-    	localStorage.setDeviceName(preferences.getDeviceName());
+		preferences.setDeviceName(user+'-desktop');*/
+    	
     	//localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
@@ -608,8 +622,9 @@ exports.main = function(options, callbacks) {
     localStorage.on('showMessage',handleShowMessage);
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save This');
-	contextMenu.addDeleteMenu('Delete This Saved Item.');
+    contextMenu.addDeleteMenu('Delete This Saved Item!');
     contextMenu.on('contextClicked',handleContextMenu);
+    contextMenu.on('deleteContextClicked',handleDeleteContext);
     
     //Whenever the bookmark sends us information:
     //bookmarks.on('take',takeABookmark);

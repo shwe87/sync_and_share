@@ -30,6 +30,7 @@ class UsersDevice(models.Model):
 	device_name = models.TextField()
 	device_type = models.CharField(max_length=7, validators = [validate_device_type])
 	
+	
 	def __unicode__(self):
 		return u'%(user)s has a device %(device)s' %{
 			'user': (self.user.email),
@@ -62,7 +63,7 @@ class Bookmark(MPTTModel):
 	unique = models.TextField(unique=True)
 	owner = models.ForeignKey(User)
 	device = models.ForeignKey(UsersDevice)
-
+	addedDate = models.DateTimeField(auto_now_add=True)
 
 	class MPTTMeta:
         	order_insertion_by = ['title']
@@ -118,6 +119,7 @@ class Tab(models.Model):
 	device = models.ForeignKey(UsersDevice)
 	owner = models.ForeignKey(User)
 	unique = models.TextField(unique=True)
+	addedDate = models.DateTimeField(auto_now_add=True)
 	
 	def __init__(self, *args, **kwargs):
         	super(Tab, self).__init__(*args, **kwargs)
@@ -147,7 +149,7 @@ class History(models.Model):
 	owner = models.ForeignKey(User)
 	unique = models.TextField(unique=True)
 	visited = models.IntegerField()
-	
+	addedDate = models.DateTimeField(auto_now_add=True)
 	class Meta:
 		ordering = ['time']
 	
@@ -179,6 +181,7 @@ class Sync(models.Model):
 	url = models.URLField()
 	typeOf = models.CharField(max_length = 9, validators = [validate_type])
 	unique = models.CharField(max_length=100, null=True, blank=True, unique=True)
+	addedDate = models.DateTimeField(auto_now_add=True)
 		
 	def __unicode__(self):
         	 return (u'%(owner)s has saved a %(typeOf)s with title %(title)s') %{
@@ -195,6 +198,8 @@ class MyGroup(models.Model):
 	members = models.ManyToManyField(User, related_name='members_set')
 	groupName = models.CharField(max_length=100)
 	unique = models.CharField(max_length=100, null=True, blank=True, unique=True)
+	addedDate = models.DateTimeField(auto_now_add=True)
+	
 	
 	def __unicode__ (self):
 		return (u'%s' %(self.groupName))
@@ -216,6 +221,8 @@ class Share(models.Model):
 	shared_with_group = models.ManyToManyField(MyGroup)
 	shared_with_emails = models.ManyToManyField(User, related_name='shared_with_emails_set')
 	unique = models.CharField(max_length=100, null=True, blank=True, unique=True)
+	addedDate = models.DateTimeField(auto_now_add=True)
+	
 	
 	def __unicode__(self):
 		return (u'%(owner)s is sharing') %{
@@ -226,6 +233,7 @@ class Share(models.Model):
 class UserGroup(models.Model):
 	user = models.OneToOneField(User)
 	groups = models.ManyToManyField(MyGroup)
+	addedDate = models.DateTimeField(auto_now_add=True)
 	
 	def __unicode__ (self):
 		return (u'%s' %(self.user.email))

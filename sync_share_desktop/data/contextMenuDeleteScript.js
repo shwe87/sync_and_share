@@ -1,3 +1,12 @@
+function decodeEntities(s){
+	/*Have to convert the html characters to normal strings to compare*/
+    var str, temp= document.createElement('p');
+    temp.innerHTML= s;
+    str= temp.textContent || temp.innerText;
+    temp=null;
+    return str;
+}
+
 self.on('click',function(node,data){
 	//The node is a LI object and the LI object has a DIV with the title and the url
 	//console.log('Script context:  '+'Context clicked ' + node.className);
@@ -13,31 +22,39 @@ self.on('click',function(node,data){
 	 * </a>
 	 * </p>
 	 * </div>*/
-	var nodeToSend = new Object();
-	nodeToSend.className = node.className;	//Will be bookmark or history.
+	var nodeToDelete = new Object();
+	var parent = node.parentNode;
+	console.log("PARENT ID = " + parent.id);
+	var element = parent.id;
+	element = element.split('show')[1];
+	console.log("ELEMENT = " + element);
+	nodeToDelete.element = element;
 	for each(var child in allChildren){
 		console.log("Script delete: " + child.className + " , " + child.nodeName);
-		/*console.log('Script context:  '+'Context className ' + child.className);
-		console.log('SCRIPT CONTEXT: ' + 'nodeName: ' + child.nodeName);
-		if (child.nodeName == 'P'){
-				var moreChild = child.children;
-				for(var j=0;j<moreChild.length;j++){
-					console.log('SCRIPT CONTEXT: ' + 'nodeName: ' + moreChild[j].className);
-					if(moreChild[j].className == 'url'){
-							nodeToSend.url = moreChild[j].innerHTML;
-							self.postMessage(nodeToSend);
-							break;
+		if (child.className == 'title'){
+			//Know the server:
+			var thisChild = child.children;
+			for (var j=0;j<thisChild.length;j++){
+					if (thisChild[j].className == 'serverLogo'){
+						var src = thisChild[j].getAttribute('src');
+						var splitted = src.split('/')[1];
+						var server = splitted.split('.png')[0];
+						nodeToDelete.server = server;
 					}
+			}
+				
+		}
+		else if (child.className == 'url'){
+				var thisChild = child.children;
+				for (var k=0;k<thisChild.length;k++){
+						if (thisChild[k].className == 'urlContainer'){
+								var toDelete = thisChild[k].innerHTML;
+								toDelete = decodeEntities(toDelete);
+								nodeToDelete.url = toDelete;
+						}
 				}
 		}
-		if (child.className == 'title'){
-			nodeToSend.title = child.innerHTML;
-		}
-		if (child.className == 'url'){
-			nodeToSend.url = child.innerHTML;
-			self.postMessage(nodeToSend);
-			break;
-		}*/
 		
 	}
+	self.postMessage(nodeToDelete);
 });
