@@ -241,8 +241,9 @@ function getAllTabs(){
 	//aHistory.history = thisHistoryList;
 	//historyList.push(aHistory);
 	var aux = new Array();
-	for each(var thisDeviceTab in tabs){
-		aux.push(thisDeviceTab);	
+	for (var i=0;i<tabs.length;i++){
+		var auxTab = {'title':tabs[i].title,'url':tabs[i].url};
+		aux.push(auxTab);	
 	}
 	var aTab = new Object();
 	aTab.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};

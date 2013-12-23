@@ -4,6 +4,7 @@
 <html>
   <title>{% block title%}  {% endblock %}</title>
   <head>
+	  {% browserid_css %}
   	<meta charset="UTF-8">
 	  {% if flavour == "mobile" %}
 	<link href={% static "css/mobile/pageStyle.css" %} rel="stylesheet" type="text/css">
@@ -14,7 +15,7 @@
     
     
     <link rel="SHORTCUT ICON" href={% static "images/favicon.png" %}>
-    {% browserid_css %}
+    
     {% block head %} {% endblock %}
   </head>
   <body>

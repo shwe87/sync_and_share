@@ -65,7 +65,7 @@ span.small, div.helpText,li.small,div.small{
 }
 */
 
-div.logo, div.brand,div#loading{
+div.logo, div.brand{
 	display:block;
 	margin-top: 60px;
 	margin-bottom: 50px;
@@ -109,6 +109,10 @@ span.small{
 	height:5em;
 	margin-top: -3em;
 
+}
+
+div.dateInfo{
+	margin-left: 10px;
 }
 
 

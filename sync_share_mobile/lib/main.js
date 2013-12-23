@@ -292,7 +292,7 @@ exports.main = function(options, callbacks) {
     UIControl.startup();
     
     if (options.loadReason == 'install'){
-    	localStorage.setDeviceName('username-android');
+    	localStorage.setDeviceName(preferences.getDeviceName());
     	localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
@@ -301,15 +301,23 @@ exports.main = function(options, callbacks) {
     }
     else{
 		localStorage.setId();
-    	var registered = localStorage.checkIfRegistered();
-		if (registered){
-			//localStorage.setId();
-			localStorage.startUp();
-			myServer.startUp();
-			localStorage.handleDatas(null);
+		var started = localStorage.getStarted();
+		console.log("MAIN: started = " + started);
+    	if (started == true){
+			var registered = localStorage.checkIfRegistered();
+			if (registered){
+				//localStorage.setId();
+				localStorage.startUp();
+				myServer.startUp();
+				localStorage.handleDatas(null);
+			}
+			else{
+				startDatas(null);
+			}
 		}
 		else{
-			startDatas(null);
+				login.loginDialog();
+				login.on('loggedIn',startDatas);
 		}
     }
     

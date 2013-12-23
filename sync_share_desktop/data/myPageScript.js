@@ -426,6 +426,7 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 		if (found == false){
 				try{
 						this_device = device.this_device;
+						console.log("THIS DEVICE FOUND!!!!");
 						found = true;
 				}
 				catch(e){
@@ -443,7 +444,7 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 		else{
 				var textToShow = device_name;
 		}
-		var text = document.createTextNode(device_name);
+		var text = document.createTextNode(textToShow);
 		aDeviceUL.appendChild(text);
 		var bookmarksList = document.getElementById('bookmarksList');
 		anItem.appendChild(aDeviceUL);

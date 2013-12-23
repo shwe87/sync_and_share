@@ -6,7 +6,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+     ('Shweta ', 'shweta.universidad@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -169,6 +169,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # Set your site url for security
+#SITE_URL = 'http://192.168.1.16:8000'
 SITE_URL = 'http://192.168.1.16:8000'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
