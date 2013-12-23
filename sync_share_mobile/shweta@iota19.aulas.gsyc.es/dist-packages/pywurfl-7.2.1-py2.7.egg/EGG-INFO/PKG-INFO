@@ -1,0 +1,421 @@
+Metadata-Version: 1.1
+Name: pywurfl
+Version: 7.2.1
+Summary: pywurfl - Python tools for processing and querying the Wireless Universal Resource File (WURFL)
+Home-page: http://celljam.net/
+Author: Armand Lynch
+Author-email: lyncha@users.sourceforge.net
+License: LGPL
+Description: WURFL and Python
+        ================
+        
+        #### by Armand Lynch (lyncha at users dot sourceforge dot net)
+        
+        **Please note: As of pywurfl v7.0.0 all textual capabilities (including WURFL
+        IDs and user agents) are unicode strings and all textual parameters to the API
+        functions should be given as unicode strings.**
+        
+        [pywurfl][1] is a [Python][3] language package that makes dealing with the
+        [WURFL][2] in Python a little easier. It contains tools that allow you to
+        retrieve objects that represent devices defined in the WURFL or manipulate the
+        WURFL device hierarchy by using a simple set of [API][9] functions or a
+        pywurfl specific [query language][4]. Also included within the package is a
+        [WURFL processor][5] class that provides an event based API that can be used
+        to alleviate some of the work when processing the WURFL sequentially.
+        
+        License
+        -------
+        
+        pywurfl is Copyright 2004-2011, Armand Lynch (lyncha at users dot sourceforge
+        dot net) The code is free software; you can redistribute it and/or modify it
+        under the terms of the [LGPL][6] License (see the file LICENSE included with
+        the distribution).
+        
+        Requires
+        --------
+        
+        Python >= 2.6
+        
+        Required Modules
+        ----------------
+        
+        [Levenshtein Module][7] >= 0.10.1 is required for the user agent similarity
+        algorithms.
+        
+        Optional Modules
+        ----------------
+        
+        [pyparsing][8] >= 1.5 is required if you want to use the pywurfl query language.
+        
+        Scripts
+        -------
+        
+        The pywurfl package contains a wurfl2python.py script that translates a WURFL
+        compatible XML file into a python class hierarchy that the pywurfl API can use
+        directly. The default name for the output file is wurfl.py. Type the following
+        at the command line to produce it:
+        
+            python wurfl2python.py wurfl.xml
+        
+        Patching
+        --------
+        
+        In order to [patch][13] your wurfl.xml file, use the [WURFL XSLT Tools][14].
+        Then run wurfl2python on the patched file.
+        
+        A quick usage example
+        ---------------------
+        
+        After you have created the wurfl.py module, you can use the following code to
+        get a device object based on a user agent and print it to stdout.
+        
+            from wurfl import devices
+            from pywurfl.algorithms import TwoStepAnalysis
+        
+            user_agent = u"Nokia3350/1.0 (05.01)"
+            search_algorithm = TwoStepAnalysis(devices)
+        
+            device = devices.select_ua(user_agent, search=search_algorithm)
+        
+            # Print out the specialized capabilities for this device.
+            print device
+        
+        That's it.
+        
+        pywurfl API
+        -----------
+        
+        To get an object that represents a device, you can use one of 2 methods of the
+        'devices' object imported from the wurfl.py module.
+        
+            select_id(unicode, [actual_device_root=False], [instance=True])
+        
+        This method returns a device object based on the WURFL ID provided.
+        
+        If `actual_device_root` is `True` then the `select_id` method will return the
+        requested device or a device in its fallbacks if it is an actual device.
+        
+        If instance is `False` then the `select_id` method will return a class object
+        instead of an instance.
+        
+            select_ua(unicode, [actual_device_root=False], [search=False], [instance=True])
+        
+        This method returns a device object based on the user agent provided.
+        
+        If `actual_device_root` is `True` then the `select_ua` method will return the
+        requested device or a device in its fallbacks if it is an actual device.
+        
+        The search argument takes an instance of [pywurfl.algorithms.Algorithm][12].
+        At this time, only four algorithms are provided: TwoStepAnalysis, Tokenizer,
+        Levenshtein distance and JaroWinkler. The TwoStepAnalysis algorithm is the
+        default algorithm used in Java and PHP APIs, you can find a description of it
+        [here][11]. The other three algorithms are older and probably shouldn't be
+        used in new programs. 
+        
+        If instance is `False` then the `select_ua` method will return a class object
+        instead of an instance.
+        
+        ### More API methods
+        
+        There are a few more methods that you can use on the 'devices' object to
+        manipulate the device class hierarchy itself.
+        
+            add(parent, devid, devua, [actual_device_root=False], [capabilities=None])
+        
+            add_capability(group, capability, object)
+        
+            add_group(group)
+        
+            insert_after(parent, devid, devua, [actual_device_root=False], [capabilities=None])
+        
+            insert_before(child, devid, devua, [actual_device_root=False], [capabilities=None])
+        
+            remove(devid)
+        
+            remove_capability(capability)
+        
+            remove_group(group)
+        
+            remove_tree(devid)
+        
+        Here's an example
+        
+            from wurfl import devices
+        
+            # Add a new device
+            devices.add(u'generic',
+                        u'teledev1',
+                        u'Mozilla/25.0 (X11; U; Linux i686; en-US; rv:25.0.0) Gecko/21000711 Firefox/28.1.5',
+                        actual_device_root=True)
+        
+            # Add a new capability group
+            devices.add_group(u'teleporter')
+        
+            # Add some capabilities to the teleporter group
+            devices.add_capability(u'teleporter', u'teleportation_device', False)
+            devices.add_capability(u'teleporter', u'distance', 20) # in km
+            devices.add_capability(u'teleporter', u'can_recover_from_errors', False)
+        
+            # Add a new device overriding a default capability value
+            # Note that no devices had a 'teleportation_device' attribute until we added it
+            devices.add(u'teledev1',
+                        u'teledev2',
+                        u'Mozilla/25.0 (X11; U; Linux i686; en-US; rv:26.0.0) Gecko/21000712 Firefox/28.1.6',
+                        actual_device_root=True,
+                        capabilities={u'teleportation_device': True})
+        
+            # Add another group and capabilities
+            devices.add_group(u'python')
+            devices.add_capability(u'python', u'py_version', u'2.6')
+            devices.add_capability(u'python', u'py_heap_size', 0)
+        
+            # Remove an unused group
+            devices.remove_group(u'j2me')
+        
+            # Not interested in tiff files
+            devices.remove_capability(u'tiff')
+        
+        Check the [documentation][9] for more information.
+        
+        Serialization
+        -------------
+        
+        It's also possible to serialize changes that you make to a WURFL compatible
+        XML file.
+        
+            from wurfl import devices
+            from pywurfl.serialize import Serialize
+        
+            # Remove some groups and their capabilities from the WURFL hierarchy
+            devices.remove_group(u'j2me')
+            devices.remove_group(u'mms')
+        
+            Serialize(devices).to_xml("no_j2me_or_mms.xml")
+        
+        Search Algorithm Classes
+        ------------------------
+        
+        The algorithms module contains four algorithm classes (TwoStepAnalysis,
+        Tokenizer, JaroWinkler and LevenshteinDistance). When instantiating any of
+        these classes, a callable object will be returned that can be used to search a
+        'devices' object with the provided user agent.
+        
+            TwoStepAnalysis(devices, [use_normalized_ua=False])
+        
+        In order to use the TwoStepAnalysis algorithm, you must initialize it with a
+        set of known devices. `use_normalized_ua` determines whether or not the search
+        algorithm requires that a normalized user agent be presented to it. The
+        TwoStepAnalysis algorithm does its own normalization internally, hence the
+        `False` specification here.
+        
+            Tokenizer([devwindow], [use_normalized_ua=True])
+        
+        The devwindow argument determines the upper limit of device matches before the
+        algorithm would return the generic device.
+        
+            JaroWinkler([accuracy=1.0], [weight=0.05], [use_normalized_ua=True])
+        
+        The accuracy argument determines the lower limit at which pywurfl will
+        determine if a user agent matches another. If no device can be found that
+        scores equal to or greater than accuracy, a generic device is returned. Valid
+        values are between 0.0 and 1.0
+        
+            LevenshteinDistance([use_normalized_ua=True])
+        
+        The LevenshteinDistance algorithm only has an optional `use_normalized_ua` argument.
+        
+            from wurfl import devices
+            from pywurfl.algorithms import JaroWinkler, Tokenizer, LevenshteinDistance
+        
+            tsa = TwoStepAnalysis(devices)
+            tokenizer = Tokenizer()
+            jarow = JaroWinkler()
+            levdis = LevenshteinDistance()
+        
+            user_agent = u"Nokia3350/1.0 (05.01)"
+            device1 = jarow(user_agent, devices)
+            device2 = tokenizer(user_agent, devices)
+            device3 = levdis(user_agent, devices)
+        
+            device4 = devices.select_ua(user_agent, search=tsa)
+            device5 = devices.select_ua(user_agent, search=jarow)
+            device6 = devices.select_ua(user_agent, search=tokenizer)
+            device7 = devices.select_ua(user_agent, search=levdis)
+        
+        It's also very easy to define your own algorithm for use in pywurfl in case
+        the algorithms provided don't serve your needs. Just subclass the
+        pywurfl.algorithms.Algorithm class and follow the protocol.
+        
+        Device Objects
+        --------------
+        
+        The object returned by either `select_id` or `select_ua` is usually a Device
+        instance.
+        
+            device = devices.select_id(unicode)
+        
+        A device object has many attributes. The device id, user agent, `fall_back`
+        and `actual_device_root` attributes are exposed with the following attributes
+        of the device object:
+        
+            device.devid
+            device.devua
+            device.fall_back # All devices have a fall_back attribute
+            device.actual_device_root
+        
+        Any capability that is defined in the WURFL becomes an attribute of the device
+        object. For example:
+        
+            device.brand_name
+            device.model_name
+            device.ringtone
+        
+        All attributes are converted into their respective Python types. For example:
+        
+            device.ringtone  # Attribute is boolean
+            device.preferred_markup  # Attribute is a unicode string
+            device.rows  # Attribute is an integer
+        
+        You can iterate over a device object to select each capability and its
+        corresponding value. For example, to print out all capabilities of a device
+        object you can use the code below:
+        
+            for group, capability, value in device:
+                print group, capability, value
+        
+        Every device has a shared groups attribute which is a Python dictionary where
+        the keys are the capability group names as defined in the WURFL and the values
+        are lists of the capability names for that specific group.
+        
+            for group in sorted(device.groups):
+                print group
+        
+        ### Classes and Instances
+        
+        The API methods can also return a class object instead of an instance. What
+        wurfl2python does is produce a module that creates a single inheritance class
+        hierarchy of all WURFL devices. You can use this to your advantage if you want
+        to change the attributes of a device at run-time and have all of its
+        descendants represent that change.
+        
+            # get an arbitrary device instance
+            device = devices.select_id(u'blackberry_generic_ver3_sub2')
+        
+            # get the generic device *class*
+            gen = devices.select_id(u'generic', instance=False)
+        
+            # modify the generic class
+            gen.teleportation_device = False
+        
+            # since all devices inherit from the generic device, this will not raise
+            # an attribute error now
+            device.teleportation_device # == False
+        
+        If you want to maintain the integrity of the class hierarchy, you should use
+        the add/remove/insert API methods on the 'devices' object mentioned above.
+        
+        Query Language
+        --------------
+        
+        The pywurfl package includes a query language that makes it easier to retrieve
+        a list of devices, WURFL IDs or user agents based on the capabilities of a
+        device. The best way to see what the query language looks like and what it can
+        do is with an example.
+        
+            from wurfl import devices
+            from pywurfl.ql import QL  # Import the query function generator
+        
+            # Retrieve a function that will query the devices object
+            query = QL(devices)
+        
+            # QL also adds a query method to devices (devices.query)
+        
+            q1 = u"""select id where ringtone=true and rows < 5 and
+                     columns > 5 and preferred_markup = 'wml_1_1'"""
+        
+            for wurfl_id in query(q1):
+                print wurfl_id
+        
+            # Let's look for some nice phones
+            q2 = u"""select device where all(ringtone_mp3, ringtone_aac, wallpaper_png,
+                     streaming_mp4) = true"""
+        
+            # Notice that we can also retrieve device classes
+            for device in devices.query(q2, instance=False):
+                print device.brand_name, device.model_name
+        
+            # We can also use the methods on the capability types to refine our queries.
+            # Note that you should *always* quote the strings that are passed to functions
+            # and those that are used in comparisons.
+            q3 = u"""select ua where brand_name.lower()='nokia'"""
+            for ua in query(q3):
+                print ua
+        
+            q4 = u"""select ua where brand_name.replace('No', 'Si').lower()='sikia'"""
+            for ua in query(q4):
+                print ua
+        
+            q5 = u"""select ua where model_name.isdigit()=true and actual_device_root=true"""
+            for ua in query(q5):
+                print ua
+        
+            # There are also a couple of regex methods (match and imatch) that were added
+            # to the string type to make those kind of queries possible. Use imatch to
+            # ignore case.
+            q6 = u"""select ua where brand_name.match('^No')=true"""
+            for ua in query(q6):
+                print ua
+        
+            # and arbitrary nesting is supported
+            q7 = u"""select ua where brand_name.replace('Nokia', brand_name.lower())='nokia'"""
+            for ua in query(q7):
+                print ua
+        
+        A full description of the query language is included in the documentation.
+        
+        The WURFL Processor
+        -------------------
+        
+        The WURFL processor is a general class that walks a WURFL XML file and
+        executes hooks as specific events occur in a fashion similar to SAX. The best
+        way to understand the WURFL processor is to look at its [documentation][10].
+        For an example of how to use use it, look at the source for wurfl2python.py.
+        
+        Contributors
+        ------------
+        
+        To *Pau Aliagas*, *Gabriele Fantini* and *Michele Bariani*: Thank you for the
+        many patches, bug reports and improvements.
+        
+        Comments and/or suggestions are appreciated.
+        
+        
+        [1]: http://celljam.net/api/index.html "pywurfl"
+        [2]: http://wurfl.sourceforge.net/ "WURFL"
+        [3]: http://www.python.org/ "Python"
+        [4]: http://celljam.net/#query "Query Language"
+        [5]: http://celljam.net/#processor "WURFL processor"
+        [6]: http://www.opensource.org/licenses/lgpl-license.php "LGPL"
+        [7]: http://pypi.python.org/pypi/python-Levenshtein/0.10.2 "Levenshtein Module"
+        [8]: http://pyparsing.wikispaces.com/ "pyparsing"
+        [9]: http://celljam.net/api/index.html "API documentation"
+        [10]: http://celljam.net/api/pywurfl.wurflprocessor-module.html "WURFL processor documentation"
+        [11]: http://wurfl.sourceforge.net/newapi/ "TwoStepAnalysis description"
+        [12]: http://celljam.net/api/pywurfl.algorithms.Algorithm-class.html "Algorithm class API documentation"
+        [13]: http://wurfl.sourceforge.net/patchfile.php "What is a patch file"
+        [14]: http://wurfl.sourceforge.net/xslt/index.php "WURFL XSLT Tools"
+        
+Platform: All
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Telecommunications Industry
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Database :: Front-Ends
+Classifier: Topic :: Internet :: WAP
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Utilities
