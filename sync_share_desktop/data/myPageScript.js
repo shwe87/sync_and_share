@@ -97,6 +97,25 @@ self.port.on('show',function(toDisplay){
 		var mainContent = document.getElementById('mainContent');
 		var p = document.createElement('p');
 		p.innerHTML = 'Nothing Saved yet!';
+		if (server == 'mysite'){
+				var textToPut = 'Sync & Share: Nothing saved yet!';
+		}
+		else if (server == 'dropbox'){
+				var textToPut = 'Dropbox: Nothing saved yet!';
+		}
+		else if (server == 'gapi'){
+				var textToPut = 'Google Drive: Nothing saved yet!';
+		}
+		else{
+				var textToPut = 'Nothing Saved yet!!'
+		}
+		p.innerHTML = textToPut;
+		var img = document.createElement('img');
+		img.setAttribute('class','serverLogo');
+		var image = 'images/'+server+'.png';
+		img.setAttribute('src',image);
+		img.setAttribute('title','Message from' + server);
+		p.appendChild(img);
 		mainContent.appendChild(p);
 	}
 	else{
@@ -115,7 +134,25 @@ self.port.on('show',function(toDisplay){
 				if (all.length == 0){
 					var mainContent = document.getElementById('mainContent');
 					var p = document.createElement('p');
-					p.innerHTML = 'Nothing Saved yet!';
+					if (server == 'mysite'){
+							var textToPut = 'Sync & Share: Nothing saved yet!';
+					}
+					else if (server == 'dropbox'){
+							var textToPut = 'Dropbox: Nothing saved yet!';
+					}
+					else if (server == 'gapi'){
+							var textToPut = 'Google Drive: Nothing saved yet!';
+					}
+					else{
+							var textToPut = 'Nothing Saved yet!!'
+					}
+					p.innerHTML = textToPut;
+					var img = document.createElement('img');
+					img.setAttribute('class','serverLogo');
+					var image = 'images/'+server+'.png';
+					img.setAttribute('src',image);
+					img.setAttribute('title','Message from' + server);
+					p.appendChild(img);
 					mainContent.appendChild(p);
 		
 				}else{
@@ -125,6 +162,7 @@ self.port.on('show',function(toDisplay){
 						var mainContent = document.getElementById('mainContent');
 						var mainDIV = document.createElement('div');
 						mainDIV.setAttribute('id','show'+key);
+						mainDiv.setAttribute('class','mainShow');
 						var div = document.createElement('div');
 						div.setAttribute('class','savedItem');
 						var p1 = document.createElement('p');
@@ -156,12 +194,7 @@ self.port.on('show',function(toDisplay){
 						a.appendChild(text);
 						
 						p2.appendChild(a);
-						console.log("KEY = " + key);
-						if (key == 'history'){
-								//var span = document.createElement('span');
-								console.log(element.lastVisited);
-								//var dateText = document.createTextNode();
-						}
+
 						div.appendChild(p2);
 						
 						var line = document.createElement('hr');

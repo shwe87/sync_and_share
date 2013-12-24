@@ -58,8 +58,7 @@ function handleErrors(response){
 	}
 	else if (response.status == '0'){
 		console.log('MY SERVER: Server is not connected');
-		var message = {'msg':'Sync & Share: Server not connected! Try again later.','type':'error'};
-		emit(exports,'showMessage',message);
+		
 	}
 	else{
 		var message = {'msg':'Sync & Share: Problem with server. Try again later!','type':'error'};
@@ -96,8 +95,7 @@ function saveAllBookmarks(){
 		    		var now = new Date();
 		    		var nTime = now.getTime();
 		    		emit(exports,'allBookmarksSavedInServer',nTime);
-		    		var message = {'msg':' All Bookmarks saved!','type':'correct'};
-		            emit(exports,'showMessage',message);
+		    		
 		    		handleRegister();
 		    			
 		    	}
@@ -131,8 +129,7 @@ function saveAllHistory(){
 		    		var nTime = now.getTime();
 		    		handleRegister();
 		    		emit(exports,'allHistorySavedInServer',nTime);
-		    		var message = {'msg':' All History saved!','type':'correct'};
-		            emit(exports,'showMessage',message);
+		    		
 		            handleRegister();
 		    			
 		    	}
@@ -213,7 +210,11 @@ function save(datas){
 						emit(exports,'showMessage',message);
 												 
 					}
-							   
+					else if (response.status == '0'){
+						console.log('MY SERVER: Server is not connected');
+						var message = {'msg':'Sync & Share: Server not connected. Please try again later!','type':'error'};
+						emit(exports,'showMessage',message);
+					}		   
 					else{
 							handleErrors(response);
 					}
@@ -271,6 +272,11 @@ function read(datas){
 				//dialog.loginDialog();	
 				emit(exports, 'notAuthorized', 'Sync & Share');
 			}
+			else if (response.status == '0'){
+				console.log('MY SERVER: Server is not connected');
+				var message = {'msg':'Sync & Share: Server not connected. Please try again later!','type':'error'};
+				emit(exports,'showMessage',message);
+			}
 			else{
 				handleErrors(response);
 			}
@@ -320,8 +326,7 @@ function readAllBookmarks(){
 		                        	
 		                }
 		                emit(exports, 'allBookmarksReadFromServer', listOfBookmarks);
-		                var message = {'msg':' All Bookmarks read!','type':'correct'};
-		                emit(exports,'showMessage',message);
+		                
 		         }
 		         else{
 		    		handleErrors(response);
@@ -405,8 +410,7 @@ function readAllHistory(){
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
 		                        emit(exports, 'allHistoryReadFromServer', listOfHistory);
-		                        var message = {'msg':' All History read!','type':'correct'};
-		                        emit(exports,'showMessage',message);
+		                        
 		                 }
 		                 else{
 		    			handleErrors(response);
@@ -483,8 +487,7 @@ function readAllTabs(){
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
 		                        emit(exports, 'allTabsReadFromServer', listOfTabs);
-		                        var message = {'msg':' All tabs read!','type':'correct'};
-		                        emit(exports,'showMessage',message);
+		                       
 		                 }
 		                 else{
 		    			handleErrors(response);
