@@ -430,7 +430,7 @@ function write(datas){
 			}
 			else if(response.status == '401'){
 				ifContinue = false;
-				message.msg = 'Not Signed in!';
+				message.msg = 'Dropbox: Not Signed in!';
 				message.type = 'error';
 				auth(datas);
 			}
@@ -459,7 +459,7 @@ function read(readDatas){
 	}
 	else{
 		var message = {};
-		message.msg = 'Not Signed in!';
+		message.msg = 'Dropbox: Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
 		emit(exports, 'notAuthorized','Dropbox');

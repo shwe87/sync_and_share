@@ -164,7 +164,7 @@ class History(models.Model):
 		return json.dumps(self.serializable_object())
 		
 	def serializable_object(self):
-		obj = {'title':self.title,'url':self.url,'deviceId':self.device.device_id,'time':str(self.time),'visited':self.visited}
+		obj = {'title':self.title,'url':self.url,'deviceId':self.device.device_id,'lastVisited':str(self.time),'visited':self.visited}
 		return obj
 	
 	

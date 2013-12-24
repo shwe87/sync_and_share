@@ -1,90 +1,112 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block title %} Sync & Share-Welcome {% endblock %}
+{% block head %}
+{% if flavour == "mobile" %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
+{% endblock %}
 {% block content %}
-
-	<div class="main">
-	<h3 class="mainTitle"> Recent synced Bookmarks </h3>
-	{% if bookmarks %}
-		{% for b in bookmarks %}
-			<div class="item">
-				<p> The {{ b.title }} was saved on {{ b.addedDate | date:"D d M Y" }}</p>
-			</div>
-		{% endfor %}
-	{% else %}
-		<div class="item">
-			<p> Nothing synced yet!</p>
-		</div>
-	{% endif %}
-	</div>
-	<div class="main">
-	<h3 class="mainTitle"> Recent synced History </h3>
-	{% if history %}
-		{% for h in history %}
-			<div class="item">
-				<p> The {{ h.title }} was saved on {{ h.addedDate | date:"D d M Y" }}</p>
-			</div>
-		{% endfor %}
-	{% else %}
-		<div class="item">
-			<p> Nothing synced yet!</p>
-		</div>
-	{% endif %}
-	</div>
-	<div class="main">
-	<h3 class="mainTitle"> Recent synced History </h3>
-	{% if tabs %}
-		{% for t in tabs %}
-			<div class="item">
-				<p> The {{ t.title }} was saved on {{ t.addedDate | date:"D d M Y" }}</p>
-			</div>
-		{% endfor %}
-	{% else %}
-		<div class="item">
-			<p> Nothing synced yet!</p>
-		</div>
-	{% endif %}
-	</div>
-	<div class="main">
-	<h3 class="mainTitle"> Recent saved Items </h3>
-	{% if savedItems %}
-		{% for s in savedItems %}
-			<div class="item">
-				<p> The {{ s.title }} was saved on {{ s.addedDate | date:"D d M Y" }} <span class="small">({{ s.typeOf }})</span></p>
-			</div>
-		{% endfor %}
-	{% else %}
-		<div class="item">
-			<p> Nothing saved yet!</p>
-		</div>
-	{% endif %}
-	</div>
-	<div class="main">
-	<h3 class="mainTitle"> Recent shared Items </h3>
-	{% if shared %}
-		{% for sh in shared %}
-			<div class="item">
-				<p> The {{ sh.title }} was saved on {{ sh.addedDate | date:"D d M Y" }}
-					<span class="small">
-						Shared with:
-						{% if sh.typeOf_share == email %}
-							{% for e in sh.shared_with_emails %}
-								{{ e.email }}, 
-							{% endfor %}
-						{% else %}
-							{% for g in sh.shared_with_group %}
-								{{ g.groupName }}, 
-							{% endfor %}
+	<div id="wholeContent">
+		<h2 class="bigTitle"> Last five activities (of each item). </h2>
+		<div class="main">
+		<h3 class="mainTitle"> Recent synced Bookmarks </h3><hr>
+		{% if bookmarks %}
+			{% for b in bookmarks %}
+				<div>
+					<p>    <span class="highlight" >
+						{% if not b.ifFolder %}
+						<a href="{{ b.url }}" class="highlight">
 						{% endif %}
-					</span>
-				
-				</p>
+						{{ b.title }} 
+						{% if not b.ifFolder %}
+						</a>
+						{% endif %}
+						</span>was saved on 
+					{{ b.addedDate | date:"D d M Y" }}
+					</p>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div>
+				<p> Nothing synced yet!</p>
 			</div>
-		{% endfor %}
-	{% else %}
-		<div class="item">
-			<p> Nothing synced yet!</p>
+		{% endif %}
 		</div>
-	{% endif %}
+		<div class="main">
+		<h3 class="mainTitle"> Recent synced History </h3><hr>
+		{% if history %}
+			{% for h in history %}
+				<div>
+					<p>    
+						<a href="{{ h.url }}" class="highlight">{{ h.title }}</a>
+					 was saved on {{ h.addedDate | date:"D d M Y" }}</p>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div>
+				<p> Nothing synced yet!</p>
+			</div>
+		{% endif %}
+		</div>
+		<div class="main">
+		<h3 class="mainTitle"> Recent synced History </h3><hr>
+		{% if tabs %}
+			{% for t in tabs %}
+				<div >
+					<p>    <a href="{{ t.url }}" class="highlight">{{ t.title }}</a>
+					was saved on {{ t.addedDate | date:"D d M Y" }}</p>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div >
+				<p> Nothing synced yet!</p>
+			</div>
+		{% endif %}
+		</div>
+		<div class="main">
+		<h3 class="mainTitle"> Recent saved Items </h3><hr>
+		{% if savedItems %}
+			{% for s in savedItems %}
+				<div >
+					<p>    <a href="{{ s.url }}" class="highlight">{{ s.title }}</a> was saved on {{ s.addedDate | date:"D d M Y" }} <span class="small">({{ s.typeOf }})</span></p>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div >
+				<p> Nothing saved yet!</p>
+			</div>
+		{% endif %}
+		</div>
+		<div class="main">
+		<h3 class="mainTitle"> Recent shared Items </h3><hr>
+		{% if shared %}
+			{% for sh in shared %}
+				<div >
+					<p>    <a href="{{ sh.url }}" class="highlight">{{ sh.title }}</a> was saved on {{ sh.addedDate | date:"D d M Y" }}
+						<span class="small">
+							Shared with:
+							{% if sh.typeOf_share == email %}
+								{% for e in sh.shared_with_emails %}
+									{{ e.email }}, 
+								{% endfor %}
+							{% else %}
+								{% for g in sh.shared_with_group %}
+									{{ g.groupName }}, 
+								{% endfor %}
+							{% endif %}
+						</span>
+					
+					</p>
+				</div>
+			{% endfor %}
+		{% else %}
+			<div >
+				<p> Nothing shared yet!</p>
+			</div>
+		{% endif %}
+		</div>
 	</div>
 {% endblock %}

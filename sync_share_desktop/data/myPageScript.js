@@ -156,7 +156,14 @@ self.port.on('show',function(toDisplay){
 						a.appendChild(text);
 						
 						p2.appendChild(a);
+						console.log("KEY = " + key);
+						if (key == 'history'){
+								//var span = document.createElement('span');
+								console.log(element.lastVisited);
+								//var dateText = document.createTextNode();
+						}
 						div.appendChild(p2);
+						
 						var line = document.createElement('hr');
 						
 						mainDIV.appendChild(div);
@@ -381,6 +388,7 @@ self.port.on('takeAllHistory',function(allHistory){
 			var text = document.createTextNode(textToShow);
 			aDeviceUL.appendChild(text);
 			for (var i=0;i<history.length;i++){
+				console.log("LAST VISITED = " + history[i].lastVisited);
 				var aHistoryLI = document.createElement('li');
 				aHistoryLI.setAttribute('class','hidden');
 				//aHistoryLI.setAttribute('class','history');
@@ -389,7 +397,7 @@ self.port.on('takeAllHistory',function(allHistory){
 				aHistoryLI.style.margin = '0px';
 				/*Padding = Top, Right, Left, Bottom.*/
 				//aHistoryLI.style.padding = '0px 0px 0px 5px';	//Modify only the space between the icon and the title.
-				var liDiv = makeLiContent(history[i].title, history[i].url);
+				var liDiv = makeHistoryLiContent(history[i].title, history[i].url,history[i].lastVisited,history[i].visited);
 				liDiv.setAttribute('class','history');
 				aHistoryLI.appendChild(liDiv);
 				aDeviceUL.appendChild(aHistoryLI);
@@ -638,26 +646,7 @@ function handle_children(aBookmark,parentNode,device_name){
 
 
 
-function clickEnter(_fn)
-{
-   return function(_evt)
-   {
-      var relTarget = _evt.relatedTarget;
-      if (this === relTarget || isAChildOf(this, relTarget))
-         { return; }
 
-      _fn.call(this, _evt);
-   }
-};
-
-function isAChildOf(_parent, _child)
-{
-   if (_parent === _child) { return false; }
-      while (_child && _child !== _parent)
-   { _child = _child.parentNode; }
-
-   return _child === _parent;
-}
 
 
 function createEffectInTable(cellName, selectedType){
@@ -871,6 +860,90 @@ function makeLiContent(title, url){
 }
 
 
+//Function that makes the <li> element's content, will be a div with two <p>
+function makeHistoryLiContent(title, url, lastVisited, visited){
+	//Always a link, never a folder.
+	//Make the div element.
+	var div = document.createElement('div');
+	
+	/*var imageSpan = document.createElement('span');
+	imageSpan.setAttribute('class','hidden');
+	var image = document.createElement('img');
+	image.setAttribute('title','Click to save.');
+	image.setAttribute('src',SYNC_ICON);
+	image.setAttribute('width','15px');
+	image.setAttribute('height','15px');
+	imageSpan.appendChild(image);
+	div.appendChild(imageSpan);*/
+	
+	//Make the title and add it to the div
+	var titleSpan = document.createElement('span');
+	titleSpan.setAttribute('class','title');
+	titleSpan.innerHTML = title;
+	div.appendChild(titleSpan);
+	
+	//Make the url and add it to the div
+	var urlP = document.createElement('p');
+	var urlA = document.createElement('a');
+	urlA.setAttribute('href',url);
+	urlA.innerHTML = url;
+	urlA.setAttribute('class','url');
+	urlP.appendChild(urlA);
+	var p = document.createElement('p');
+	p.setAttribute('class','small visitedInfo');
+	/* Two types of dates, one is javascript and another from python type datetime*/
+	var aux = lastVisited.split(" ");
+	if (aux.length > 1){
+		//It is python type, convert to javscript
+		var date = new Date(aux[0]+'T'+aux[1]);
+	}
+	else{
+		var date = new Date(lastVisited);
+	}
+	var textNode = document.createTextNode('Last visited: ' + date + " and visited: " + visited + " times");
+	p.appendChild(textNode);
+	urlP.appendChild(p);
+	div.appendChild(urlP);
+	
+	//Make the line and add it to the div.
+	var line = document.createElement('hr');
+	line.setAttribute('class','liLine');
+	div.appendChild(line);
+	
+	/*div.addEventListener('mouseover',function(event){
+		//console.log('Hovered over ' + event.target.nodeName);		
+		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
+		if (DIVChildren != undefined){
+			for (var i=0;i<DIVChildren.length;i++){
+				//console.log(i+" DIVChildren = " + DIVChildren[i].className);
+				if (DIVChildren[i].className == 'hidden'){
+					//console.log("IMG = " + DIVChildren[i].innerHTML);
+					DIVChildren[i].className = 'show';
+				}
+				
+			}
+		}
+			
+	});*/
+	
+	/*div.addEventListener('mouseout',function(event){
+		//console.log(event.target.parentNode);
+		
+		var DIVChildren = event.target.parentNode.children;	//The third child is the LI elements
+		if (DIVChildren != undefined){
+			for (var i=0;i<DIVChildren.length;i++){
+				//console.log(i+" DIVChildren = " + DIVChildren[i].className);
+				if (DIVChildren[i].className == 'show'){
+					//console.log("IMG = " + DIVChildren[i].innerHTML);
+					DIVChildren[i].className = 'hidden';
+				}
+				
+			}
+		}
+			
+	});*/
+	return div;
+}
 
 
 

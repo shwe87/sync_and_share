@@ -60,12 +60,10 @@ div.item:hover,div.textInput:hover,div.autoSync:hover{
           box-shadow: 20px 20px 15px #888888;
           
 }
-span.highlight{
 
-	color:#60a282;
-}
 a,span.small{
      	color: #383127;
+     	text-decoration: none;
 }
 span.small, div.helpText,li.small{
      	font-size: x-small;
@@ -81,7 +79,9 @@ span.small, div.helpText,li.small{
 	font-size: large;
 	cursor: pointer;
 }
-
+span.highlight{
+	color:#60a282;
+}
 
 .hidden{
 	/*visibility: hidden;*/
@@ -166,10 +166,32 @@ span.favicon{
 div:empty{
 	display:none;
 }
-span.highlight{
 
-	color:#60a282;
+div#wholeContent{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	width: 80%;
 }
+h2.bigTitle{
+	text-decoration: underline;
+}
+div.main{
+	margin-left: 20%;
+	margin-right: 20%;
+	border:1px groove #383127;
+    border-radius:6px 6px 6px 6px;
+    margin-bottom: 30px;
+
+}
+.mainTitle hr{
+	border: 1px solid #383127;
+}
+
+
+
+
 
 
 
