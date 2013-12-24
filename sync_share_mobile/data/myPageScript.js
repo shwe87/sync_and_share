@@ -464,7 +464,24 @@ self.port.on('takeAllHistory',function(allHistory){
 				a.setAttribute('class','url');
 				a.setAttribute('href',url);
 				a.innerHTML = url;
+				
 				historyDIV.appendChild(a);
+				var lastVisited = history[i].lastVisited;
+				var visited = history[i].visited;
+				var p = document.createElement('p');
+				p.setAttribute('class','small visitedInfo');
+				/* Two types of dates, one is javascript and another from python type datetime*/
+				var aux = lastVisited.split(" ");
+				if (aux.length > 1){
+					//It is python type, convert to javscript
+					var date = new Date(aux[0]+'T'+aux[1]);
+				}
+				else{
+					var date = new Date(lastVisited);
+				}
+				var textNode = document.createTextNode('Last visited: ' + date + " and visited: " + visited + " times");
+				p.appendChild(textNode);
+				historyDIV.appendChild(p);
 				ul.appendChild(historyDIV);
 				//aWrapper.appendChild(historyDIV);	
 	
