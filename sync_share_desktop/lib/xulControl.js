@@ -12,8 +12,8 @@ var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWi
 //Get the window
 var window = mediator.getMostRecentWindow("navigator:browser");
 //Get the XUL elements as DOM
-var document = mediator.getMostRecentWindow("navigator:browser").document; 
 
+var document = mediator.getMostRecentWindow("navigator:browser").document;
 /*XUL items unique identifiers*/
 const TAB_MENU = myId+'saveTabMenu';
 const SYNC_ALL_NOW_MENU = myId+'syncAllNowMenu';
@@ -50,6 +50,80 @@ function createKey(id,modifiers,key){
 	return aKey;	
 }
 */
+function loadIntoWindow(aWindow){
+	document = aWindow.document;
+	//Add the options in the tool menu:
+	var toolBar = document.getElementById('menu_ToolsPopup');
+	//Get the main key set:
+	//var mainKeySet = document.getElementById('mainKeyset');
+	/***********A Separator***********************/
+	//var separator = createMenuSeparator('SyncShareToolSeparator');
+	//toolBar.appendChild(separator);
+	//Create a pop up menu item:
+	var menu = document.createElement('menu');
+	menu.setAttribute('id',SS_MENU);
+	menu.setAttribute('label','Synch & Share Menu');
+	var menuPopUp = document.createElement('menupopup');
+	menuPopUp.setAttribute('id',SS_MENU_POPUP);
+	//Add the Save all Tabs option.
+	var anItem = addSaveAllTabsMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	
+	
+	var anItem = addSyncAllMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	
+	//Add the Open... menu option:
+	var anItem = addOpenMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	/*************A Separator***********************/
+	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
+	menuPopUp.appendChild(separator);
+	//Add the Share option.
+	var anItem = addShareMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	//Add the view Share items
+	var anItem = addViewShareMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	/*************A Separator***********************/
+	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
+	menuPopUp.appendChild(separator);
+	//Add the settings options
+	var anItem = addSettingsMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	//Add help menu
+	var anItem = addHelpMenu();
+	//mainKeySet.appendChild(anItem.key);
+	menuPopUp.appendChild(anItem);
+	menu.appendChild(menuPopUp);
+	toolBar.appendChild(menu);
+	//Add the tabs context menu:
+	addTabMenu();
+	
+}
+
+
+var windowListener = {
+  onOpenWindow: function(aWindow) {
+    // Wait for the window to finish loading
+    let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+    domWindow.addEventListener("load", function onLoad() {
+      domWindow.removeEventListener("load", onLoad, false);
+      loadIntoWindow(domWindow);
+    }, false);
+  },
+ 
+  onCloseWindow: function(aWindow) {},
+  onWindowTitleChange: function(aWindow, aTitle) {}
+};
+
+
 function createMenuItem(id,label){
 	var menuItem = document.createElement('menuitem');
 	menuItem.setAttribute('id',id);
@@ -274,60 +348,15 @@ function addViewShareMenu(){
 }
 
 exports.addAllOptions = function(){
+	let windows = mediator.getEnumerator("navigator:browser");
+  while (windows.hasMoreElements()) {
+	let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+	loadIntoWindow(domWindow);
+  }
 
-	//Add the options in the tool menu:
-	var toolBar = document.getElementById('menu_ToolsPopup');
-	//Get the main key set:
-	//var mainKeySet = document.getElementById('mainKeyset');
-	/***********A Separator***********************/
-	//var separator = createMenuSeparator('SyncShareToolSeparator');
-	//toolBar.appendChild(separator);
-	//Create a pop up menu item:
-	var menu = document.createElement('menu');
-	menu.setAttribute('id',SS_MENU);
-	menu.setAttribute('label','Synch & Share Menu');
-	var menuPopUp = document.createElement('menupopup');
-	menuPopUp.setAttribute('id',SS_MENU_POPUP);
-	//Add the Save all Tabs option.
-	var anItem = addSaveAllTabsMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	
-	
-	var anItem = addSyncAllMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	
-	//Add the Open... menu option:
-	var anItem = addOpenMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	/*************A Separator***********************/
-	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
-	menuPopUp.appendChild(separator);
-	//Add the Share option.
-	var anItem = addShareMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	//Add the view Share items
-	var anItem = addViewShareMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	/*************A Separator***********************/
-	var separator = createMenuSeparator(SS_MENU_SEPARATOR);
-	menuPopUp.appendChild(separator);
-	//Add the settings options
-	var anItem = addSettingsMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	//Add help menu
-	var anItem = addHelpMenu();
-	//mainKeySet.appendChild(anItem.key);
-	menuPopUp.appendChild(anItem);
-	menu.appendChild(menuPopUp);
-	toolBar.appendChild(menu);
-	//Add the tabs context menu:
-	addTabMenu();
+  // Load into any new windows
+  mediator.addListener(windowListener);
+
 
 
 }
