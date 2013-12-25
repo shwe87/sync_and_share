@@ -407,33 +407,34 @@ exports.write = write;
 
 
 function read(readDatas){
-	readDatas.save = false;
-	if (ifAuthenticated()){
-		getData(readDatas);	//If read only show.
-	}
-	else{
-		{
-		var message = {};
-		message.msg = 'Dropbox: Not Signed in!';
-		message.type = 'error';
-		emit(exports, 'showMessage', message );
-		emit(exports, 'notAuthorized','Dropbox');
-		//auth(readDatas);
-	}
+        readDatas.save = false;
+        if (ifAuthenticated()){
+                getData(readDatas);        //If read only show.
+        }
+        else{
+                var toShow = new Object();
+                toShow.data = new Object();
+                toShow.data['msg'] = "Dropbox: Not signed in. Please sign in!";
+                toShow.element = readDatas.title.split('.json')[0];
+                toShow.server = 'dropbox';
+                //emit(exports, 'showMessage', message );
+                emit(exports, 'notAuthorized',toShow);
+                //auth(readDatas);
+        }
 }
 exports.read = read;
 
 function save(saveDatas){
-	saveDatas.save = true;
-	if (ifAuthenticated()){
-		var message = 'Saving....';
-		getData(saveDatas);	//If write read and then overwrite.
-		emit(exports, 'showMessage',message);
-	}
-	else{
-		var message = 'Not Signed in!';
-		emit(exports, 'showMessage', message );
-		auth(saveDatas);
-	}
+        saveDatas.save = true;
+        if (ifAuthenticated()){
+                var message = 'Saving....';
+                getData(saveDatas);        //If write read and then overwrite.
+                emit(exports, 'showMessage',message);
+        }
+        else{
+                var message = 'Dropbox: Not Signed in!';
+                emit(exports, 'showMessage', message );
+                auth(saveDatas);
+        }
 }
 exports.save = save;

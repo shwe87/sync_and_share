@@ -15,8 +15,8 @@ const share = require("./share.js");		//Controls the share option.
 const myServer = require("./myServer.js");	//The server implemented by me.
 const preferences = require("./preferences.js");//Module used to access the user's preferences for this add-on.
 const login = require('./dialog.js');		//Module to control when the user logins in my server.
-const localStorage = require('./localStorage.js');
-const helpPanel = require('./panelWithWidget.js');
+const localStorage = require('./localStorage.js');	//This is local storage control module.
+const helpPanel = require('./panelWithWidget.js');	//This is the panel which has the quick start page.
 /****************************************Global Variables**************************************************************/
 var openMenuTabWorker;				//This worker will be attached to the addon html page.
 var myContextMenu;				//This is the context menu that will be displayed when a user right clicks a bookmark or a history in this addon html page.
@@ -27,22 +27,13 @@ const TABS_FILE = 'tabs.json';			//The file with all the saved tabs will be name
 const BOOKMARKS_FILE = 'bookmarks.json';	//The file with the saved bookmarks will be named this way in the server.
 const HISTORY_FILE = 'history.json';		//The file with the saved history will be named this way in the server.
 
-
-
-/*
- * "2013-12-23T12:04:02.312Z"
-
-tabs.open('www.urjc.es');
-tabs.open('www.gmail.com');
-tabs.open('www.google.com');
-tabs.open('www.mozilla.org');
-tabs.open('www.hotmail.com');
-tabs.open('www.facebook.com');
-tabs.open('http://www.urjc.es/alumnos/');
-*/
-
+/************************************************************************************************************************
+@function showErrorMessage: This will show an error message. Whenever called, creates an error message and shows it.
+*************************************************************************************************************************/
 function showErrorMessage(){
+	//Create the error message:
 	var message = {'msg':'An error has ocurred!','type':'error'};
+	//Show the error message:
 	handleShowMessage(message);
 }
 
@@ -340,75 +331,83 @@ function openMenu(msg){
 		contentScriptWhen: 'ready',
 		contentScriptFile: data.url('myPageScript.js'),
 		onAttach: function onAttach(worker) {
-			openMenuTabWorker = worker;
-			console.log('main '+openMenuTabWorker.tab.title);
-			openMenuTabWorker.port.emit('start','Bookmarks');
-			openMenuTabWorker.port.on('cellClicked',function(clickedElement){
-				var nodeName = clickedElement.node;
-				var nodeId = clickedElement.id;
-				console.log('MAIN: cellClicked received = ' + nodeName + ','+nodeId);
-				if (nodeId == 'tabsCell'){
-					console.log('main clicked = tabsCell');
-					//console.log('main '+'Here nodeName = '+nodeName);
-					//console.log('main '+'Here nodeId = '+nodeId);
-					//List the saved tabs:
-					//listSavedTabs();
-					openMenuTabWorker.port.emit('initHiddenRow');
-					getAllTabs();
-					
-				}
-				else if (nodeName == 'Tabs'){
-					console.log("\t\t\tTABS CLICKED: " + nodeId);
-					getAllTabs();
-				}
-				else if (nodeName == 'Saved Tabs'){
-					console.log('main '+'Saved tabs was clicked!!!!');
-					console.log('main '+'getAllTabs()');
-					getAllTabs();
-					listSavedTabs();
-				}
-				else if (nodeName == 'Bookmarks'){
-					if (nodeId == 'bookmarksCell'){
-						console.log('main '+'****bookmarksCell****');
-						console.log('main '+'Send initHiddenRow');
+			try{
+				openMenuTabWorker = worker;
+				console.log('main '+openMenuTabWorker.tab.title);
+				openMenuTabWorker.port.emit('start','Bookmarks');
+				openMenuTabWorker.port.on('cellClicked',function(clickedElement){
+					var nodeName = clickedElement.node;
+					var nodeId = clickedElement.id;
+					console.log('MAIN: cellClicked received = ' + nodeName + ','+nodeId);
+					if (nodeId == 'tabsCell'){
+						console.log('main clicked = tabsCell');
+						//console.log('main '+'Here nodeName = '+nodeName);
+						//console.log('main '+'Here nodeId = '+nodeId);
+						//List the saved tabs:
+						//listSavedTabs();
 						openMenuTabWorker.port.emit('initHiddenRow');
+						getAllTabs();
+						
 					}
-					console.log('main '+'\r\n\r\n Bookmarks');
-					//console.log('main '+'Here nodeName = '+nodeName);
-					//console.log('main '+'Here nodeId = '+nodeId);
-					console.log('main '+'Calling getAllBookmarks()');
-					getAllBookmarks();
-				}
-				else if (nodeName == 'History'){
-					if (nodeId == 'historyCell'){
-						console.log('main '+'****historyCell****');
-						console.log('main '+'Send initHiddenRow');
-						openMenuTabWorker.port.emit('initHiddenRow');
+					/*else if (nodeName == 'Tabs'){
+						console.log("\t\t\tTABS CLICKED: " + nodeId);
+						getAllTabs();
+					}*/
+					else if (nodeName == 'Saved Tabs'){
+						console.log('main '+'Saved tabs was clicked!!!!');
+						console.log('main '+'getAllTabs()');
+						getAllTabs();
+						listSavedTabs();
+						
 					}
-					console.log('main '+'\r\n\r\n History');
-					//console.log('main '+'Here nodeName = '+nodeName);
-					//console.log('main '+'Here nodeId = '+nodeId);
-					console.log('main '+'Calling getAllHistory()');
-					getAllHistory();
-				}
-				else if (nodeName == 'Saved Bookmarks'){
-					console.log('main '+'\r\n\r\n *********Saved Bookmarks');
-					//console.log('main '+'Here nodeName = '+nodeName);
-					//console.log('main '+'Here nodeId = '+nodeId);
-					//console.log('main '+"SAVED BOOKMARKS!");
-					listSavedBookmarks();
-				}
-				else if (nodeName == 'Saved History'){
-					console.log('main '+'\r\n\r\n ***********Saved History');
-					console.log('main '+'Here nodeName = '+nodeName);
-					console.log('main '+'Here nodeId = '+nodeId);
-					console.log('main '+"SAVED HISTORY");
-					listSavedHistory();
-				}
+					else if (nodeName == 'Bookmarks'){
+						if (nodeId == 'bookmarksCell'){
+							console.log('main '+'****bookmarksCell****');
+							console.log('main '+'Send initHiddenRow');
+							openMenuTabWorker.port.emit('initHiddenRow');
+						}
+						console.log('main '+'\r\n\r\n Bookmarks');
+						//console.log('main '+'Here nodeName = '+nodeName);
+						//console.log('main '+'Here nodeId = '+nodeId);
+						console.log('main '+'Calling getAllBookmarks()');
+						getAllBookmarks();
+					}
+					else if (nodeName == 'History'){
+						if (nodeId == 'historyCell'){
+							console.log('main '+'****historyCell****');
+							console.log('main '+'Send initHiddenRow');
+							openMenuTabWorker.port.emit('initHiddenRow');
+						}
+						console.log('main '+'\r\n\r\n History');
+						//console.log('main '+'Here nodeName = '+nodeName);
+						//console.log('main '+'Here nodeId = '+nodeId);
+						console.log('main '+'Calling getAllHistory()');
+						getAllHistory();
+					}
+					else if (nodeName == 'Saved Bookmarks'){
+						console.log('main '+'\r\n\r\n *********Saved Bookmarks');
+						//console.log('main '+'Here nodeName = '+nodeName);
+						//console.log('main '+'Here nodeId = '+nodeId);
+						//console.log('main '+"SAVED BOOKMARKS!");
+						listSavedBookmarks();
+					}
+					else if (nodeName == 'Saved History'){
+						console.log('main '+'\r\n\r\n ***********Saved History');
+						console.log('main '+'Here nodeName = '+nodeName);
+						console.log('main '+'Here nodeId = '+nodeId);
+						console.log('main '+"SAVED HISTORY");
+						listSavedHistory();
+					}
 				
 				
-			});
+				
+				});
 			//openMenuWorker.port.emit('msg','Hola');
+			}//try
+			catch(e){
+					var message = {'msg':'Error: Please refresh the page!','type':'error'};
+					handleShowMessage(message);
+			}
 	  	}
 	});
 

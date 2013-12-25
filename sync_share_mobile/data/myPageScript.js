@@ -50,11 +50,13 @@ self.port.on('show',function(toDisplay){
 				//showTitle(key, server);
 				console.log(server+element+'Content');
 				handle_main_content(server,element);
+				console.log(all);
 				try{
 					all = JSON.parse(all);
 				}
 				catch(e){
 					//nothing
+					all = all;
 					console.log("SCRIPT: Can't parse");
 				}
 				//createTitle('Saved ' + element);

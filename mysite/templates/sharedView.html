@@ -49,10 +49,7 @@
 				</div>
 			{% endfor %}
 			{% if s.shared_bookmarks.all %}
-			<div id="autoSyncedbookmarkTitle">
-				Shared Bookmarks
-				<span class="imageContainer"><img src="/static/images/bookmarks.png" height="15px" title="bookmarks"></span>
-			</div>
+			
 			<div class="autoSync" id="autoSyncedbookmark">
 			
 			{% for b in s.shared_bookmarks.all %}
@@ -64,6 +61,7 @@
 					<span clas="imageContainer">
 						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ b.unique }}','bookmark')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
 					</span>
+					<span class="imageContainer"><img src="/static/images/bookmarks.png" height="15px" title="bookmarks"></span>
 				</li>
 			
 			{% endfor %}
@@ -71,11 +69,7 @@
 			{% endif %}
 			
 			{% if s.shared_history.all %}
-			<div id="autoSyncedhistoryTitle">
-				Shared History
-				<span class="imageContainer">
-					<img src="/static/images/history.png" height="15px" title="history"></span>
-			</div>	
+
 			<div class="autoSync" id="autoSyncedhistory">
 			{% for h in s.shared_history.all %}
 				<li id="{{ h.unique }}">
@@ -87,6 +81,8 @@
 					<span clas="imageContainer">
 						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ h.unique }}','history')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
 					</span>
+					<span class="imageContainer">
+					<img src="/static/images/history.png" height="15px" title="history"></span>
 				</li>
 			
 			{% endfor %}			
@@ -94,11 +90,7 @@
 			{% endif %}
 			
 			{% if s.shared_tabs.all %}
-			<div id="autoSyncedtabTitle">
-				Shared tabs
-				<span class="imageContainer">
-					<img src="/static/images/tabs.png" height="15px" title="tabs"></span>
-			</div>
+
 			<div class="autoSync" id="autoSyncedtab">
 				
 			{% for t in s.shared_tabs.all %}
@@ -111,6 +103,8 @@
 					<span clas="imageContainer">
 						<img onclick="delSharedWith(event,'{{ s.unique }}', '{{ t.unique }}','tab')" class="image" src={% static "images/cross.png" %} title="Stop sharing this" height="15px">
 					</span>
+					<span class="imageContainer">
+					<img src="/static/images/tabs.png" height="15px" title="tabs"></span>
 				</li>
 			
 			{% endfor %}			

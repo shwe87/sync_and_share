@@ -15,7 +15,7 @@
 		<h3 class="mainTitle"> Recent synced Bookmarks </h3><hr>
 		{% if bookmarks %}
 			{% for b in bookmarks %}
-				<div>
+				<div class="recentItems">
 					<p>    <span class="highlight" >
 						{% if not b.ifFolder %}
 						<a href="{{ b.url }}" class="highlight">
@@ -25,7 +25,7 @@
 						</a>
 						{% endif %}
 						</span>was saved on 
-					{{ b.addedDate | date:"D d M Y" }}
+					{{ b.addedDate | date:'Y-m-d H:i' }}
 					</p>
 				</div>
 			{% endfor %}
@@ -40,9 +40,9 @@
 		{% if history %}
 			{% for h in history %}
 				<div>
-					<p>    
+					<p class="recentItems">    
 						<a href="{{ h.url }}" class="highlight">{{ h.title }}</a>
-					 was saved on {{ h.addedDate | date:"D d M Y" }}</p>
+					 was saved on {{ h.addedDate | date:'Y-m-d H:i' }}</p>
 				</div>
 			{% endfor %}
 		{% else %}
@@ -55,9 +55,9 @@
 		<h3 class="mainTitle"> Recent synced History </h3><hr>
 		{% if tabs %}
 			{% for t in tabs %}
-				<div >
+				<div class="recentItems">
 					<p>    <a href="{{ t.url }}" class="highlight">{{ t.title }}</a>
-					was saved on {{ t.addedDate | date:"D d M Y" }}</p>
+					was saved on {{ t.addedDate | date:'Y-m-d H:i' }}</p>
 				</div>
 			{% endfor %}
 		{% else %}
@@ -70,8 +70,8 @@
 		<h3 class="mainTitle"> Recent saved Items </h3><hr>
 		{% if savedItems %}
 			{% for s in savedItems %}
-				<div >
-					<p>    <a href="{{ s.url }}" class="highlight">{{ s.title }}</a> was saved on {{ s.addedDate | date:"D d M Y" }} <span class="small">({{ s.typeOf }})</span></p>
+				<div class="recentItems">
+					<p>    <a href="{{ s.url }}" class="highlight">{{ s.title }}</a> was saved on {{ s.addedDate | date:'Y-m-d H:i' }} <span class="small">({{ s.typeOf }})</span></p>
 				</div>
 			{% endfor %}
 		{% else %}
@@ -84,8 +84,8 @@
 		<h3 class="mainTitle"> Recent shared Items </h3><hr>
 		{% if shared %}
 			{% for sh in shared %}
-				<div >
-					<p>    <a href="{{ sh.url }}" class="highlight">{{ sh.title }}</a> was saved on {{ sh.addedDate | date:"D d M Y" }}
+				<div class="recentItems">
+					<p>    <a href="{{ sh.url }}" class="highlight">{{ sh.title }}</a> was saved on {{ sh.addedDate | date:'Y-m-d H:i' }}
 						<span class="small">
 							Shared with:
 							{% if sh.typeOf_share == email %}

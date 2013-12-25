@@ -26,11 +26,22 @@ def validate_device_type(value):
 
 class UsersDevice(models.Model):
 	user = models.ForeignKey(User)
-	device_id = models.TextField(unique=True)
+	device_id = models.TextField()
 	device_name = models.TextField()
 	device_type = models.CharField(max_length=7, validators = [validate_device_type])
+	unique = models.TextField(unique=True)
 	
-	
+	def __init__(self, *args, **kwargs):
+		super(UsersDevice, self).__init__(*args, **kwargs)
+		#print self.device.device_id
+		#print self.itemId
+		#print self.title
+		#print self.parentId
+		#print self.owner.email
+		#Only itemId doesn't change, title may change,
+		self.unique = str(str(self.device_id) + str(self.user.email))
+		#print self.unique
+    
 	def __unicode__(self):
 		return u'%(user)s has a device %(device)s' %{
 			'user': (self.user.email),

@@ -94,6 +94,7 @@ div.authentication div.message{
 
 div.error,ul.errorlist li{
 	color: red;	
+	margin-bottom: 5px;
 }
 
 ul.errorlist{
@@ -116,6 +117,7 @@ span.small{
 div.dateInfo{
 	margin-left: 10px;
 }
+
 
 
 

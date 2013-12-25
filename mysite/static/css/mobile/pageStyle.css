@@ -36,6 +36,7 @@ span.highlight{
 	color:#60a282;
 }
 
+
 span.small, div.helpText,li.small,div.small{
      	font-size: x-small;
 }
@@ -83,6 +84,7 @@ div.authentication div.message{
 
 div.error,ul.errorlist li{
 	color: red;	
+	margin-bottom: 5px;
 }
 
 ul.errorlist{
@@ -92,14 +94,12 @@ ul.errorlist{
 span.small{
      	font-size: x-small;
 }
-div#signedInInfo,div#settingsInfo{
-	margin-bottom: 20px;
-	margin-top: 20px;
-}
 
-div.brand{
-	text-align:center;
 
+
+
+div.dateInfo{
+	margin-left: 5px;
 }
 
 

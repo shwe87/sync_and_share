@@ -49,7 +49,7 @@ function handleErrors(response){
 	else if (response.status == '401' && response.headers.error == 'Unauthorized'){
 		console.log('MY SERVER:  '+"Not authorized!!");
 		dialog.loginDialog();	
-		emit(exports, 'notAuthorized', null);
+		//emit(exports, 'notAuthorized', null);
 	}
 	else if (response.status == '0'){
 		console.log('MY SERVER: Server is not connected');
@@ -129,14 +129,20 @@ function save(datas){
                 headers: {'myName':deviceName,'myId':deviceId,'type':'mobile'},
                 content: JSON.stringify(dataToSave),
                 onComplete: function (response) {        
-			if (response.status == '200'){
-                                 console.log('MY SERVER:  '+"SAVED CORRECTLY");
-                                  handleRegister(); 
-                                  emit(exports,'showMessage','Sync & Share: Saved correctly!');      
-                        }
-                       else{
-		    		handleErrors(response);
-		    	}
+					if (response.status == '200'){
+						console.log('MY SERVER:  '+"SAVED CORRECTLY");
+						handleRegister(); 
+						emit(exports,'showMessage','Sync & Share: Saved correctly!');      
+					}
+					else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+						console.log('MY SERVER:  '+"Not authorized!!");
+						//dialog.loginDialog();	
+						var message = "Sync & Share: You are not signed in. Please sign in!";
+						emit(exports, 'showMessage', message);
+					}
+					else{
+						handleErrors(response);
+					}
                  }
          });
         saveRequest.post();
@@ -175,8 +181,8 @@ function read(datas){
 		                	console.log("MYSERVER: Can't convert!!! ");
 		                	var dataToShow = response.text;
 		                }
-		                toShow.data = new Object();
-		                toShow.data[element] = dataToShow;
+		                //toShow.data = new Object();
+		                toShow.data = dataToShow;
 		                toShow.server = 'mysite';
 		                toShow.element = element;
 		                console.log("MY SERVER : display = " + JSON.stringify(toShow));

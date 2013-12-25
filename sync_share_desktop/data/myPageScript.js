@@ -92,7 +92,8 @@ self.port.on('show',function(toDisplay){
 	clean('loading');
 	var server = toDisplay.server;
 	var elementsToShow = toDisplay.data;
-
+	console.log("*******TO DISPLAY*****");
+	console.log(toDisplay);
 	if (elementsToShow == null){
 		var mainContent = document.getElementById('mainContent');
 		var p = document.createElement('p');
@@ -121,7 +122,7 @@ self.port.on('show',function(toDisplay){
 	else{
 		//console.log();
 		var key = Object.keys(elementsToShow);
-		//console.log("SCRIPT : key = " + key);
+		console.log("SCRIPT : key = " + key);
 		try{
 			if (key == 'msg'){
 				var mainContent = document.getElementById('mainContent');
@@ -131,6 +132,7 @@ self.port.on('show',function(toDisplay){
 			}
 			else{
 				var all = elementsToShow[key];
+				console.log("SCRIPT: ALL = " + JSON.stringify(all));
 				if (all.length == 0){
 					var mainContent = document.getElementById('mainContent');
 					var p = document.createElement('p');
@@ -162,7 +164,7 @@ self.port.on('show',function(toDisplay){
 						var mainContent = document.getElementById('mainContent');
 						var mainDIV = document.createElement('div');
 						mainDIV.setAttribute('id','show'+key);
-						mainDiv.setAttribute('class','mainShow');
+						mainDIV.setAttribute('class','mainShow');
 						var div = document.createElement('div');
 						div.setAttribute('class','savedItem');
 						var p1 = document.createElement('p');
@@ -207,7 +209,7 @@ self.port.on('show',function(toDisplay){
 				}
 			}
 		}catch(e){
-			console.log("ERROR!!!");
+			console.log("ERROR!!! " + e.toString());
 		}
 	}
 
@@ -750,7 +752,7 @@ function createEffectInTable(cellName, selectedType){
 				//console.log("CLicked on = " + event.target.id);
 				self.port.emit('cellClicked',whatWasClicked);
 				//console.log("\t\t\t\t cellClicked Sent.");
-		
+				event.stopPropagation();
 					
 			},false);
 			

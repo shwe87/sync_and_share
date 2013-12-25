@@ -172,18 +172,18 @@ div#wholeContent{
 	margin-left: auto;
 	margin-right: auto;
 	text-align: center;
-	width: 80%;
+	width: 90%;
 }
 h2.bigTitle{
 	text-decoration: underline;
 }
 div.main{
-	margin-left: 20%;
-	margin-right: 20%;
-	border:1px groove #383127;
-    border-radius:6px 6px 6px 6px;
+    margin-left: 20%;
+    margin-right: 20%;
     margin-bottom: 30px;
-
+    background: #eae3cd;
+    box-shadow: 20px 20px 15px #888888;
+    border: groove #383127 1px;
 }
 .mainTitle hr{
 	border: 1px solid #383127;
@@ -191,6 +191,11 @@ div.main{
 
 div#existingGroup{
 	padding: 20px;
+
+}
+div.recentItems{
+    width:95%;
+	border-bottom: groove #383127 1px;
 
 }
 
