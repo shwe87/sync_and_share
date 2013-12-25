@@ -89,7 +89,7 @@ function saveTabs(tabsToSave){
 	message.msg = 'Loading...';
 	message.type = 'info';
 	handleShowMessage(message);
-	console.log(tabsToSave);
+	//console.log(tabsToSave);
 	//Get the favicon icon:
 	var dataToSave = new Array();
 	for each (var tabToSave in tabsToSave){				
@@ -241,9 +241,19 @@ function getAllTabs(){
 	//aHistory.history = thisHistoryList;
 	//historyList.push(aHistory);
 	var aux = new Array();
+<<<<<<< HEAD
 	for (var i=0;i<tabs.length;i++){
 		var auxTab = {'title':tabs[i].title,'url':tabs[i].url};
 		aux.push(auxTab);	
+=======
+	for each(var thisDeviceTab in tabs){
+		aux.push(thisDeviceTab);	
+	}
+	var aux = new Array();
+	for (var i=0;i<tabs.length;i++){
+			var auxTab = {'title':tabs[i].title,'url':tabs[i].url};
+			aux.push(auxTab);        
+>>>>>>> delete-test
 	}
 	var aTab = new Object();
 	aTab.device = {'this_device':true,'device_id':localStorage.getDeviceId(),'device_name':localStorage.getDeviceName()};
@@ -411,7 +421,14 @@ function openMenu(msg){
 
 
 }
-
+function handleDeleteContext(nodeToDelete){
+	var serverName = nodeToDelete.server;
+	var url = nodeToDelete.url;
+	var element = nodeToDelete.element;
+	console.log("Delete from = " + serverName + " , "+ url + ' , ' + element);
+	server.del(serverName,url,element);
+	
+}
 
 
 //Handle the context menu:
@@ -512,6 +529,7 @@ exports.main = function(options, callbacks) {
     localStorage.setId();
     //Create the panel:
     console.log(options.loadReason);
+    localStorage.setDeviceName(preferences.getDeviceName());
     //handleShowMessage(options.loadReason);
     if (options.loadReason == 'install'){
 		console.log("INSTALL!!!!!");
@@ -527,7 +545,9 @@ exports.main = function(options, callbacks) {
 				var user = 'username';
 		}
 		preferences.setDeviceName(user+'-desktop');*/
+
     	localStorage.setDeviceName(preferences.getDeviceName());
+
     	//localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
@@ -610,7 +630,9 @@ exports.main = function(options, callbacks) {
     localStorage.on('showMessage',handleShowMessage);
     //Whenever the context menu is clicked:
     contextMenu.addContextMenu('Save This');
+    contextMenu.addDeleteMenu('Delete This Saved Item!');
     contextMenu.on('contextClicked',handleContextMenu);
+    contextMenu.on('deleteContextClicked',handleDeleteContext);
     
     //Whenever the bookmark sends us information:
     //bookmarks.on('take',takeABookmark);

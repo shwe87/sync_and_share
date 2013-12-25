@@ -46,7 +46,7 @@ exports.removeListener = function removeListener(type, listener) {
 function handleErrors(response){
 	if (response.status == '500'){
 		console.log('MY SERVER:  '+"Did not work out!");
-		var message = {'msg':'Internal server problem', 'type':'error'};
+		var message = {'msg':'Sync & Share: Internal server problem. Try again later!', 'type':'error'};
 		emit(exports, 'showMessage',message);
 		    	
 	}
@@ -58,8 +58,11 @@ function handleErrors(response){
 	}
 	else if (response.status == '0'){
 		console.log('MY SERVER: Server is not connected');
+		
 	}
 	else{
+		var message = {'msg':'Sync & Share: Problem with server. Try again later!','type':'error'};
+		emit(exports,'showMessage',message);
 		console.log('MY SERVER:  Response status = '+response.status);
 		console.log('MY SERVER:  response text = '+response.statusText);
 	}
@@ -92,6 +95,7 @@ function saveAllBookmarks(){
 		    		var now = new Date();
 		    		var nTime = now.getTime();
 		    		emit(exports,'allBookmarksSavedInServer',nTime);
+		    		
 		    		handleRegister();
 		    			
 		    	}
@@ -125,6 +129,8 @@ function saveAllHistory(){
 		    		var nTime = now.getTime();
 		    		handleRegister();
 		    		emit(exports,'allHistorySavedInServer',nTime);
+		    		
+		            handleRegister();
 		    			
 		    	}
 		    	else{
@@ -204,7 +210,11 @@ function save(datas){
 						emit(exports,'showMessage',message);
 												 
 					}
-							   
+					else if (response.status == '0'){
+						console.log('MY SERVER: Server is not connected');
+						var message = {'msg':'Sync & Share: Server not connected. Please try again later!','type':'error'};
+						emit(exports,'showMessage',message);
+					}		   
 					else{
 							handleErrors(response);
 					}
@@ -262,6 +272,11 @@ function read(datas){
 				//dialog.loginDialog();	
 				emit(exports, 'notAuthorized', 'Sync & Share');
 			}
+			else if (response.status == '0'){
+				console.log('MY SERVER: Server is not connected');
+				var message = {'msg':'Sync & Share: Server not connected. Please try again later!','type':'error'};
+				emit(exports,'showMessage',message);
+			}
 			else{
 				handleErrors(response);
 			}
@@ -311,6 +326,7 @@ function readAllBookmarks(){
 		                        	
 		                }
 		                emit(exports, 'allBookmarksReadFromServer', listOfBookmarks);
+		                
 		         }
 		         else{
 		    		handleErrors(response);
@@ -394,6 +410,7 @@ function readAllHistory(){
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
 		                        emit(exports, 'allHistoryReadFromServer', listOfHistory);
+		                        
 		                 }
 		                 else{
 		    			handleErrors(response);
@@ -470,6 +487,7 @@ function readAllTabs(){
 		                        	//listOfBookmarks.push(aBookmark);
 		                        }
 		                        emit(exports, 'allTabsReadFromServer', listOfTabs);
+		                       
 		                 }
 		                 else{
 		    			handleErrors(response);
@@ -577,7 +595,7 @@ function getAll(){
 	if (if_sync_tabs == true){				//If the user chose to syn tabs.
 		readAllTabs();
 	}
-	console.log("MY SERVER: REad all");
+	console.log("MY SERVER: Read all");
 }
 
 exports.getAll = getAll;

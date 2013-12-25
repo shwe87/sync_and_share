@@ -35,7 +35,7 @@ div.logo{
 	
 }
 
-span.small{
+span.small,p.small{
 	font-size: x-small;
 }
 
@@ -266,6 +266,10 @@ img.serverLogo{
 
 ul.device div{
 	padding-top: 20px;
+}
+
+div.mainShow{
+	padding: 10px;
 }
 
 

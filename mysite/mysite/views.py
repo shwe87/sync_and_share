@@ -223,6 +223,7 @@ def save(request, element):
 	if (request.user.is_authenticated()):
 		print "Save received!! from "
 		try:
+			print request.body
 			#Validate the element passed: Valid only tabs,bookmarks or history.
 			validate_type(element)
 			parsedData = json.loads(request.body)	#parse the incoming data to json type.

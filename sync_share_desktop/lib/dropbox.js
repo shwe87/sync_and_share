@@ -118,7 +118,12 @@ function auth(datas){
 						emit(exports, 'authComplete', datas);
 						if (datas.authSuccess){
 							if (datas.save){
-								save(datas);
+								if (datas.del == true){
+									del(datas);
+								}
+								else{
+									save(datas);
+								}
 							}
 							else if (!datas.save){
 								read(datas);
@@ -159,7 +164,9 @@ function handleOnlyShow(showData){
 	
 	
 	console.log('DROPBOX:  '+"HAVE TO SHOW!!!!");
+	//console.log('DROPBOX: ' + JSON.stringify(showData.downloadedContent));
 	var exists = showData.exists;
+	console.log(exists);
 	if (exists){
 		downloadedData = showData.downloadedContent;
 	}
@@ -169,7 +176,8 @@ function handleOnlyShow(showData){
 	var toDisplay = new Object();
 	toDisplay.server = 'dropbox';
 	toDisplay.element = title.split('.json')[0];
-	toDisplay.datas = downloadedData;
+	toDisplay.data = downloadedData;
+	console.log("Dropbox: show datas = " + JSON.stringify(toDisplay));
 	emit(exports,'display',toDisplay);
 	
 	
@@ -190,8 +198,33 @@ function handleBeforeWrite(datas){
 		downloadedData = datas.downloadedContent;
 	//}
 	console.log('DROPBOX:  '+"DOWNLOADED DATA = " + JSON.stringify(downloadedData));
-	var dataToSave = datas.dataToSave;
+	
 	if (exists){
+		if (datas.del == true){
+			console.log("HAVE TO DELETE!!!");
+			var key = Object.keys(downloadedData);
+				//console.log('GAPI:  '+"Using key = " + downloadedData[key]);
+			//If it is update file then have to update the save data:
+			//var arrayOfObjects = new Array();	//New array containing the elements' array
+			//arrayOfObjects = downloadedData[key].slice(0);
+			//Search for the item to delete:
+			var aux = downloadedData[key];
+			for (var j=0;j<aux.length;j++){
+					if (aux[j].url == datas.url){
+						console.log("Found to delete!!!!!");
+						downloadedData[key].splice(j,1);
+						console.log(JSON.stringify(downloadedData[key]));
+						break;
+					}
+			}
+			actionAfterDownload = REWRITE;
+			datas.dataToSave = downloadedData[key].slice(0);
+			downloadedData[key] = new Array();
+		
+		}
+		
+		var dataToSave = datas.dataToSave;
+		
 
 		
 		
@@ -209,9 +242,12 @@ function handleBeforeWrite(datas){
     			 */
     		//console.log('DROPBOX:  '+"Keys " + Object.keys(downloadedData));
     		var key = Object.keys(downloadedData);
-    		//console.log('DROPBOX:  '+"Using key = " + downloadedData[key]);
+    		
+    		console.log('DROPBOX:  '+"Using key = " + key);
+    		console.log("DROPBOX: downloadedData[key] = " + JSON.stringify(downloadedData[key]));
 		//If it is update file then have to update the save data:
 		var arrayOfObjects = new Array();	//New array containing the elements' array
+		//arrayOfObjects = downloadedData[key].slice(0);
 		arrayOfObjects = downloadedData[key].slice(0);
 		/*if (title == TABS_FILE){
 			arrayOfObjects = downloadedData.tabs.slice(0);   //Contains the tabs' array						
@@ -237,8 +273,8 @@ function handleBeforeWrite(datas){
     			
     			if (pos == -1){//Doesn't exist
     				console.log('DROPBOX:  '+"\r\n\r\n\r\n"+oneData.url + " doesn't exist\r\n\r\n\r\n");
-				downloadedData[key].push(oneData);
-				upload = true;
+					downloadedData[key].push(oneData);
+					upload = true;
 					
 			}
 			else{
@@ -268,7 +304,7 @@ function handleBeforeWrite(datas){
 							
 			});
 			elementWorker.port.emit('alreadySaved',alreadySaved);*/
-			var messageToShow = 'The following are already saved:\r\n';
+			var messageToShow = 'Dropbox: The following are already saved:\r\n';
 			for each(var saved in alreadySaved){
 				messageToShow = messageToShow + saved + '\r\n';
 			}
@@ -278,6 +314,7 @@ function handleBeforeWrite(datas){
     		
 	}
 	else{
+		var dataToSave = datas.dataToSave;
 		//To save
 		console.log('DROPBOX:  '+"FILE = " + title);
 		//var key = Object.keys();
@@ -326,6 +363,7 @@ function getData(datas){
 				datas.metadata = metadata;
 				datas.rev = metadata.rev;
 				datas.downloadedContent = response.json;
+				ifContinue = true;
 				//handleDownloadCompleted(datas);
 			}
 			else if(response.status == '401'){
@@ -392,7 +430,7 @@ function write(datas){
 			}
 			else if(response.status == '401'){
 				ifContinue = false;
-				message.msg = 'Not Signed in!';
+				message.msg = 'Dropbox: Not Signed in!';
 				message.type = 'error';
 				auth(datas);
 			}
@@ -421,7 +459,7 @@ function read(readDatas){
 	}
 	else{
 		var message = {};
-		message.msg = 'Not Signed in!';
+		message.msg = 'Dropbox: Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
 		emit(exports, 'notAuthorized','Dropbox');
@@ -433,16 +471,34 @@ exports.read = read;
 function save(saveDatas){
 	saveDatas.save = true;
 	if (ifAuthenticated()){
-		var message = {'msg':'Saving....','type':'info'};
+		var message = {'msg':'Dropbox: Saving....','type':'info'};
 		getData(saveDatas);	//If write read and then overwrite.
 		emit(exports, 'showMessage',message);
 	}
 	else{
 		var message = {};
-		message.msg = 'Not Signed in!';
+		message.msg = 'Dropbox: Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
 		auth(saveDatas);
 	}
 }
 exports.save = save;
+
+function del(searchDatas){
+	searchDatas.save = true;
+	searchDatas.del = true;
+	if (ifAuthenticated()){
+		getData(searchDatas);
+	}
+	else{
+		var message = {};
+		message.msg = 'Dropbox: Not Signed in!';
+		message.type = 'error';
+		emit(exports, 'showMessage', message );
+		emit(exports, 'notAuthorized','Google Drive');
+		//auth(searchDatas);
+	}
+}
+
+exports.del = del;

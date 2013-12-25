@@ -156,7 +156,11 @@ function auth(datas){
 						emit(exports, 'authComplete', datas);
 						if (datas.authSuccess){
 							if (datas.save){
-								save(datas);
+								if (datas.del == true){
+									del(datas);
+								}else{
+									save(datas);
+								}
 							}
 							else if (!datas.save){
 								read(datas);
@@ -515,14 +519,47 @@ function handleDownloadCompleted(downloadData){
 		console.log('GAPI:  '+"ERROR = " + e.toString());
 		downloadedData = downloadData.downloadedContent;
 	}
-	console.log('GAPI:  '+"DOWNLOADED DATA = " + JSON.stringify(downloadedData));
+	//console.log('GAPI:  '+"DOWNLOADED DATA = " + JSON.stringify(downloadedData));
+	if (downloadData.del == true){
+		console.log("HAVE TO DELETE!!!");
+		var key = Object.keys(downloadedData);
+    		//console.log('GAPI:  '+"Using key = " + downloadedData[key]);
+		//If it is update file then have to update the save data:
+		//var arrayOfObjects = new Array();	//New array containing the elements' array
+		//arrayOfObjects = downloadedData[key].slice(0);
+		//Search for the item to delete:
+		var aux = downloadedData[key];
+		for (var j=0;j<aux.length;j++){
+				if (aux[j].url == downloadData.url){
+					console.log("Found to delete!!!!!");
+					downloadedData[key].splice(j,1);
+					console.log(JSON.stringify(downloadedData[key]));
+					break;
+				}
+		}
+		actionAfterDownload = REWRITE;
+		downloadData.dataToSave = downloadedData[key].slice(0);
+		downloadedData[key] = new Array();
+		
+	}
+	
 	if (actionAfterDownload == REWRITE){
 
 		console.log('GAPI:  '+"Have to rewrite!!!!");
-		var dataToSave = downloadData.dataToSave;
+		
+		 var dataToSave = downloadData.dataToSave;
 		
 		
 		
+		var key = Object.keys(downloadedData);
+    		//console.log('GAPI:  '+"Using key = " + downloadedData[key]);
+		//If it is update file then have to update the save data:
+		var arrayOfObjects = new Array();	//New array containing the elements' array
+		//if (downloadedData[key] != null){
+			
+			
+			arrayOfObjects = downloadedData[key].slice(0);
+		//}
 		//Lets search for the tab with thisTabsId in the listOfTabs.
     		/*	var pos = listOfTabs.map(function(e) { 
     				return e.id; 
@@ -532,11 +569,7 @@ function handleDownloadCompleted(downloadData){
     			listOfTabs[pos].cookies = cookiesInfo;
     			 */
     		//console.log('GAPI:  '+"Keys " + Object.keys(downloadedData));
-    		var key = Object.keys(downloadedData);
-    		//console.log('GAPI:  '+"Using key = " + downloadedData[key]);
-		//If it is update file then have to update the save data:
-		var arrayOfObjects = new Array();	//New array containing the elements' array
-		arrayOfObjects = downloadedData[key].slice(0);
+    		
 		/*if (title == TABS_FILE){
 			arrayOfObjects = downloadedData.tabs.slice(0);   //Contains the tabs' array						
 		}
@@ -592,7 +625,7 @@ function handleDownloadCompleted(downloadData){
 							
 			});
 			elementWorker.port.emit('alreadySaved',alreadySaved);*/
-			var messageToShow = 'The following are already saved:\r\n';
+			var messageToShow = 'Google-Drive: The following are already saved:\r\n';
 			for each(var saved in alreadySaved){
 				messageToShow = messageToShow + saved + '\r\n';
 			}
@@ -682,6 +715,7 @@ exports.read = read;
 **********************************************************************************************************************************/
 function save(writeDatas){
 	writeDatas.save = true;
+	writeDatas.del = false;
 	if (ifAuthenticated()){
 		searchFile(writeDatas);
 	}
@@ -694,7 +728,23 @@ exports.save = save;
 
 
 
+function del(searchDatas){
+	searchDatas.save = true;
+	searchDatas.del = true;
+	if (ifAuthenticated()){
+		searchFile(searchDatas);
+	}
+	else{
+		var message = {};
+		message.msg = 'Google Drive: Not Signed in!';
+		message.type = 'error';
+		emit(exports, 'showMessage', message );
+		emit(exports, 'notAuthorized','Google Drive');
+		//auth(searchDatas);
+	}
+}
 
+exports.del = del;
 
 
 

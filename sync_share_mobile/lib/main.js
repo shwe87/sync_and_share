@@ -42,7 +42,7 @@ function showErrorMessage(){
 function handleDisplay(toShowDatas){
 	try{
 		//openMenuTabWorker.port.emit('show',toShowDatas);
-		var element = toShowDatas.element;
+		//var element = toShowDatas.element;
 		openMenuTabWorker.port.emit('show',toShowDatas);
 		
 	}

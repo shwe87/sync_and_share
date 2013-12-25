@@ -28,4 +28,23 @@ function addContextMenu(toLabel, aContextMenu){
 	}*/
 }
 
+function addDeleteMenu(toLabel, aContextMenu){
+	//if (aContextMenu == undefined || aContextMenu == null){
+		var myContextMenu = cm.Item({
+			label: toLabel,
+			context: [cm.SelectorContext("div.savedItem"), cm.URLContext(data.url('myPage.html'))],
+			contentScriptFile: data.url('contextMenuDeleteScript.js'),
+			onMessage: function(nodeToDelete){
+				emit(exports, 'deleteContextClicked', nodeToDelete);
+			}
+		});
+		return myContextMenu;
+	//}
+	/*	else{
+		aContextMenu.remove(aContextMenu.context);
+		aContextMenu.add(toLabel);
+		return aContextMenu;	
+	}*/
+}
+exports.addDeleteMenu = addDeleteMenu;
 exports.addContextMenu = addContextMenu;

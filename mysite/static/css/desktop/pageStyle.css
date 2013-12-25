@@ -42,8 +42,7 @@ div.info{
 	padding: 10px 10px 10px 10px;
 }
 
-span.highlight{
-
+.highlight{
 	color:#60a282;
 }
 
@@ -67,12 +66,15 @@ span.small, div.helpText,li.small,div.small{
 
 div.logo, div.brand{
 	display:block;
-	margin-top: 60px;
+	/*margin-top: 60px;*/
 	margin-bottom: 50px;
 	margin-left: auto;
 	margin-right:auto;
 	text-align:center;
 	/*float:center;*/	
+}
+div.brand{
+	margin-top: 60px;
 }
 
 div.authentication{
@@ -114,6 +116,8 @@ span.small{
 div.dateInfo{
 	margin-left: 10px;
 }
+
+
 
 
 

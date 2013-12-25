@@ -412,12 +412,13 @@ function read(readDatas){
 		getData(readDatas);	//If read only show.
 	}
 	else{
-		{
-		var message = {};
-		message.msg = 'Dropbox: Not Signed in!';
-		message.type = 'error';
-		emit(exports, 'showMessage', message );
-		emit(exports, 'notAuthorized','Dropbox');
+		var toShow = new Object();
+		toShow.data = new Object();
+		toShow.data['msg'] = "Dropbox: Not signed in. Please sign in!";
+		toShow.element = readDatas.title.split('.json')[0];
+		toShow.server = 'dropbox';
+		//emit(exports, 'showMessage', message );
+		emit(exports, 'notAuthorized',toShow);
 		//auth(readDatas);
 	}
 }
@@ -431,7 +432,7 @@ function save(saveDatas){
 		emit(exports, 'showMessage',message);
 	}
 	else{
-		var message = 'Not Signed in!';
+		var message = 'Dropbox: Not Signed in!';
 		emit(exports, 'showMessage', message );
 		auth(saveDatas);
 	}

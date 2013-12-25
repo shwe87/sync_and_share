@@ -17,6 +17,7 @@ function setStarted (if_started){
 exports.setStarted = setStarted;
 
 function getStarted(){
+		console.log("STARTED = " + ss.storage.started);
 		if (!ss.storage.started){
 				return false;
 		}
@@ -43,6 +44,7 @@ function checkIfRegistered(){
 exports.checkIfRegistered = checkIfRegistered;
 
 function setId(){
+	console.log("ID = " + ss.storage.id);
 	if (!ss.storage.id){
 		//Generate an unique id for each device:
 		var uuidGenerator = Cc['@mozilla.org/uuid-generator;1'].
@@ -224,6 +226,7 @@ function getDeviceId(){
 exports.getDeviceId = getDeviceId;
 
 function getDeviceName(){
+	console.log("\t\t\t\t Device name = " + ss.storage.deviceName);
 	return ss.storage.deviceName;
 }
 exports.getDeviceName = getDeviceName;

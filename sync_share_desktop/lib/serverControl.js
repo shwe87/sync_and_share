@@ -243,6 +243,37 @@ function read(readInfo){
 }
 exports.read = read;
 
+function del(server,url,element){
+	//var message = {};
+	//message.msg = 'Loading.... ';
+	//message.type = 'info';
+	if (server == 'dropbox'){
+			var toDelete = new Object();
+			toDelete.url = url;
+			toDelete.title = element+'.json';
+			toDelete.token = dropboxDatas.access_token;
+			dropbox.del(toDelete);
+	}
+	else if (server == 'gapi'){
+			var toDelete = new Object();
+			toDelete.url = url;
+			toDelete.title = element+'.json';
+			toDelete.token = gapiDatas.access_token;
+			gapi.del(toDelete);
+	}
+	else if(server == 'mysite'){
+			var message = {};
+			message.msg = "Sync & Share: Please delete items from the server!";
+			message.type = "error";
+			emit(exports,'showMessage',message);
+			
+	}
+	
+	//message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
+	//emit(exports, 'showMessage',message);
+}
+exports.del = del;
+
 function handleNotAuthorized(serverName){
 	console.log("Not authorized!!");
 	var toDisplay = new Object();
