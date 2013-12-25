@@ -42,7 +42,7 @@ function showErrorMessage(){
 function handleDisplay(toShowDatas){
 	try{
 		//openMenuTabWorker.port.emit('show',toShowDatas);
-		//var element = toShowDatas.element;
+		var element = toShowDatas.element;
 		openMenuTabWorker.port.emit('show',toShowDatas);
 		
 	}
@@ -292,7 +292,7 @@ exports.main = function(options, callbacks) {
     UIControl.startup();
     
     if (options.loadReason == 'install'){
-    	localStorage.setDeviceName(preferences.getDeviceName());
+    	localStorage.setDeviceName('username-android');
     	localStorage.setId();
     	login.loginDialog();
     	login.on('loggedIn',startDatas);
@@ -301,23 +301,15 @@ exports.main = function(options, callbacks) {
     }
     else{
 		localStorage.setId();
-		var started = localStorage.getStarted();
-		console.log("MAIN: started = " + started);
-    	if (started == true){
-			var registered = localStorage.checkIfRegistered();
-			if (registered){
-				//localStorage.setId();
-				localStorage.startUp();
-				myServer.startUp();
-				localStorage.handleDatas(null);
-			}
-			else{
-				startDatas(null);
-			}
+    	var registered = localStorage.checkIfRegistered();
+		if (registered){
+			//localStorage.setId();
+			localStorage.startUp();
+			myServer.startUp();
+			localStorage.handleDatas(null);
 		}
 		else{
-				login.loginDialog();
-				login.on('loggedIn',startDatas);
+			startDatas(null);
 		}
     }
     

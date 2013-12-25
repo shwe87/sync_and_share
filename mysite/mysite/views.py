@@ -55,7 +55,8 @@ def register_device(request):
 			device_name = info['device_name']
 			device_type = info['device_type']
 			try:
-				aDevice = UsersDevice.objects.get(device_id=device_id,user=user,device_type=device_type)
+				unique = device_id + request.user.email
+				aDevice = UsersDevice.objects.get(device_id=device_id,user=user,unique=unique,device_type=device_type)
 				response = HttpResponseBadRequest()	#400
 				response['error'] = 'device already exists'
 			except UsersDevice.DoesNotExist:
@@ -98,6 +99,11 @@ def parseData(datasList):
 def main(request):
 	#First check if the request was send from the app:
 	return render(request, 'login.html',context_instance = RequestContext(request))
+
+
+def logout(request):
+	#First check if the request was send from the app:
+	return render(request, 'logout.html',context_instance = RequestContext(request))
 
 
 def saveData(aData):
@@ -549,6 +555,7 @@ def share(request):
 		groups = None
 	if (request.method == 'POST'):				#User has sent the form
 		form = ShareForm(request.POST, request=request)	#The request object is passed to validate the form
+		print request.POST
 		if form.is_valid():				#If the form is valid or not
 			cd = form.cleaned_data			#Cleaned data
 			print cd
@@ -833,7 +840,11 @@ def viewShared(request):
 	except UserGroup.DoesNotExist:
 		#This user does't belong to any group
 		groups = None
-	return render(request, 'sharedView.html', {'sharedFrom':shared_from_user,'sharedWith':shared_with_user,'sharedGroup':groups},context_instance = RequestContext(request))
+	if (not shared_from_user and not shared_with_user and not groups):
+		rendered = render(request, 'nothingShared.html',context_instance = RequestContext(request))
+	else:
+		rendered = render(request, 'sharedView.html', {'sharedFrom':shared_from_user,'sharedWith':shared_with_user,'sharedGroup':groups},context_instance = RequestContext(request))
+	return rendered
 
 
 @login_required
@@ -873,9 +884,11 @@ def deleteFromGroup(request):
 
 
 def get_device(owner,device_id,device_name,device_type):
+	print "*************GET DEVICE********************"
 	createDevice = False
 	try:
-		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,device_type=device_type)
+		unique = device_id + owner.email
+		thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,unique=unique,device_type=device_type)
 	except UsersDevice.DoesNotExist:
 		print "Have to create device!!!!"
 		createDevice = True
@@ -885,6 +898,7 @@ def get_device(owner,device_id,device_name,device_type):
 			thisDevice = UsersDevice(device_id=device_id,user=owner,device_name=device_name,device_type=device_type)
 			thisDevice.save()
 		except IntegrityError:
+			unique = device_id + owner.email
 			thisDevice = UsersDevice.objects.get(device_id=device_id,user=owner,device_type=device_type)
 	return thisDevice
 
@@ -966,7 +980,8 @@ def addNewBookmarks(request):
 				#print set(enumerate(parsedData))
 				search = True
 				try:
-					sD = UsersDevice.objects.get(user=owner,device_id=device_id,device_name=device_name)
+					unique = device_id + request.user.email
+					sD = UsersDevice.objects.get(unique=unique,user=owner,device_id=device_id,device_name=device_name)
 				except UsersDevice.DoesNotExist:
 					search = False
 				if search == True:	
@@ -1272,6 +1287,8 @@ def addNewTabs(request):
 				title = p['title']
 				url = p['url']
 				ID = p['id']
+				if (title == None):
+						title = url
 				try:
 					unique = str(device_id + url+owner.email)
 					savedTabs = Tab.objects.get(unique=unique)
@@ -1280,6 +1297,8 @@ def addNewTabs(request):
 					savedTabs.save()
 				except Tab.DoesNotExist:
 					print p['url'] + " doesn't exist!!"
+					
+					
 					savedTabs = Tab(title=title,url=url,tabID=ID,device=thisDevice,owner=owner)
 					savedTabs.save()
 			for t in toDelete:
@@ -1315,12 +1334,16 @@ def changeDeviceName(request):
 			device_id = device_info['device_id']
 			device_type = device_info['device_type']
 			new_device_name = device_info['device_name']
+			print device_id
+			print device_type
+			print new_device_name
 			try:
-				thisDevice = UsersDevice.objects.get(user=request.user,device_id=device_id)
+				unique = device_id + request.user.email
+				thisDevice = UsersDevice.objects.get(unique=unique,user=request.user,device_id=device_id)
 				thisDevice.device_name = new_device_name
 				thisDevice.save()
 			except UsersDevice.DoesNotExist:
-				thisDevice = UsersDevice(user=request.user,device_id=device_id,device_name=device_name)
+				thisDevice = UsersDevice(user=request.user,device_id=device_id,device_name=new_device_name)
 				thisDevice.save()
 			
 			

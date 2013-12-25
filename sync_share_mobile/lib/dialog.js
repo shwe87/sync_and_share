@@ -4,7 +4,7 @@ var tabs = require('sdk/tabs');
 var constants = require('./constants.js');
 const LOGIN_URL = constants.LOGIN_URL;
 var alreadyOpen = false;
-var thisTab;
+
 
 
 exports.on = on.bind(null, exports);
@@ -42,8 +42,6 @@ function loginDialog(){
 			tabs.open({
 				url: LOGIN_URL,
 				onReady: function(tab){
-					thisTab = tab;
-					thisTab.activate();
 					var tabWorker = tab.attach({
 						contentScriptFile: data.url('mysite-login.js')
 						

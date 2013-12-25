@@ -50,11 +50,13 @@ self.port.on('show',function(toDisplay){
 				//showTitle(key, server);
 				console.log(server+element+'Content');
 				handle_main_content(server,element);
+				console.log(all);
 				try{
 					all = JSON.parse(all);
 				}
 				catch(e){
 					//nothing
+					all = all;
 					console.log("SCRIPT: Can't parse");
 				}
 				//createTitle('Saved ' + element);
@@ -113,7 +115,7 @@ self.port.on('takeAllTabs',function(allTabs){
 	     //createItem('Nothing synced yet!', null, server+'synced',true, element);	
 	    var mainContent = document.getElementById(server+'synced'+element+'Content');
 		var p = document.createElement('p');
-		p.innerHTML = 'Nothing Synced yet!';
+		p.innerHTML = 'Nothing Saved yet!';
 		mainContent.appendChild(p);
 	}
 	else{
@@ -248,7 +250,7 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 		//createItem(title, url, server, nothing, element)
 		var mainContent = document.getElementById(server+'synced'+element+'Content');
 		var p = document.createElement('p');
-		p.innerHTML = 'Nothing Synced yet!';
+		p.innerHTML = 'Nothing Saved yet!';
 		mainContent.appendChild(p);
 	    // createItem('Nothing synced yet!', null, server+'synced',true, element);	
 	}
@@ -365,7 +367,7 @@ self.port.on('takeAllHistory',function(allHistory){
 		//createItem(title, url, server, nothing, element)
 		var mainContent = document.getElementById(server+'synced'+element+'Content');
 		var p = document.createElement('p');
-		p.innerHTML = 'Nothing Synced yet!';
+		p.innerHTML = 'Nothing Saved yet!';
 		mainContent.appendChild(p);
 	    //createItem('Nothing synced yet!', null, server+'synced',true, element);	
 	}

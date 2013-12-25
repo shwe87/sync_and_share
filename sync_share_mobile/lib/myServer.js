@@ -92,17 +92,6 @@ function saveTabs(datasToSave){
 		    		console.log('MY SERVER:  '+"TABS SAVED CORRECTLY");
 		    		handleRegister();	
 		    	}
-		    	/*else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-					//console.log('MY SERVER:  '+"Not authorized!!");
-					//dialog.loginDialog();	
-					var toShow = new Object();
-					toShow.data = new Object();
-					toShow.data['msg'] = "You are not signed in Sync & Share. Please sign in!";
-					toShow.element = element;
-					toShow.server = 'mysite';
-					emit(exports, 'notAuthorized', toShow);
-					//emit(exports,'toShow','Not authorized!');
-				}*/
 		    	else{
 		    		handleErrors(response);
 		    	}
@@ -146,21 +135,15 @@ function save(datas){
 						emit(exports,'showMessage','Sync & Share: Saved correctly!');      
 					}
 					else if (response.status == '401' && response.headers.error == 'Unauthorized'){
-						//console.log('MY SERVER:  '+"Not authorized!!");
+						console.log('MY SERVER:  '+"Not authorized!!");
 						//dialog.loginDialog();	
-						//var toShow = new Object();
-						//toShow.data = new Object();
-						//toShow.data['msg'] = "You are not signed in Sync & Share. Please sign in!";
-						//toShow.element = element;
-						//toShow.server = 'mysite';
-						var message = "Sync & Share: Not signed in! Please sign in!"
+						var message = "Sync & Share: You are not signed in. Please sign in!";
 						emit(exports, 'showMessage', message);
-						//emit(exports,'toShow','Not authorized!');
 					}
 					else{
 						handleErrors(response);
 					}
-                }
+                 }
          });
         saveRequest.post();
         
@@ -188,36 +171,36 @@ function read(datas){
 				handleRegister();
 				//emit(exports,'showMessage','Sync & Share: Saved correctly!'); 
 				console.log('MY SERVER:  '+"READ CORRECTLY");
-                console.log('MY SERVER:  '+response.text);
-                console.log('MY SERVER: ' + element);
-                toShow = new Object();
-                try{
-                	var dataToShow = JSON.parse(response.text);
-                }
-                catch(e){
-                	console.log("MYSERVER: Can't convert!!! ");
-                	var dataToShow = response.text;
-                }
-                toShow.data = new Object();
-                toShow.data[element] = dataToShow;
-                toShow.server = 'mysite';
-                toShow.element = element;
-                console.log("MY SERVER : display = " + JSON.stringify(toShow));
-                emit (exports,'display',toShow)
-			}
-			else if (response.status == '500'){
-				console.log('MY SERVER:  '+"Did not work out!");
-				var message = 'Internal server problem';
-				emit(exports, 'showMessage',message);
+		                console.log('MY SERVER:  '+response.text);
+		                console.log('MY SERVER: ' + element);
+		                toShow = new Object();
+		                try{
+		                	var dataToShow = JSON.parse(response.text);
+		                }
+		                catch(e){
+		                	console.log("MYSERVER: Can't convert!!! ");
+		                	var dataToShow = response.text;
+		                }
+		                //toShow.data = new Object();
+		                toShow.data = dataToShow;
+		                toShow.server = 'mysite';
+		                toShow.element = element;
+		                console.log("MY SERVER : display = " + JSON.stringify(toShow));
+		                emit (exports,'display',toShow)
+		        }
+		        else if (response.status == '500'){
+		        	console.log('MY SERVER:  '+"Did not work out!");
+			    	var message = 'Internal server problem';
+			    	emit(exports, 'showMessage',message);
 			}
 			else if (response.status == '404'){
 				console.log("MY SERVER: Read nothing saved! ");
 				var toShow = new Object();
 				toShow.data = null;
-				toShow.server = 'dropbox';
-				toShow.element = searchDatas.title.split('.json')[0];
+				toShow.server = 'mysite';
+				toShow.element = element;
 				console.log("MY SERVER read: " + element);
-			    emit(exports, 'display', toShow);
+			    	emit(exports, 'display', toShow);
 			}
 			else if (response.status == '401' && response.headers.error == 'Unauthorized'){
 				//console.log('MY SERVER:  '+"Not authorized!!");

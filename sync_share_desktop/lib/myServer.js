@@ -202,13 +202,18 @@ function save(datas){
                 content: JSON.stringify(dataToSave),
                 onComplete: function (response) {        
 					if (response.status == '200'){
-						console.log('MY SERVER:  '+"SAVED CORRECTLY");
+						console.log('MY SERVER:  '+element + "  SAVED CORRECTLY");
 						handleRegister();
 						var message = new Object();
 						message.msg = 'Sync & Share: Saved correctly.'
 						message.type = 'correct';
 						emit(exports,'showMessage',message);
 												 
+					}
+					else if (response.status == '401' && response.headers.error == 'Unauthorized'){
+						console.log('MY SERVER: Not authorized');
+						var message = {'msg':'Sync & Share: Not signed in. Please sign in!','type':'error'};
+						emit(exports,'showMessage',message);
 					}
 					else if (response.status == '0'){
 						console.log('MY SERVER: Server is not connected');
@@ -243,21 +248,26 @@ function read(datas){
 		onComplete: function (response) {
 			if (response.status == '200'){
 				console.log('MY SERVER:  '+"READ CORRECTLY");
-		                //console.log('MY SERVER:  '+response.text);
-		                var readThings = JSON.parse(response.text);
-		                var toDisplay = new Object();
-		                toDisplay.server = 'mysite';
-		                toDisplay.data = readThings;
-		                toDisplay.element = element;
-		                //console.log(readThings);
-		                emit (exports,'display',toDisplay);
-		                
-		                handleRegister();
-		        }
-		        else if (response.status == '500'){
-		        	console.log('MY SERVER:  '+"Did not work out!");
-			    	var message = {'msg':'Internal server problem', 'type':'error'};
-			    	emit(exports, 'showMessage',message);
+                //console.log('MY SERVER:  '+response.text);
+                try{
+					var readThings = JSON.parse(response.text);
+				}
+				catch(e){
+					var readThings = response.text;
+				}
+                var toDisplay = new Object();
+                toDisplay.server = 'mysite';
+                toDisplay.data = readThings;
+                toDisplay.element = element;
+                //console.log(readThings);
+                emit (exports,'display',toDisplay);
+                
+                handleRegister();
+	        }
+	        else if (response.status == '500'){
+	        	console.log('MY SERVER:  '+"Did not work out!");
+		    	var message = {'msg':'Internal server problem', 'type':'error'};
+		    	emit(exports, 'showMessage',message);
 			}
 			else if (response.status == '404'){
 					var toDisplay = new Object();

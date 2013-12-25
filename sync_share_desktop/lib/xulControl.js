@@ -286,13 +286,14 @@ function addSettingsMenu(){
 	var settingsMenuItem = createMenuItem(SETTINGS_MENU,'Settings');
 	
 	settingsMenuItem.addEventListener('command',function(event){
-			var addonMenu = document.getElementById('menu_openAddons');
-			if (addonMenu){
+			//var addonMenu = document.getElementById('menu_openAddons');
+			console.log("Settings clicked!!!");
+			/*if (addonMenu){
 				addonMenu.click();
 			}
-			else{
+			else{*/
 				tabs.open('about:addons');
-			}
+			//}
 	});
 	/*var modifiers = 'control alt';
 	var key = 'P';

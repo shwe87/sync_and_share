@@ -10,23 +10,6 @@ var {Cc, Ci, Cu} = require("chrome");
 
 var myServer = require('./myServer.js');
 var preferences = require('./preferences.js');
-
-function setStarted (if_started){
-		console.log("\t\t\t\tLOCAL STORAGE: Set started to " + if_started);
-		ss.storage.started = if_started;
-}
-exports.setStarted = setStarted;
-
-function getStarted(){
-		if (!ss.storage.started){
-				return false;
-		}
-		else{
-				return ss.storage.started;
-		}
-}
-exports.getStarted = getStarted;
-
 function notify(){
 	var notifications = require("sdk/notifications");
 	notifications.notify({

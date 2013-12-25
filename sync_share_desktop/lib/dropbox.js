@@ -496,7 +496,7 @@ function del(searchDatas){
 		message.msg = 'Dropbox: Not Signed in!';
 		message.type = 'error';
 		emit(exports, 'showMessage', message );
-		emit(exports, 'notAuthorized','Google Drive');
+		emit(exports, 'notAuthorized','Dropbox');
 		//auth(searchDatas);
 	}
 }

@@ -9,7 +9,8 @@ from django.views.decorators.cache import never_cache
 admin.autodiscover()
 
 urlpatterns = patterns('',
-        (r'^login/$','mysite.views.main'),
+    (r'^login/$','mysite.views.main'),
+    (r'^logout/$','mysite.views.logout'),
 	(r'^browserid/', include('django_browserid.urls')),
 	(r'^change/device/name/$','mysite.views.changeDeviceName'),
 	(r'^add/all/bookmarks/$','mysite.views.addNewBookmarks'),

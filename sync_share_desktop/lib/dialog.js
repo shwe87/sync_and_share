@@ -6,7 +6,6 @@ var { emit, on, once, off } = require("sdk/event/core");
 
 const LOGIN_URL = constants.LOGIN_URL;
 var alreadyOpen = false;
-var thisTab;
 
 
 exports.on = on.bind(null, exports);
@@ -35,7 +34,7 @@ function checkIfOpen(){
 	
 }
 
-
+var thisTab;
 function loginDialog(){
 	console.log("Dialog = " + LOGIN_URL);
 	try{
@@ -47,7 +46,6 @@ function loginDialog(){
 				url: LOGIN_URL,
 				onReady: function(tab){
 					thisTab = tab;
-					thisTab.activate();
 					var tabWorker = tab.attach({
 						contentScriptFile: data.url('mysite-login.js')
 						

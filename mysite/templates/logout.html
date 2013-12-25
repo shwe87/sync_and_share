@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load browserid %}
+{% block title %} Log out {% endblock %}
+
+{% block content %}
+	<div class="authentication">
+        <div class="message small">
+        Sync & Share uses Mozilla Persona for authentication.
+        </div>
+       
+        {% if user.is_authenticated %}
+          {% browserid_logout text='Logout' %}
+        {% else %}
+          {% browserid_login text='Login' color='dark' %}
+        {% endif %}
+
+      </div>
+
+{% endblock %}
+
+{% block script %}
+    
+{% endblock %}

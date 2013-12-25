@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} My shared items {% endblock %}
+{% block head %}
+{% if flavour == "mobile" %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
+{% endblock %}
+<!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
+{% block content %}
+	<div class="shareView error">
+		<p>You are not sharing anything yet.</p>
+		<p class="small">Go to <a href="/share" class="highlight">Share</a>, if you want to share anything.</p>
+	</div>
+{% endblock %}
+
+{% block script %}
+<script src={% static "javascript/sharescript.js" %}></script>
+
+{% endblock %}
+
+
