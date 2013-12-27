@@ -95,10 +95,7 @@ ul.device{
 	margin:0px;
 }
 
-div.deviceName{
-	border
 
-}
 
 ul li{
 	list-style-type:none;
@@ -133,7 +130,11 @@ div.logo,div#footer{
 	border:none;
 		
 }
-
+img.serverLogo{
+	width:15px;
+	height:15px;
+	padding-left: 5px;
+}
 /*div.deviceWrapper{
 	border:solid #383127 1px;
          border-radius:6px 6px 6px 6px;

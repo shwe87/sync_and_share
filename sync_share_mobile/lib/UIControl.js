@@ -1,3 +1,10 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module was created because mozilla sdk doesn't offer creation of XUL elements and controls.						|																					
+ ************************************************************************************************************************/
+
+/**********************************************SDK Modules*************************************************************/
 const {Ci,Cc} = require("chrome");
 var { emit, on, once, off } = require("sdk/event/core");
 exports.on = on.bind(null, exports);
@@ -5,44 +12,34 @@ exports.once = once.bind(null, exports);
 exports.removeListener = function removeListener(type, listener) {
   off(exports, type, listener);
 };
-
 var data = require('sdk/self').data;
 var tabs = require('sdk/tabs');
-
-             
-              
-
 var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 //Get the window
 var thisWindow = mediator.getMostRecentWindow("navigator:browser");
-
 var menuId;
-//var gWindow;
-//var uuid;
+
+
+
 function loadIntoWindow(window) {
 	if (!window)
 		return;
 	menuId = window.NativeWindow.menu.add("Sync & Share", null, function() { /*showToast(window);*/
 	  	emit(exports, 'menuClicked',null);
    	});
-   
-   
-  
-  // DO SOMETHING HERE (create UI)
 }
 
 
 function showDoorhanger(aWindow) {
   buttons = [
     {
-      label: "Save this tab",
+      label: "Save This Tab",
       callback: function() {
-        //showToast('Save this tab');
         var currentTab = tabs.activeTab;
         emit(exports, 'saveTabClicked', [currentTab] );
       }
     } , {
-      label: "Save all tabs",
+      label: "Save All Tabs",
       callback: function() {
         //showToast('Save all tabs');
         emit(exports, 'saveAllTabsClicked', tabs);
@@ -99,18 +96,9 @@ function showToast(msg) {
 
 
 function addPageAction(){
-	/*
-	title: Pageaction title
-	icon: Icon image for the pageaction
-	clickCallback: Callback called when pageaction is clicked
-	longClickCallback: Callback called when pageaction is long pressed
-	*/
 	var aOptions = {
 	  title: "Page action",
 	  icon: data.url('images/myLogo64.png'),
-	  //clickCallback: function() {
-	  //	
-	   //}
 	  longClickCallback: function() {
 			showDoorhanger(thisWindow);
 	  } 

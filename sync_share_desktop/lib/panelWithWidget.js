@@ -1,18 +1,18 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module was created to show a panel with the quickStart.html content. When a usr clicks the widget located		|
+ * in the add-on bar, this panel opens. Learnt from:																	|
+ * https://addons.mozilla.org/en-US/developers/docs/sdk/latest/modules/sdk/panel.html									|																					
+ ************************************************************************************************************************/
 var panel = require("sdk/panel");
 var data = require("sdk/self").data;
 var widget = require("sdk/widget");
 const timer = require('sdk/timers');
 const { myId } = require("sdk/self");
-var { emit, on, once, off } = require("sdk/event/core");
-exports.on = on.bind(null, exports);
-exports.once = once.bind(null, exports);
-exports.removeListener = function removeListener(type, listener) {
-  off(exports, type, listener);
-};
-
-const images = require('./imagesHandler.js');
 
 
+const images = require('./imagesHandler');
 
 function startUp(){
 		var helpPanel = panel.Panel({

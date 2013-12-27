@@ -83,7 +83,7 @@ class ShareForm(forms.Form):
 	shareHistory = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_HISTORY,required=False)
 	shareTabs = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=SHARE_TABS,required=False)
 	selectFrom = forms.ChoiceField(widget=forms.Select(attrs={'id':'selectTypeWhom'}),choices=SELECT_OPTIONS)
-	friends_email = MultiEmailField(help_text='Write emails separated by commas', required=False,widget=forms.TextInput(attrs={'size':'50'}));
+	friends_email = MultiEmailField(help_text='Write emails separated by commas', required=False);
 	group_name = forms.CharField(max_length=100,label='Group Name', help_text='Maximum 100 characters', required=False)
 	existingGroups = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=GROUP_OPTIONS,required=False)
 	

@@ -7,9 +7,9 @@
 
 
 <link rel="stylesheet" href="themes/shweta.min.css" />
-<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0.min.css">
 <script src="jquery-1.10.2.min.js"></script>
-<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+<script src="jquery.mobile-1.4.0.min.js"></script>
 
 
 
@@ -42,11 +42,6 @@ Sync & Share-Menu and Views
         <div data-role="content" id="mainContent">
 				<h2 class="contentTitle"><span class="counter"> 2.</span>Menu:</h2>
 				<div class="sectionContent">
-					<!--a href="#popupBasic" data-rel="popup">Open Popup</a>
-
-						<div data-role="popup" id="popupBasic" data-transition="slideup">
-						<p>This is a completely basic popup, no options set.<p>
-					</div-->
 					<DL>
 						<DT class="contentTitle"> 
 							<STRONG><h3>
@@ -54,8 +49,14 @@ Sync & Share-Menu and Views
 							</STRONG>
 						</DT>
 							<DD>
+								<div class="fotoWrapper">
+									<img id="syncShareMenu" class="picture" src="images/syncShareMenu.png" title="Sync & Share Menu">
+									<div class="fotoTitle">
+										Picture 2.1. Sync & Shre Menu.
+									</div>
+								</div>
 								<p>
-									The <em>Sync & Share Menu</em> will appear when you are in Firefox and touch your
+									The <em>Sync & Share Menu</em> will appear when the Firefox browser is open, then touch your
 									device's menu button.
 								</p>
 							</DD>
@@ -65,6 +66,12 @@ Sync & Share-Menu and Views
 							</STRONG>
 						</DT>
 							<DD>
+								<div class="fotoWrapper">
+									<img id="syncedView" class="picture" src="images/syncedView.png" title="Synced Items">
+									<div class="fotoTitle">
+										Picture 2.2. My Synced Items.
+									</div>
+								</div>
 								<OL type="a">
 									<LI id="saveAllTabsOption">
 										<DL>
@@ -78,10 +85,17 @@ Sync & Share-Menu and Views
 										</DD>
 									</LI>
 									<LI>
+										
 										<DT>
 										<STRONG><EM><h4>Bookmarks</h4></EM></STRONG>
 										</DT>
 										<DD>
+											<div class="fotoWrapper">
+												<img id="syncedBookmarks" class="picture" src="images/syncedBookmarks.png" title="Synced Bookmarks">
+												<div class="fotoTitle">
+													Picture 2.3. View your synced bookmarks.
+												</div>
+											</div>
 											<p>
 												Click Bookmarks and view all the synced and saved bookmarks of all your devices.
 											</p>
@@ -107,10 +121,16 @@ Sync & Share-Menu and Views
 											<p>
 												Click Options and view the options available.
 											</p>
+											
 											<ol type="i">
 												<li>Save All Tabs
 													<p>
-														Will <a href="sync.html" id="reference">save all the open tabs</a>in your browser.
+														This will <a href="sync.html" id="reference">save all the open tabs</a>in your browser.
+													</p>
+												</li>
+												<li>Sync All Now!
+													<p>
+														This will <a href="sync.html" id="reference">sync</a> all your devices.
 													</p>
 												</li>
 												<li> Share
@@ -128,7 +148,7 @@ Sync & Share-Menu and Views
 										</DD>
 									</LI>
 										</DL>
-									</LI>
+									
 									 
 					</DL>
 				</div><!--End of sectionContent-->
@@ -139,11 +159,7 @@ Sync & Share-Menu and Views
 			<img src="images/shwetaBrand.png">
 		</div>
 		</div><!-- /page -->
-        <script type="text/javascript">
-			$(document).ready(function(){
-				$( "#popupBasic" ).popup( "open" );
-			});
-		</script>
+	
     </body>
 
 </html>

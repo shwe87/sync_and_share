@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% block title %} About {% endblock %}
+<!--link href={% static "css/sharestyle.css?" now "U" %} rel="stylesheet" type="text/css"-->
+{% block content %}
+		<div id="aboutContainer">
+			<h3 class="title">Welcome to Sync & Share.</h3>
+			<p>
+				This add-on was created as a my career's final project work, just for educational purpose. This add-on uses a django-based-server made by me and is
+				running in my university. Please use it and comment it. If you drop me a comment, it would be very helpful. Send me an email: <span class="highlight">addonsyncshare@gmail.com </span>
+				  or leave me a comment in the add-on page:
+				<ul>
+					<li>
+				<a href="https://addons.mozilla.org/en-US/firefox/addon/sync-share/" title="Desktop version" class="highlight">
+					Sync & Share Desktop Version</a></li>
+				
+				<li><a href="https://addons.mozilla.org/en-US/firefox/addon/sync-share-mobile-version/" title="Mobile version" class="highlight">
+					Sync & Share Mobile Version</a></li>
+				</ul>
+				Thanks!
+				
+			</p>
+		</div>
+		
+{% endblock %}

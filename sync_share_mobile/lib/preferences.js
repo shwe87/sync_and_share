@@ -1,3 +1,11 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module was created to control the user's preferences.															|
+ * Learnt from:																											|
+ * https://addons.mozilla.org/en-US/developers/docs/sdk/latest/modules/sdk/simple-prefs.html							|																					
+ ************************************************************************************************************************/
+
 var { emit, on, once, off } = require("sdk/event/core");
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
@@ -9,13 +17,13 @@ var settings = require("sdk/simple-prefs");
 
 function onDeviceNameChange(prefName) {
     var message = "Device name set to " + settings.prefs['deviceName'];
-    emit(exports,'showMessage', message);    
+    emit(exports,'showMessage', message);
+    emit(exports,'deviceNameChanged',settings.prefs['deviceName']);    
 }
 
 function onExtraServerChange(prefName){
 	var message = "Extra server set to " + settings.prefs[prefName];
 	emit(exports, 'showMessage', message);
-	console.log("Prefs: Server changed sent ");
 	emit(exports, 'serverChanged',settings.prefs[prefName]);
 }
 function onSyncTabs(prefName){

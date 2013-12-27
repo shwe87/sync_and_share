@@ -26,6 +26,7 @@ div#userInfo{
 	display:inline-block;
 	border: solid #383127 1px;
 	border-radius:6px 6px 6px 6px;
+	padding: 10px;
 }
 
 div#toShareFrom,div#viewShare{
@@ -55,7 +56,7 @@ span.small, div.helpText,li.small,div.small{
 }
 */
 
-div.logo, div.brand,div#loading{
+div.logo, div.brand,div#loading,div#aboutContainer{
 	display:block;
 	margin-top: 60px;
 	margin-bottom: 50px;
@@ -76,7 +77,22 @@ div.authentication{
 	padding-right: 5%;
 	
 }
- 
+div#aboutContainer{
+	border: groove #60a282 1px;
+	border-radius:10px 10px 10px 10px;
+	width:85%;
+	padding: 50px;
+
+}
+
+div#aboutContainer h3.title{
+	color: #DC5B21;
+	text-decoration: underline;
+}
+div#aboutContainer ul{
+	list-style-type:none;
+}
+
 div.authentication div.message{
 	padding-bottom: 20px; 
  

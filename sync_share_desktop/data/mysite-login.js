@@ -1,3 +1,4 @@
+/*This script is to let the add-on that the use has logged in into the django server!*/
 var email = document.getElementById('browserid-info');
 if (email != null){
 	var useremail = email.getAttribute('data-user-email');

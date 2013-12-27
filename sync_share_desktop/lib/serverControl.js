@@ -1,79 +1,75 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module was created to control all the servers used in this add-on												|							|																					
+ ************************************************************************************************************************/
+/**********************************************SDK Modules*************************************************************/
 var { emit, on, once, off } = require("sdk/event/core");
-var dropbox = require('./dropbox.js');
-var gapi = require('./gapi.js');
-var myServer = require('./myServer.js');
-//var myServer = require(');
-
-
+/**********************************************My modules*************************************************************/
+const dropbox = require('./dropbox');
+const gapi = require('./gapi');
+const myServer = require('./myServer');
+const preferences = require("./preferences");
+/**********************************************Variables*************************************************************/
 var chosenServer;
-//var serverInfo = {'dropbox':false,'googleDrive':false,'both':false};
-const preferences = require("./preferences.js");
-var theServer;
 var dropboxDatas = {};
 dropboxDatas.access_token;
 dropboxDatas.token_type;
 dropboxDatas.uid;
-
 var gapiDatas = {};
 gapiDatas.access_token;
 gapiDatas.token_type;
 gapiDatas.expires_in;
 gapiDatas.id_token;
 gapiDatas.refresh_token;
-
+/**********************************************CONSTANTS*************************************************************/
 const DROPBOX = 'dropbox';
 const GOOGLE_DRIVE = 'gapi';
 const BOTH = 'both';
 const NONE = 'none';
 
 
-
+/************************************************************************************************************************
+@function handleDropboxAuth:Called when the dropbox module lets this module know that the authorization process was complete
+* @param {object} authDatas - Contains:
+* 	--> authDatas.authSuccess {Boolean} - If the auth process was a success or not.
+* 	--> authDatas.token {String} - The token that will let this app work in name of the user.
+* 	--> authDatas.uid {String} - Unique id of the request
+*************************************************************************************************************************/
 /*Handle the auth reply*/
-//var access_token = dropBox.access_token;
 function handleDropboxAuth(authDatas){
-	/*authDatas = [response.json, callersData]
-	**callersData = [whoCalled, datas...]
-	*/
 	authenticated = authDatas.authSuccess;
-	//var accessDatas = authDatas[0];
-	//var callersData = authDatas[1];
-	
-	//var whoCalled = authDatas.whoCalled;
 	var message = {};
 	//Save the respective value of the access response.
 	if (authenticated){
 		dropboxDatas.access_token = authDatas.token;
 		dropboxDatas.token_type = authDatas.token_type;
 		dropboxDatas.uid = authDatas.uid;
-		message.msg = 'Signed in correctly!';
+		message.msg = 'Dropbox: Signed in correctly!';
 		message.type = 'correct';
 			
 	}
 	else{
-		message.msg = 'Signed in failed!';
+		message.msg = 'Dropbox: Signed in failed!';
 		message.type = 'correct';
 	
 	}
-	
-
-	
 	emit(exports,'showMessage',message);
 
 
 
 }
-
+/************************************************************************************************************************
+@function handleGapiAuth:Called when the gapi (Google Drive)  module lets this module know that the authorization process was complete
+* @param {object} authDatas - Contains:
+* 	--> authDatas.authSuccess {Boolean} - If the auth process was a success or not.
+* 	--> authDatas.token {String} - The token that will let this app work in name of the user.
+* 	--> authDatas.expires_in {String} - The token gets expired in
+* 	--> authDatas.refresh_token {String} - Refresh with this token
+*************************************************************************************************************************/
 /*Handle the auth reply*/
-//var access_token = dropBox.access_token;
 function handleGapiAuth(authDatas){
-	/*authDatas = [response.json, callersData]
-	**callersData = [whoCalled, datas...]
-	*/
 	authenticated = authDatas.authSuccess;
-	//var accessDatas = authDatas[0];
-	//var callersData = authDatas[1];
-	
-	//var whoCalled = authDatas.whoCalled;
 	var message = {};
 	//Save the respective value of the access response.
 	if (authenticated){
@@ -82,102 +78,62 @@ function handleGapiAuth(authDatas){
 		gapiDatas.expires_in = authDatas.expires_in;
 		gapiDatas.id_token = authDatas.id_token;
 		gapiDatas.refresh_token = authDatas.refresh_token;
-		message.msg = 'Signed in correctly!';
+		message.msg = 'Google Drive: Signed in correctly!';
 		message.type = 'correct';
 			
 	}
 	else{
-		message.msg = 'Signed in failed!';
+		message.msg = 'Google Drive: Signed in failed!';
 		message.type = 'correct';
 	
 	}
-		
-	
 	emit(exports,'showMessage',message);
-	/*var currentTab = tabs.activeTab;
-	console.log('SERVER:  '+"Active tab " + currentTab.title);
-	var currentTabWorker = currentTab.attach({
-		contentScriptFile: data.url('messages.js')
-	});
-	currentTabWorker.port.emit('authenticated','Signed in correctly!');
-	*/
-	/*panelMessage.write({'msg':'Signed in correctly!','type':'correct'});
-	panelMessage.show();
-	timer.setTimeout(hidePanel, 5000);	//5 seconds*/
 	
-	//console.log('SERVER:  '+"EXPIRES IN " + expires_in);
-	
-	/*
-	if (whoCalled == 'searchFile'){
-		//Continue to search File
-		//callersData = ['searchFile' , title, dataToSave]
-		var title = authDatas.title;
-		var dataToSave = authDatas.dataToSave;
-		//var elementToSave = callersData[3];
-		gapi.searchFile(authDatas);
-	}
-	/*if(whoCalled == 'OpenTab'){
-		tabs.open({
-  			url: data.url('GoogleDriveShare.html'),
-  			inNewWindow: true
-    		});
-		
-	}*/
-	/*
-	else if (whoCalled == 'downloadData'){
-		//callersData = ['downloadData', fileName, downloadURL]
-		var title = authDatas.title;
-		var downloadURL = authDatas.dLoadURL;
-		gapi.downloadData(authDatas);	
-	}*/
-
-
 }
 
-
+/************************************************************************************************************************
+@function changeServer:Called when the user changes the extra server option in the preferences panel
+* @param newServer {String} - The new server chosen
+*************************************************************************************************************************/
 function changeServer(newServer){
-	
-	//setServer();
-	console.log("SERVER : Server Changed to = " + newServer);
 	chosenServer = newServer;
-	//var message = 'Changed correctly!';
-	//emit(exports,'showMessage',message);
-	
-
 }
 
-
+/************************************************************************************************************************
+@function handleDisplay: Called whenever any of the server wants to display the downloaded data.
+* @param toShowDatas {Object} - Contains:
+* 	--> toShowDatas.server {String} - From which server was this sent.
+* 	--> toShowDatas.data {Object} - The data to be displayed.
+* 	--> toShowDatas.element {String} - Type of element (tabs,bookmarks or history).
+*************************************************************************************************************************/
 function handleDisplay(toShowDatas){
+	//Tell the main to handle it.
 	emit(exports,'display',toShowDatas);
 }
 
+/************************************************************************************************************************
+@function handleShowMessage: Called whenever any of the server wants to show a message to the user.
+* @param messageToShow {Object} - Contains:
+* 	--> messageToShow.message {String} - The message to be shown.
+* 	--> messageToShow.type {String ( correct, error or info)} - Type of message.
+*************************************************************************************************************************/
 function handleShowMessage(messageToShow){
 	emit(exports,'showMessage',messageToShow);
 }
 
-
-
-
-
+/************************************************************************************************************************
+@function setServer: Set the choseServer (global var ) to the one the user chose.
+*************************************************************************************************************************/
 function setServer(){
-	//if(chosenServer != undefined){
-	//	serverInfo[chosenServer] = false;
-	//}
-	chosenServer = preferences.getExtraServer();
-	//serverInfo[chosenServer] = true;
-	/*if (chosenServer == DROPBOX){//If it is not both then:
-		theServer = dropbox;
-	}
-	else if (chosenServer == GOOGLE_DRIVE){
-		theServer = gapi;
-	}
-	else if (chosenServer == BOTH){
-		theServer = 'both';
-	}*/
-	console.log('SERVER:  '+'Chosen server = ' + chosenServer);	
+	chosenServer = preferences.getExtraServer();	
 }
 exports.setServer = setServer;
 
+/************************************************************************************************************************
+@function save: Called when the user wants to save something manually. Depending on the user's preferences the datas wil be
+* saved in certain servers.
+* @param writeDatas {Object} - Necessary datas to be saved
+*************************************************************************************************************************/
 function save(writeDatas){
 	var message = {};
 	message.msg = 'Loading..... ';
@@ -185,15 +141,15 @@ function save(writeDatas){
 	if (chosenServer == DROPBOX){
 		writeDatas.token = dropboxDatas.access_token;
 		dropbox.save(writeDatas);
-		//message.msg = message.msg + 'Dropbox.';
+		
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
 		writeDatas.token = gapiDatas.access_token;
 		gapi.save(writeDatas);
-		//message.msg = message.msg + 'Google-Drive.';
+		
 	}
 	else if (chosenServer == BOTH){
-		//message.msg = message.msg + 'Dropbox and Google-Drive.';
+		
 		writeDatas.token = dropboxDatas.access_token;
 		dropbox.save(writeDatas);
 		writeDatas.token = gapiDatas.access_token;
@@ -201,32 +157,30 @@ function save(writeDatas){
 	}
 	else if (chosenServer == NONE){
 		//Do nothing
-		//message.msg = "You haven't chosen any extra server."
+		
 	}
 	//Have to send to my server:
 	myServer.save(writeDatas);
-	//message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
 	emit(exports, 'showMessage',message);
 
 }
 exports.save = save;
-
+/************************************************************************************************************************
+@function read: Called when the user wants to view his/her synced items. Depending on the user's preferences the datas wil be
+* read from certain servers.
+* @param readInfo {Object} - Necessary datas to be able to read
+*************************************************************************************************************************/
 function read(readInfo){
-	//var message = {};
-	//message.msg = 'Loading.... ';
-	//message.type = 'info';
+
 	if (chosenServer == DROPBOX){
 		readInfo.token = dropboxDatas.access_token;
 		dropbox.read(readInfo);
-		//message.msg = message.msg + 'Dropbox.';
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
 		readInfo.token = gapiDatas.access_token;
 		gapi.read(readInfo);
-		//message.msg = message.msg + 'Google-Drive.';
 	}
 	else if (chosenServer == BOTH){
-		//message.msg = message.msg + 'Dropbox and Google-Drive.';
 		readInfo.token = dropboxDatas.access_token;
 		dropbox.read(readInfo);
 		readInfo.token = gapiDatas.access_token;
@@ -234,65 +188,60 @@ function read(readInfo){
 	}
 	else if (chosenServer == NONE){
 		//Do nothing
-		//message.msg = message.msg = 'No extra server.';
-		//emit(exports, 'display',null);
 	}
 	myServer.read(readInfo);
-	//message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
-	//emit(exports, 'showMessage',message);
 }
 exports.read = read;
-
+/************************************************************************************************************************
+@function del: Called when the user wants to delete any saved item. The given parameters will tell from which server to be deleted.
+* @param server {String} - Where the item lies, in which server
+* @param url {String} - The item to be deleted.
+* @param element {String} - What type of item is it? tabs, bookmarks or history?
+*************************************************************************************************************************/
 function del(server,url,element){
-	//var message = {};
-	//message.msg = 'Loading.... ';
-	//message.type = 'info';
+
 	if (server == 'dropbox'){
-			var toDelete = new Object();
-			toDelete.url = url;
-			toDelete.title = element+'.json';
-			toDelete.token = dropboxDatas.access_token;
-			dropbox.del(toDelete);
+		var toDelete = new Object();
+		toDelete.url = url;
+		toDelete.title = element+'.json';
+		toDelete.token = dropboxDatas.access_token;
+		dropbox.del(toDelete);
 	}
 	else if (server == 'gapi'){
-			var toDelete = new Object();
-			toDelete.url = url;
-			toDelete.title = element+'.json';
-			toDelete.token = gapiDatas.access_token;
-			gapi.del(toDelete);
+		var toDelete = new Object();
+		toDelete.url = url;
+		toDelete.title = element+'.json';
+		toDelete.token = gapiDatas.access_token;
+		gapi.del(toDelete);
 	}
 	else if(server == 'mysite'){
-			var message = {};
-			message.msg = "Sync & Share: Please delete items from the server!";
-			message.type = "error";
-			emit(exports,'showMessage',message);
+		var message = {};
+		message.msg = "Sync & Share: Please delete items from the server!";
+		message.type = "error";
+		emit(exports,'showMessage',message);
 			
 	}
-	
-	//message.msg = message.msg + 'If you want to change this, please see the help page or go to the preference page.';
-	//emit(exports, 'showMessage',message);
 }
 exports.del = del;
-
+/************************************************************************************************************************
+@function handleNotAuthorized: Called when any of the server tells this module that the use is not logged in!
+* @param serverName {String} - The server which makes this call
+*************************************************************************************************************************/
 function handleNotAuthorized(serverName){
-	console.log("Not authorized!!");
 	var toDisplay = new Object();
 	toDisplay.server = serverName;
 	toDisplay.data = new Object();
 	toDisplay.data['msg'] = "You are not signed in "+serverName+". Please sign in!";
-	//toDisplay.datas = message;
 	emit(exports,'display',toDisplay);
 }
 
-
+/************************************************************************************************************************
+@function start: Start function, start listening to events.
+*************************************************************************************************************************/
 function start(){
 	//Set the server:
 	setServer();
 	preferences.on('serverChanged',changeServer);
-	//Listen for the button Save changes in the preferences panel.
-	//preferences.on("saveChanges", changeServer);
-	//When the user is unauthorized:
-	//gapi.on('Unauthorized',handleUnAuth);
 	//When the authentication process is completed:
 	gapi.on('authComplete',handleGapiAuth);
 	//Display the downloaded data.  
@@ -300,8 +249,6 @@ function start(){
 	//To show the corresponding message
 	gapi.on('showMessage',handleShowMessage); 
 	gapi.on('notAuthorized',handleNotAuthorized);
-
-	//dropbox.on('Unauthorized',handleUnAuth);
 	//When the authentication process is completed:
 	dropbox.on('authComplete',handleDropboxAuth);
 	dropbox.on('notAuthorized',handleNotAuthorized);
@@ -309,12 +256,35 @@ function start(){
 	dropbox.on('display',handleDisplay);
 	//To show the corresponding message
 	dropbox.on('showMessage',handleShowMessage); 
-	
+	//My server wants to display some datas
 	myServer.on('display',handleDisplay);
+	//My server : The user is not authorized
 	myServer.on('notAuthorized',handleNotAuthorized);
 }
 exports.start = start;
-   
+function clean(){
+	//Stop listening!
+	preferences.removeListener('serverChanged');
+	gapi.removeListener('authComplete');
+	//Display the downloaded data.  
+	gapi.removeListener('display');
+	//To show the corresponding message
+	gapi.removeListener('showMessage'); 
+	gapi.removeListener('notAuthorized');
+	//When the authentication process is completed:
+	dropbox.removeListener('authComplete');
+	dropbox.removeListener('notAuthorized');
+	//Display the downloaded data.  
+	dropbox.removeListener('display');
+	//To show the corresponding message
+	dropbox.removeListener('showMessage'); 
+	//My server wants to display some datas
+	myServer.removeListener('display');
+	//My server : The user is not authorized
+	myServer.removeListener('notAuthorized');
+}
+
+exports.clean = clean; 
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
 exports.removeListener = function removeListener(type, listener) {

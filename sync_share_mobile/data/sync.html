@@ -6,9 +6,9 @@
 <link rel="SHORTCUT ICON" href="images/myLogo64.png">
 
 <link rel="stylesheet" href="themes/shweta.min.css" />
-<link rel="stylesheet" href="jquery.mobile.structure-1.4.0-rc.1.min.css" />
+<link rel="stylesheet" href="jquery.mobile.structure-1.4.0.min.css">
 <script src="jquery-1.10.2.min.js"></script>
-<script src="jquery.mobile-1.4.0-rc.1.min.js"></script>
+<script src="jquery.mobile-1.4.0.min.js"></script>
 
 
 
@@ -23,7 +23,7 @@ Sync & Share Help Page-Sync
 	<body>	
  
             
-		</div><!-- /page -->
+		
         <div data-role="page" id="syncPage">
             <div data-role="header" data-position="fixed">
 			<div data-role="navbar">
@@ -47,17 +47,17 @@ Sync & Share Help Page-Sync
 					<div><span class="small">Sync & Share</span></div>
 				</div>
 
-				<h2 class="contentTitle"><span class="counter"> 2.</span>Sync</h2>
+				<h2 class="contentTitle"><span class="counter"> 3.</span>Sync</h2>
 					<div class="sectionContent">
 					<DL>
 						<DT class="contentTitle"> 
 							<STRONG><h3>
-							<span class="counter"> 2.1.</span>Auto Syncing</EM></h3>
+							<span class="counter"> 3.1.</span>Auto Syncing</h3>
 							</STRONG>
 						</DT>
 							<DD>
 								<p>
-									To activate this option, you just have to be signed in on the Sync & Share Server
+									To activate this option, you just have to be signed into the Sync & Share Server
 									page. Note that, if the <a href="help.html" id="reference"><EM>Tabs, Bookmarks & History</EM></a> options in the
 									<a rel="external" href="help.html" id="reference"> Preference </a> panel is unchecked then they won't be 
 									synced automatically. 
@@ -75,14 +75,20 @@ Sync & Share Help Page-Sync
 							</DD>
 						<DT class="contentTitle" id="saveManuallyContent">
 							<STRONG><h3>
-							<span class="counter"> 2.2.</span>Save manually</EM></h3>
+							<span class="counter"> 3.2.</span>Save manually</h3>
 							</STRONG>
 						</DT>
 							<DD>
+								<div class="fotoWrapper">
+									<img id="doorHanger" class="picture" src="images/doorHanger.png" title="Save Tabs">
+									<div class="fotoTitle">
+										Picture 3.1. Save Tabs.
+									</div>
+								</div>
 								<p>
 									When an item is synced, they will be deleted when they are deleted from your device (unless it is being
 									shared with someone). If you want to save any item even when they get deleted from your device, use this
-									option. This option is available for the <a href="help.html#extraServersOption" id="reference">
+									option. This option is available for the <a href="help.html" id="reference">
 									extra servers</a>and for the default server.
 								</p>
 								<OL type="a">
@@ -96,27 +102,28 @@ Sync & Share Help Page-Sync
 												<STRONG><EM>Save This Tab</EM></STRONG>
 												<p>
 													<ol>
-													<li>Touch for a while the icon located in the location bar.</li>
+													<li>Touch for a while the icon located in the address bar.</li>
 													<li>Two options will appear. Click the <EM>Save This Tab</EM> option.</li>
 													</ol>
 												</p>
 												
-												<div class="fotoWrapper">
-													<img src="images/saveThisTab.png" title="Save a tab manually.">
-													<div class="fotoTitle">
-														2.1. This will save the tab in the default server and the chosen extra servers.
-													</div>
-												</div>
+												
 												 
 												
 												
 											</LI>
 											<LI>
+												<div class="fotoWrapper">
+													<img id="options" class="picture" src="images/options.png" title="Options">
+													<div class="fotoTitle">
+														Picture 3.2. Options panel.
+													</div>
+												</div>
 												<STRONG><EM>Save All Tabs</EM></STRONG>
 												<p>
 													There are two ways to save a tab.
 													<ul type="i">
-														<li> Touch for a while the icon located in the location bar.
+														<li> Touch for a while the icon located in the address bar.
 															<p>
 																Two options will appear. Click the <EM>Save All Tabs</EM> option.
 															</p>
@@ -127,7 +134,7 @@ Sync & Share Help Page-Sync
 															</a> menu. 
 															<p>
 																A new tab will open. Touch
-																<a href="menu.html#options" id="reference">
+																<a href="menu.html" id="reference">
 																	<EM>Options</EM>.
 																</a>
 																Then touch Save All Tabs.

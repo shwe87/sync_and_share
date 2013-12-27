@@ -1,7 +1,17 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module opens the tabs to share and the tab to view the shared items												|																					
+ ************************************************************************************************************************/
+/**********************************************SDK Modules*************************************************************/
 var tabs = require('sdk/tabs');
 var { emit, on, once, off } = require("sdk/event/core");
-var preferences = require('./preferences.js');
+/**********************************************My Modules*************************************************************/
+var preferences = require('./preferences');
 var sync_tabs = true;
+var tabsList = new Array();
+/*********************************************************************************************************************/
+
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
 exports.removeListener = function removeListener(type, listener) {
@@ -9,58 +19,47 @@ exports.removeListener = function removeListener(type, listener) {
 };
 
 
-var tabsList = new Array();
 
+/************************************************************************************************************************
+@function getTabs: If the sync tab option is on then get all the open tabs right now 
+*************************************************************************************************************************/
 function getTabs(tab){
+	//Know if sync tabs is turned on.
 	sync_tabs = preferences.getSyncTabs();
 	if (sync_tabs == true){
-		//console.log("TAB LOAD = " + tab.url + ' with ID = ' + tab.id);
 		var aTab = new Object();
 		aTab.url = tab.url;
 		aTab.id = tab.id;
 		aTab.title = tab.title;
-		//console.log(JSON.stringify(aTab));
 		var found = false;
 		var save = true;
 		for (var i=0;i<tabsList.length;i++){
 			if (tabsList[i].url == tab.url){
-				//console.log("Here");
-				//if (aTab.url == tabsList[i].url){//Don't save this
-					found = true;
-					save = false;
-					break;
-				//}
-				tabsList[i] = aTab;
 				found = true;
+				save = false;
 				break;
 			} 
 		}
 		if (!found){
-			//console.log("Not found");
 			tabsList.push(aTab);
 		}
-		//console.log(JSON.stringify(tabsList));
 		if (save == true){
-			console.log("Have to save : " + JSON.stringify(tabsList));
 			emit(exports,'save',tabsList);
 		}
 	}
-
-
-
-
 }
-
+/************************************************************************************************************************
+@function delDuplicates: Only save tabs once, if there are more same tabs open, only save it once.
+* @param {Array} whereToSearch - Searche here the duplicates
+* @return {Array} whereToSearch - return the value without duplicates.
+*************************************************************************************************************************/
 function delDuplicates(whereToSearch){
-	//var duplicates = new Array();
+	
 	for (var i=0;i<whereToSearch.length;i++){
-		//var found = false;
 		for (var j=0;j<whereToSearch.length;j++){
 			if(i != j){
 				if (whereToSearch[i].url == whereToSearch[j].url){
-					//found = true;
-					console.log("Duplicate = " + whereToSearch[i].url);
-					whereToSearch.splice(j,1);
+					whereToSearch.splice(j,1);	//Delete the duplicate value.
 				}
 			}
 		}
@@ -68,121 +67,66 @@ function delDuplicates(whereToSearch){
 	return whereToSearch;
 
 }
-
+/************************************************************************************************************************
+@function getAllTabs: Get all the tabs that are open right now in the browser.
+* @return openTabs {Array} - All the open tabs.
+*************************************************************************************************************************/
 function getAllTabs(){
 	var openTabs = new Array();
+	//Have to make a simple object, to avoid the cyclic object value error
 	for each(var tab in tabs){
 		var aTab = {'title':tab.title,'url':tab.url,'id':tab.id}
 		openTabs.push(aTab);
 	}
-	console.log("Have to save : " + JSON.stringify(openTabs));
+
 	return openTabs;
-	//emit(exports,'save',tabsList);
 
 }
 
+/************************************************************************************************************************
+@function listePageShow: Whenever a new page opens, send it to the server, to always have the tabs synced! Only if the 
+* sync tabs options is turned on!
+*************************************************************************************************************************/
 function listenPageShow(){
-console.log("Start listening!!!");
-tabs.on('pageshow',function(tab){
-		/*sync_tabs = preferences.getSyncTabs();
-		if (sync_tabs == true){
-			//console.log("TAB LOAD = " + tab.url + ' with ID = ' + tab.id);
-			var aTab = new Object();
-			aTab.url = tab.url;
-			aTab.id = tab.id;
-			aTab.title = tab.title;
-			//console.log(JSON.stringify(aTab));
-			var found = false;
-			var save = true;
-			for (var i=0;i<tabsList.length;i++){
-				if (tabsList[i].id == tab.id){
-					//console.log("Here");
-					if (aTab.url == tabsList[i].url){//Don't save this
-						found = true;
-						save = false;
-						break;
-					}
-					tabsList[i] = aTab;
-					found = true;
-					break;
-				} 
-			}
-			if (!found){
-				//console.log("Not found");
-				tabsList.push(aTab);
-			}
-			//console.log(JSON.stringify(tabsList));
-			if (save == true){
-			
-				emit(exports,'save',tabsList);
-			}
-		}*/
+	tabs.on('pageshow',function(tab){	
 		sync_tabs = preferences.getSyncTabs();
-		console.log(sync_tabs);
 		if (sync_tabs == true){ 
-			console.log("TABS: Page show!!! HAve to send tabs!");
 			var openTabs = getAllTabs();
 			openTabs = delDuplicates(openTabs);
-			console.log("TABS: Page show!!! HAve to send tabs! " + JSON.stringify(openTabs));
 			emit(exports, 'save',openTabs);
 		}
 
-});
+	});
 }
 
 
-
+/************************************************************************************************************************
+@function listenClose: Whenever a page closes, send it to the server, to always have the tabs synced! Only if the 
+* sync tabs options is turned on!
+*************************************************************************************************************************/
 function listenClose(){
-console.log("Start listening Close");
-tabs.on('close',function(tab){
-		//console.log("TAB CLOSE = " + tab.id);
-		/*sync_tabs = preferences.getSyncTabs();
-		if (sync_tabs == true){
-			var found = false;
-			for (var i=0;i<tabsList.length;i++){
-				if (tabsList[i].id == tab.id){
-					//console.log("found");
-					tabsList.splice(i,1);
-					found = true;
-					break;
-				} 
-			}
-
-	
-			emit(exports,'save',tabsList);
-		}*/
-		
+	tabs.on('close',function(tab){
 		sync_tabs = preferences.getSyncTabs();
-		console.log(sync_tabs);
 		if (sync_tabs == true){
-			console.log("TABS: Page close!! Have to send!");
 			var openTabs = getAllTabs();
 			openTabs = delDuplicates(openTabs);
-			console.log("TABS: Page show!!! HAve to send tabs! " + JSON.stringify(openTabs));
 			emit(exports, 'save',openTabs);	
 		}
-});
+	});
 
 }
-
+/************************************************************************************************************************
+@function start up function: Listen to the events
+*************************************************************************************************************************/
 function startUp(){
 	sync_tabs = preferences.getSyncTabs();
 	if (sync_tabs == true){
-		console.log("Mytabs : start!!!!");
 		var openTabs = getAllTabs();
 		openTabs = delDuplicates(openTabs);
 		emit(exports,'save',openTabs);
 		listenPageShow();
 		listenClose();
-		//console.log("saveTabs = " + JSON.stringify(dataToSave));
-		//listenOpen();
-		//listenClose();
 	}
-	
-	
-
-
-
 }
 
 exports.startUp = startUp;

@@ -33,6 +33,7 @@ urlpatterns = patterns('',
 	#(r'^save/bookmarks/','browseridTest.views.saveBookmarks'),
 	#(r'^save/history','browseridTest.views.saveHistory'),
 	(r'^$', 'mysite.views.welcome'),
+	(r'^about/$','mysite.views.about'),
 	(r'^static/(?P<path>.*)$', never_cache(serve_static)),
 	
 	
@@ -45,4 +46,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
      url(r'^admin/', include(admin.site.urls)),
+     (r'^','mysite.views.help'),
 )

@@ -146,7 +146,7 @@
 			
 			You belong to the following groups:
 			<ul onclick="showOrHide(event)" class="hiding" id="{{ s.unique }}">
-			<span class="highlight">{{ s.groupName }}</span>
+			<span class="highlight">Group {{ s.groupName }}</span>
 			
 				<span clas="imageContainer"><img onclick="delFromGroup(event,'{{ s.unique }}')" class="image" src={% static "images/cross.png" %} title="Delete from this group" height="15px"></span>
 			

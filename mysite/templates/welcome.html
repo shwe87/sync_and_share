@@ -25,7 +25,7 @@
 						</a>
 						{% endif %}
 						</span>was saved on 
-					{{ b.addedDate | date:'Y-m-d H:i' }}
+					{{ b.addedDate | date:'D d M Y H:i' }}
 					</p>
 				</div>
 			{% endfor %}
@@ -42,7 +42,7 @@
 				<div>
 					<p class="recentItems">    
 						<a href="{{ h.url }}" class="highlight">{{ h.title }}</a>
-					 was saved on {{ h.addedDate | date:'Y-m-d H:i' }}</p>
+					 was saved on {{ h.addedDate | date:'D d M Y H:i' }}</p>
 				</div>
 			{% endfor %}
 		{% else %}
@@ -52,12 +52,12 @@
 		{% endif %}
 		</div>
 		<div class="main">
-		<h3 class="mainTitle"> Recent synced History </h3><hr>
+		<h3 class="mainTitle"> Recent synced Tabs </h3><hr>
 		{% if tabs %}
 			{% for t in tabs %}
 				<div class="recentItems">
 					<p>    <a href="{{ t.url }}" class="highlight">{{ t.title }}</a>
-					was saved on {{ t.addedDate | date:'Y-m-d H:i' }}</p>
+					was saved on {{ t.addedDate | date:'D d M Y H:i' }}</p>
 				</div>
 			{% endfor %}
 		{% else %}
@@ -71,40 +71,12 @@
 		{% if savedItems %}
 			{% for s in savedItems %}
 				<div class="recentItems">
-					<p>    <a href="{{ s.url }}" class="highlight">{{ s.title }}</a> was saved on {{ s.addedDate | date:'Y-m-d H:i' }} <span class="small">({{ s.typeOf }})</span></p>
+					<p>    <a href="{{ s.url }}" class="highlight">{{ s.title }}</a> was saved on {{ s.addedDate | date:'D d M Y H:i' }} <span class="small">({{ s.typeOf }})</span></p>
 				</div>
 			{% endfor %}
 		{% else %}
 			<div >
 				<p> Nothing saved yet!</p>
-			</div>
-		{% endif %}
-		</div>
-		<div class="main">
-		<h3 class="mainTitle"> Recent shared Items </h3><hr>
-		{% if shared %}
-			{% for sh in shared %}
-				<div class="recentItems">
-					<p>    <a href="{{ sh.url }}" class="highlight">{{ sh.title }}</a> was saved on {{ sh.addedDate | date:'Y-m-d H:i' }}
-						<span class="small">
-							Shared with:
-							{% if sh.typeOf_share == email %}
-								{% for e in sh.shared_with_emails %}
-									{{ e.email }}, 
-								{% endfor %}
-							{% else %}
-								{% for g in sh.shared_with_group %}
-									{{ g.groupName }}, 
-								{% endfor %}
-							{% endif %}
-						</span>
-					
-					</p>
-				</div>
-			{% endfor %}
-		{% else %}
-			<div >
-				<p> Nothing shared yet!</p>
 			</div>
 		{% endif %}
 		</div>

@@ -1,27 +1,28 @@
+/*Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.
+ * Still in development. This add-on is my career's final project work.
+ * 
+ * This module was created to obtain the bookmarks of this device by using the mozilla sdk.
+ * */
+ 
+ 
+/**********************************************SDK Modules*************************************************************/
 var {Cc, Ci, Cu} = require("chrome");
 var { emit, on, once, off } = require("sdk/event/core");
 var bookmarkService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
 var history = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
-var bookmarksList = new Array();
-//var FaviconService = (Cc['@mozilla.org/browser/favicon-service;1'].getService(Ci.mozIAsyncFavicons));
+/**********************************************My variables*************************************************************/
+var bookmarksList = new Array();		//Contains all the bookmarks of this device.
+/***********************************************************************************************************************/
 /*
+ * Code of the type of folders:
  RESULT_TYPE_URI = 0;               // nsINavHistoryResultNode
 RESULT_TYPE_VISIT = 1;             // nsINavHistoryVisitResultNode
-RESULT_TYPE_FULL_VISIT = 2;        // nsINavHistoryFullVisitResultNode
-RESULT_TYPE_DYNAMIC_CONTAINER = 4; // nsINavHistoryContainerResultNode
 RESULT_TYPE_QUERY = 5;             // nsINavHistoryQueryResultNode
 RESULT_TYPE_FOLDER = 6;            // nsINavHistoryQueryResultNode
 RESULT_TYPE_SEPARATOR = 7;         // nsINavHistoryResultNode
 RESULT_TYPE_FOLDER_SHORTCUT = 9;   // nsINavHistoryQueryResultNode
-
-var node = result.root.getChild(i);
-  // do something with the node properties...
-  var title = node.title;
-  var url = node.uri;
-  var visited = node.accessCount;
-  var lastVisitedTimeInMicrosecs = node.time;
-  var iconURI = node.icon; // is null if no favicon available
 */
+//So that other modules can use this one:
 exports.on = on.bind(null, exports);
 exports.once = once.bind(null, exports);
 exports.removeListener = function removeListener(type, listener) {
@@ -29,16 +30,21 @@ exports.removeListener = function removeListener(type, listener) {
 };
 
 
-
+/************************************************************************************************************************
+@function getFoldersId:Get the bookmarks main three folders' IDs.
+* @return allFolderId {Integer}: Returns the three main folers' IDs.
+*************************************************************************************************************************/
 function getFoldersId(){
-	//There are three main folders, everything else will be their children
+	//There are three main folders, everything else will be their children.
 	var allFoldersId = [bookmarkService.bookmarksMenuFolder,bookmarkService.toolbarFolder,bookmarkService.unfiledBookmarksFolder];
-	/*console.log("Menu folder =" +  bookmarkService.bookmarksMenuFolder);
-	console.log("Toolbar folder =" +  bookmarkService.toolbarFolder);
-	console.log("Unfiled folder =" +  bookmarkService.unfiledBookmarksFolder);*/
 	return allFoldersId;
 }	
 
+/************************************************************************************************************************
+@function nameFolder: Get the main folders' name from their IDs:
+* @param {Integer} ID: The ID of the folder.
+* @return name {String}: Returns the name of the folder.
+*************************************************************************************************************************/
 function nameFolder(ID){
 	var name = "";
 	if (ID == 2){
@@ -54,39 +60,32 @@ function nameFolder(ID){
 
 }
 
-function ifSubFolder(node){
-	var type = node.type;
-	var subFolder = false;
-	if ((type == Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER) /*|| (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_QUERY)*/){
-		//console.log(node.title + "is a subfolder!");
-		subFolder = true;	
-	}
-	return subFolder;
-} 
-
-function ifUri(childNode){
-	var uri = false;
-	var type = childNode.type;
-	if (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_URI) {
-		uri = true;		
-	}	
-	return uri;
-}
 
 
+
+/************************************************************************************************************************
+@function searchForParent: Search for the parent of the children node and place him next to his parent node:
+* @param {Bookmark node} childNode: The child bookmark node.
+* @param {Array} whereToSearch: The array where the parent will be searched for:
+*************************************************************************************************************************/
 function searchForParent(childNode, whereToSearch){
+	//Get the child's parent ID
 	var parentId = childNode.parentId;
-
+	//Search for him in the whereToSearch array:
 	for (var i=0;i<whereToSearch.length;i++){
 		if (whereToSearch[i].itemId == parentId){
+			//Parent was found!
 			whereToSearch[i].children.push(childNode);
-			//console.log("Break and return!");
+			//No need to search anymore
 			break;
 			return;
 		
 		}
+		//If not found then see if the node has children, may be the parent node we are
+		//searching for is a child of another node:
 		if (whereToSearch[i].children){
 			if (whereToSearch[i].children.length > 0){
+				//Recursive search:
 				searchForParent(childNode,whereToSearch[i].children);
 			}
 		}
@@ -95,100 +94,101 @@ function searchForParent(childNode, whereToSearch){
 
 }
 
-
+/************************************************************************************************************************
+@function saveBookmark: Saves a bookmark in an object form:
+* @param {bookmark node} aBookmark: The bookmark to be saved:
+*************************************************************************************************************************/
 function saveBookmark(aBookmark){
+	//See if the bookmark to be saved is a folder:
 	var ifFolder = aBookmark.ifFolder;
+	//If it is a folder then
 	if (ifFolder){
+		//Create an array to save its children:
 		if (!aBookmark.children){
 			aBookmark.children = new Array();
 		}
+		//Search for this bookmark node's parent:
 		searchForParent(aBookmark,bookmarksList);
 	}
 	else{
+		//If it not a folder then just search for parent:
 		searchForParent(aBookmark,bookmarksList);
 	}
 
 }
 
+/************************************************************************************************************************
+@function convertToDate: Given a time in microseconds (PRTime: from 1 January 1970) convert to date format:
+* @param {PRTime} timeInMicro: The time to be  converted to date
+* @return {Date} aux: Return the converted date:
+*************************************************************************************************************************/
 function convertToDate(timeInMicro){
 	var aux = new Date(timeInMicro);
-	
-	//console.log("Bookmarks = " + aux);
-	return aux;
-	
+	return aux;	
 }	 
+
+/************************************************************************************************************************
+@function getFoldersChildren: Given a folder's ID, get its children and form a list of all the bookmarks of this device:
+* @param {Integer} myFolderId: The ID of the folder whose children we want to retrieve:
+* INFO: Part of this code was taken from the Mozilla Developers page:
+* https://developer.mozilla.org/en-US/docs/Places_Developer_Guide#Accessing_Folder_Contents
+*************************************************************************************************************************/
 function getFoldersChildren(myFolderId){	 
+	//Assume that it is not a folder:
 	var ifFolder = false;        
-        var query = history.getNewQuery();
-        query.setFolders([myFolderId], 1);
-        var result = history.executeQuery(query, history.getNewQueryOptions());
-        // The root property of a query result is an object representing the folder you specified above.
-        var folderNode = result.root;
-        // Open the folder, and iterate over its contents.
-        folderNode.containerOpen = true;
-        //console.log("ID = " + myFolderId + " Child count = " + folderNode.childCount);
-        for (var i=0; i < folderNode.childCount; ++i) {
-                var child = folderNode.getChild(i);
-                 // Some item properties.
-                //var title = childNode.title;
-                //var id = childNode.itemId;
-                //var type = childNode.type;
-                var childNode = new Object();
-                //console.log("FAVICON = " + childNode.icon);
-                childNode.itemId = child.itemId;
-                childNode.title = child.title;
-                childNode.parentId = child.parent.itemId;
-                childNode.url = child.uri;
-                
-                
-                //childNode.type = child.type;
-                //All the times are in PRTime: milliseconds since epoch time.
-                //Convert to date and send it:
-                //var dateAdded = new Date(child.dateAdded/1000).toUTCString();
-                //childNode.dateAdded = child.dateAdded;
-                //console.log("dateAdded bookmark");
-                childNode.dateAdded = convertToDate(child.dateAdded/1000);
-                console.log(childNode.dateAdded);
-                //var lastModified = new Date(child.lastModified/1000).toUTCString();
-                //childNode.lastModified = child.lastModified;
-                //console.log("lastModified bookmark");
-                childNode.lastModified = convertToDate(child.lastModified/1000);
-               // console.log(childNode.lastModified);
-                //childNode.lastModified = child.lastModified;
-               // var time = new Date(child.time/1000).toUTCString();
-                //console.log("time bookmark");
-                childNode.time = convertToDate(child.time/1000);
-                var type = child.type;
+	var query = history.getNewQuery();
+	query.setFolders([myFolderId], 1);
+	var result = history.executeQuery(query, history.getNewQueryOptions());
+	// The root property of a query result is an object representing the folder you specified above.
+	var folderNode = result.root;
+	// Open the folder, and iterate over its contents.
+	folderNode.containerOpen = true;
+	for (var i=0; i < folderNode.childCount; ++i) {
+			var child = folderNode.getChild(i);
+			var childNode = new Object();
+			childNode.itemId = child.itemId;
+			childNode.title = child.title;
+			childNode.parentId = child.parent.itemId;
+			childNode.url = child.uri;
+			childNode.dateAdded = convertToDate(child.dateAdded/1000);
+			childNode.lastModified = convertToDate(child.lastModified/1000);
+			childNode.time = convertToDate(child.time/1000);
+			var type = child.type;
+			// Some type-specific actions.
+			if (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_URI) {
+				//If it is not a folder:
+				ifFolder = false;
+				childNode.ifFolder = ifFolder;
+				//Save it (Will also look for its parent node)
+				saveBookmark(childNode);
 
-                // Some type-specific actions.
-                if (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_URI) {
-                	//var uri = childNode.uri;
-                        ifFolder = false;
-                        childNode.ifFolder = ifFolder;
-                        saveBookmark(childNode);
-                        //emit(exports, 'take',childNode);
+			}
+			else if (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER) {
+				//If it is a folder:
+				ifFolder = true;
+				childNode.ifFolder = ifFolder;
+				//Save it and search for its parent node
+				saveBookmark(childNode);
+				//Recursive call: Get this folder's children
+				getFoldersChildren(childNode.itemId);
 
-                }
-                else if (type == Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER) {
-
-                        ifFolder = true;
-                        childNode.ifFolder = ifFolder;
-                        //emit(exports, 'take',childNode);
-             		saveBookmark(childNode);
-                        getFoldersChildren(childNode.itemId);
- 
-                }
-
-               
-        }
+			}		   
+	}
 
 }
 
 
-
+/************************************************************************************************************************
+@function getbook: This function will return all the bookmarks of this device with the help of all the functions mentioned
+* above
+* @return {Array} bookmarksList: Return an array of all the bookmarks of this device.
+*************************************************************************************************************************/
 function getbook(){
+	//The bookmarks list
 	bookmarksList = new Array();
+	//Get the three main folders' IDs
 	var folderIds = getFoldersId();
+	//For each folder, get its children.
 	for each (var id in folderIds){
 		var thisFolder = new Object();
 		thisFolder.itemId = id;

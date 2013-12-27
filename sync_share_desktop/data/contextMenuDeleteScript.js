@@ -1,7 +1,8 @@
 function decodeEntities(s){
-	/*Have to convert the html characters to normal strings to compare*/
+	/*Have to convert the html characters to normal strings to compare. To avois special HTML characters.*/
     var str, temp= document.createElement('p');
-    temp.innerHTML= s;
+    var t = document.createTextNode(s);
+    temp.appendChild(t);
     str= temp.textContent || temp.innerText;
     temp=null;
     return str;
@@ -9,7 +10,7 @@ function decodeEntities(s){
 
 self.on('click',function(node,data){
 	//The node is a LI object and the LI object has a DIV with the title and the url
-	//console.log('Script context:  '+'Context clicked ' + node.className);
+	//The clicked node will be:
 	var allChildren = node.children;
 	/*<div class="savedItem">
 	 * 	<p class="title">
@@ -24,13 +25,11 @@ self.on('click',function(node,data){
 	 * </div>*/
 	var nodeToDelete = new Object();
 	var parent = node.parentNode;
-	console.log("PARENT ID = " + parent.id);
+	//We need the parent id to know what type of element is it: tabs, bookmarks or history?
 	var element = parent.id;
 	element = element.split('show')[1];
-	console.log("ELEMENT = " + element);
 	nodeToDelete.element = element;
 	for each(var child in allChildren){
-		console.log("Script delete: " + child.className + " , " + child.nodeName);
 		if (child.className == 'title'){
 			//Know the server:
 			var thisChild = child.children;

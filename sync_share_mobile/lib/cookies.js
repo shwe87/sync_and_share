@@ -1,15 +1,16 @@
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * 																														|
+ * This module was created to add my own cookies to save that the user is signed in and if not then there will be		|
+ * no cookie																											|
+ ********************************************************************************************************************** |*/	
+/**********************************************SDK Modules*************************************************************/
 var {Cc, Ci} = require("chrome");
-var { emit, on, once, off } = require("sdk/event/core");
-exports.on = on.bind(null, exports);
-exports.once = once.bind(null, exports);
-exports.removeListener = function removeListener(type, listener) {
-  off(exports, type, listener);
-};
-
 var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
 var cookieSvc = Cc["@mozilla.org/cookieService;1"].getService(Ci.nsICookieService);
 var cookieMgr2 = Cc["@mozilla.org/cookiemanager;1"].getService(Ci.nsICookieManager2);
-
+/***********************************************************************************************************************/
 
  
                  
@@ -35,7 +36,6 @@ exports.getCookies = function(url){
 	var cookies = cookieMgr2.getCookiesFromHost(url);
 	for (var e = cookies; e.hasMoreElements();) {
 		var cookie = e.getNext().QueryInterface(Ci.nsICookie); 
-		console.log(cookie.host + ";" + cookie.name + "=" + cookie.value);
 		listOfCookies.push(cookie); 
 	}
 	return listOfCookies;

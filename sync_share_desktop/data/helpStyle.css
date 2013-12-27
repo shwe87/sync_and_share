@@ -128,11 +128,7 @@ dt {
    font-size: small;
 }
 
-/*dl.sections
-{
-counter-reset:section;
-}
-*/
+
 dt.stepsContainer dd
 {
 counter-reset:section;
@@ -146,13 +142,7 @@ counter-increment:section;
 span.counter{
 	padding-right:5px;
 }
-/*
-.sections dd:before 
-{
-counter-increment:subsection;
-content:counter(section) "." counter(subsection) " ";
-}
-*/
+
 div.subSectionContent{
 	margin-left: 15px;
 
@@ -169,8 +159,6 @@ div.fotoWrapper{
 	margin-right:auto;
 	text-align:center;
 	
-	/*margin-top: 20px;
-	margin-bottom: 20px;*/
 
 }
 
@@ -200,14 +188,7 @@ div.fotoWrapper img{
 
 }
 
-/*
 
-
-div.brand{
-	margin-left: 50%;
-	margin-right:50%;
-
-}*/
 
 
 

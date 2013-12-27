@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load browserid %}
+{% block title %} Help {% endblock %}
+{% block head %}
+{% if flavour == "mobile" %}
+<link href={% static "css/mobile/sharestyle.css" %} rel="stylesheet" type="text/css">
+{% else %}
+<link href={% static "css/desktop/sharestyle.css" %} rel="stylesheet" type="text/css"> 
+{% endif %}
+{% endblock %}
+{% block content %}
+	<div class="mainContent">
+		<div class="error">
+			<h2>Oops! Seems like the page you are looking for doesn't exist.</h2>
+		</div>
+		<p>
+			<ul><h3>May be you want to:</h3>
+			<li><a href="/login/" class="highlight"> Log in </a></li>
+			<li><a href="/" class="highlight">View your recent activity</a></li>
+			<li><a href="/share/" class="highlight">Share</a></li>
+			<li><a href="/view/share/" class="highlight">View your Shared Items</a></li>
+			<li><a href="/log out/" class="highlight">Log out</a></li>
+			</ul>
+			<p class="small">Links not listed here should be visited only with the add-on. So, install it and have fun!</p>
+		</p>
+	</div>
+
+{% endblock %}
+
+{% block script %}
+    
+{% endblock %}

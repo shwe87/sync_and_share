@@ -13,8 +13,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'Sync.sqlite',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', 		# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'SyncShare.sqlite',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
@@ -30,11 +30,11 @@ ALLOWED_HOSTS = []
 # Path to redirect to on successful login.
 LOGIN_REDIRECT_URL = '/login/'
 
-LOGIN_URL = "/login"
-LOGOUT_URL = "/logout"
+LOGIN_URL = "/login/"
+LOGOUT_URL = "/logout/"
 
 # Path to redirect to on unsuccessful login attempt.
-LOGIN_REDIRECT_URL_FAILURE = '/login'
+LOGIN_REDIRECT_URL_FAILURE = '/login/'
 
 # Path to redirect to on logout.
 LOGOUT_REDIRECT_URL = '/'
@@ -170,7 +170,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Set your site url for security
 #SITE_URL = 'http://192.168.1.16:8000'
-SITE_URL = 'http://192.168.1.16:8000'
+SITE_URL = 'http://iota20.aulas.gsyc.es:8000'
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
