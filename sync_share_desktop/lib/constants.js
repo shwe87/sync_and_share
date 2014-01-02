@@ -19,7 +19,7 @@ const LOGIN_URL = URL + '/login/';
 const ADD_ALL_BOOKMARKS = URL + '/add/all/bookmarks/';
 const ADD_ALL_HISTORY = URL + '/add/all/history/';
 const ADD_ALL_TABS = URL + '/add/all/tabs/';
-
+const DELETE_ALL = URL + '/deleteAll/';
 
 exports.URL = URL;
 exports.SHARE_URL = SHARE_URL;
@@ -35,3 +35,4 @@ exports.LOGIN_URL = LOGIN_URL;
 exports.ADD_ALL_BOOKMARKS = ADD_ALL_BOOKMARKS;
 exports.ADD_ALL_HISTORY = ADD_ALL_HISTORY;
 exports.ADD_ALL_TABS = ADD_ALL_TABS;
+exports.DELETE_ALL = DELETE_ALL;

@@ -27,6 +27,7 @@ const READ_ALL_TABS = constants.READ_ALL_TABS;
 const CHANGE_DEVICE_NAME = constants.CHANGE_DEVICE_NAME;
 const REGISTER = constants.REGISTER;
 const ADD_ALL_BOOKMARKS = constants.ADD_ALL_BOOKMARKS;
+const DELETE_ALL = constants.DELETE_ALL;
 /**********************************************Variables*************************************************************/
 var bookmarksList = new Array();
 const INTERVAL_MS = 30*60*1000;	//In milliseconds 30 minutes Update every 30 minutes
@@ -471,18 +472,17 @@ function registerMe(){
 		headers: {'myName':device_name,'myId':device_id,'type':'desktop'},
 		onComplete: function (response){
 			if (response.status == '200'){
-					localStorage.setRegistered(true);
-					emit(exports,'registered',true);
+				localStorage.setRegistered(true);
+				emit(exports,'registered',true);
+			}
+			else if (response.status == '400'){
+				//Already registered:
+				handleRegister();
 			}
 			else{
 	    		handleErrors(response);
 	    	}
-		
-		
-		
 		}
-		
-	
 	});
 	register.get();
 
@@ -490,6 +490,29 @@ function registerMe(){
 }
 exports.registerMe = registerMe;
 
+
+/*********************************************************************************************************************************
+@function deleteMe: Delete this device. This has to be realized by another way because on unload this module will be 
+* deleted and we have to send this request before this module is deleted, so use the XHR:
+*********************************************************************************************************************************/
+function deleteMe(){
+	var device_name = preferences.getDeviceName();
+	var device_id = localStorage.getDeviceId();
+	const {XMLHttpRequest} = require('sdk/net/xhr');
+	try{
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET',DELETE_ALL,false);
+		xhr.setRequestHeader('myName',device_name);
+		xhr.setRequestHeader('myId',device_id);
+		xhr.setRequestHeader('type','desktop');
+		xhr.send(null);
+	}
+	catch (e){
+		//If the server is disconnected. Here is a problem, if the server is disconnected then this device
+		//won't be deleted ever.
+	}
+}
+exports.deleteMe = deleteMe;
 /*********************************************************************************************************************************
 @function saveAll: Save everything, bookmarks and history at once. (Depends on user's preferences). The tabs will be saved automatically, depending on the events trigered by the tabs module.
 *********************************************************************************************************************************/

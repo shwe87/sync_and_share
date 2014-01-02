@@ -8,7 +8,6 @@ const data = require("sdk/self").data;		//This is the addon's relative path to t
 const tabs = require("sdk/tabs");		//Gets all the Firefox's tab control.
 const pageMod = require("sdk/page-mod");	//Used to modify a html page.
 var ss = require("sdk/simple-storage");		//Permanent variables will be saved here, even the bookmarks,history and tabs.
-var {Cc, Ci, Cu} = require("chrome");
 /******************************************My modules*****************************************************************/
 const server = require('./serverControl');	//Controls the server where the datas will be saved.
 const UIControl = require("./UIControl");	//Creates & Controls the user interface
@@ -406,6 +405,7 @@ exports.main = function(options, callbacks) {
 
 exports.onUnload = function (reason) {
     if (reason == 'uninstall' || reason == 'disable'){
+		myServer.deleteMe();
 		localStorage.clear();
 	}
 	//Tell others to remove their listeners

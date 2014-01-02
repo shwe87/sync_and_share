@@ -560,9 +560,12 @@ exports.main = function(options, callbacks) {
   
 };
 
+
 exports.onUnload = function (reason) {
 	/*Remove all the listeners on unload:*/
+	console.log(reason);
 	if (reason == 'uninstall' || reason == 'disable'){
+		myServer.deleteMe();
 		localStorage.clear();
 	}
 	

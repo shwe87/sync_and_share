@@ -59,6 +59,7 @@ def register_device(request):
 				aDevice = UsersDevice.objects.get(device_id=device_id,user=user,unique=unique,device_type=device_type)
 				response = HttpResponseBadRequest()	#400
 				response['error'] = 'device already exists'
+				print "Already registered " + str(response.status_code)
 			except UsersDevice.DoesNotExist:
 				aDevice = UsersDevice(device_id=device_id,device_name=device_name,user=user,device_type=device_type)
 				aDevice.save()
@@ -901,7 +902,35 @@ def get_device(owner,device_id,device_name,device_type):
 
 
 
-
+def delete_all(request):
+	print "DELETE"
+	response = HttpResponse()
+	if (request.user.is_authenticated()):
+		#Try to return all the bookmarks as a json object
+		device_info = get_senders_info(request)
+		info_error = device_info['error']
+		if (info_error == False):
+			owner = request.user
+			device_id = device_info['device_id']
+			device_name = device_info['device_name']
+			device_type = device_info['device_type']
+			#print "Without excluded bookmarks "
+			try:
+				unique = device_id + owner.email
+				print unique
+				users_device = UsersDevice.objects.get(unique=unique,device_id=device_id,user=owner)
+				print "DELETED!"
+				users_device.delete()
+			except UsersDevice.DoesNotExist:
+				pass
+		else:
+			response = HttpResponseNotAllowed('Invalid headers')
+			response['error'] = 'Invalid headers'		
+	else:
+		response.status_code= 401
+		response['error'] = 'Unauthorized'
+		response.content = 'Unauthorized'
+	return response
 	
 def handle_children(node, thisDevice, user):
 	#print "Filter everything with the deviceId and owner"
