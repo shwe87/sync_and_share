@@ -5,7 +5,7 @@
   "description": "Syncing and sharing between devices and friends.",
   "author": "Shweta",
   "license": "GPL 3.0",
-  "version": "1.3",
+  "version": "1.4",
   "fullName": "sync and share",
   "icon64":"skin/myLogo64.png",
   "permissions":{
@@ -56,7 +56,7 @@
 	    "options": [
 		{
 		    "value": "none",
-		    "label": "Don't user extra server"
+		    "label": "Don't use extra server"
 		},
 		{
 		    "value": "dropbox",

@@ -3,6 +3,8 @@ self.port.on('write',function(messageInfo){
 	var messageContainer = document.getElementById('messageContainer');
 	if (messageContainer != null){
 		var message = document.getElementById('message');
+		//First remove the message already existing:
+		clean(message);
 		var text = document.createTextNode(messageInfo.msg);
 		message.appendChild(text);
 		message.setAttribute('class',messageInfo.type);	
@@ -10,3 +12,10 @@ self.port.on('write',function(messageInfo){
 
 
 });
+
+function clean(node){
+	while(node.firstChild){
+		node.removeChild(node.firstChild);
+	}
+	
+}

@@ -39,11 +39,7 @@ function loadIntoWindow(aWindow){
 	document = aWindow.document;
 	//Add the options in the tool menu:
 	var toolBar = document.getElementById('menu_ToolsPopup');
-	//Get the main key set:
-	//var mainKeySet = document.getElementById('mainKeyset');
 	/***********A Separator***********************/
-	//var separator = createMenuSeparator('SyncShareToolSeparator');
-	//toolBar.appendChild(separator);
 	//Create a pop up menu item:
 	var menu = document.createElement('menu');
 	menu.setAttribute('id',SS_MENU);
@@ -52,7 +48,6 @@ function loadIntoWindow(aWindow){
 	menuPopUp.setAttribute('id',SS_MENU_POPUP);
 	//Add the Save all Tabs option.
 	var anItem = addSaveAllTabsMenu();
-	//mainKeySet.appendChild(anItem.key);
 	menuPopUp.appendChild(anItem);
 	
 	
