@@ -349,7 +349,7 @@ function startDatas(email){
 	
 	
 }
-var myTabs = require('./tabs.js');
+
 /*************************************************************************************************************************
  * Whenever Firefox loads the addon, this function is called:
  * See https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/tutorials/load-and-unload.html
