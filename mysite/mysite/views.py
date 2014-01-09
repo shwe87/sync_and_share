@@ -339,7 +339,7 @@ def deleteSync(request):
 			#print uniqueId
 			try:
 				s = Sync.objects.get(unique=uniqueId)
-				shared = s.shared_set.all()
+				shared = s.share_set.all()
 				if (s.user == request.user):
 					if (shared.count()):
 						shared.shared.remove(s)

@@ -11,5 +11,5 @@ self.port.on('signedIn',function(msg){
 });
 
 self.on("detach", function() {
-  	window.close();
+  	//window.close();
 });

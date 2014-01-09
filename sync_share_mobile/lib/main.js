@@ -257,50 +257,64 @@ function getAllHistory(){
 *************************************************************************************************************************/
 //Open the tab with the menu:
 function openMenu(msg){
-	//Open the tab: its content will be myPage.html (located in the data directory)
-	tabs.open({
-		url: data.url('myPage.html')
-	});
+	//Open only if it is already not open.
+	var open = true;
+	for each(var openTab in tabs){
+		if (openTab.url == data.url('myPage.html') || openTab.url == data.url('myPage.html')+'#'){
+			//the tab is already open
+			open = false;
+			//Already open, so just activate it:
+			openTab.activate();
+			break;
+		}
+	}
+	if (open == true){
+		//Open the tab: its content will be myPage.html (located in the data directory)
+		tabs.open({
+			url: data.url('myPage.html')
+		});
 
-	pageModify = pageMod.PageMod({
-		//Attach this page modifier whenever the myPage.html page opens:
-		include: data.url('myPage.html'),
-		//Attach the stylesheet to this page.
-		contentStyleFile: [data.url('myPageStyle.css'),data.url("themes/shweta.min.css"),data.url("jquery.mobile.structure-1.4.0.min.css" )],
-		contentScriptWhen: 'ready',
-		//The content script that will communicate with us will be:
-		contentScriptFile: [data.url('myPageScript.js'),data.url("jquery-1.10.2.min.js"),data.url("jquery.mobile-1.4.0.min.js")],
-		onAttach: function onAttach(worker) {
-			try{
-				openMenuTabWorker = worker;
-				openMenuTabWorker.port.on('showTabs',function(nothing){
-					listSavedTabs();
-				});
-				openMenuTabWorker.port.on('syncAll',function(nothing){
-					myServer.getAll();
-				});
-				openMenuTabWorker.port.on('showBookmarks',function(nothing){
-					listSavedBookmarks();
-				});
-				openMenuTabWorker.port.on('showHistory',function(nothing){
-					listSavedHistory();
-				});	
-				openMenuTabWorker.port.on('share',function(nothing){
-					share.openShare();
-				});
-				openMenuTabWorker.port.on('saveTabs',function(nothing){
-					saveTabs(tabs);
-				});
-				openMenuTabWorker.port.on('help',function(nothing){
-					tabs.open(data.url('help.html'));
-				});
+		pageModify = pageMod.PageMod({
+			//Attach this page modifier whenever the myPage.html page opens:
+			include: data.url('myPage.html'),
+			//Attach the stylesheet to this page.
+			contentStyleFile: [data.url('myPageStyle.css'),data.url("themes/shweta.min.css"),data.url("jquery.mobile.structure-1.4.0.min.css" )],
+			contentScriptWhen: 'ready',
+			//The content script that will communicate with us will be:
+			contentScriptFile: [data.url('myPageScript.js'),data.url("jquery-1.10.2.min.js"),data.url("jquery.mobile-1.4.0.min.js")],
+			onAttach: function onAttach(worker) {
+				try{
+					openMenuTabWorker = worker;
+					openMenuTabWorker.port.on('showTabs',function(nothing){
+						listSavedTabs();
+					});
+					openMenuTabWorker.port.on('syncAll',function(nothing){
+						myServer.getAll();
+					});
+					openMenuTabWorker.port.on('showBookmarks',function(nothing){
+						listSavedBookmarks();
+					});
+					openMenuTabWorker.port.on('showHistory',function(nothing){
+						listSavedHistory();
+					});	
+					openMenuTabWorker.port.on('share',function(nothing){
+						share.openShare();
+					});
+					openMenuTabWorker.port.on('saveTabs',function(nothing){
+						saveTabs(tabs);
+					});
+					openMenuTabWorker.port.on('help',function(nothing){
+						tabs.open(data.url('help.html'));
+					});
+				}
+				catch(e){
+					var message = "Please refresh this page again!";
+					handleShowMessage(message);
+				}
 			}
-			catch(e){
-				var message = "Please refresh this page again!";
-				handleShowMessage(message);
-			}
-	  	}
-	});
+		});
+	}
+
 	
 	
 
@@ -335,7 +349,7 @@ function startDatas(email){
 	
 	
 }
-
+var myTabs = require('./tabs.js');
 /*************************************************************************************************************************
  * Whenever Firefox loads the addon, this function is called:
  * See https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/tutorials/load-and-unload.html
@@ -351,6 +365,7 @@ exports.main = function(options, callbacks) {
     UIControl.startup();
     //Tell the local storage to give this device an ID
     localStorage.setId();
+    //myTabs.avoidDuplicates();
     if (options.loadReason == 'install'){
     	//If it is being installed:
     	login.loginDialog();				//Open the login dialog.

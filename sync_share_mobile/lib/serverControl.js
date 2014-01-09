@@ -111,6 +111,7 @@ exports.changeServer = changeServer;
 * 	--> toShowDatas.element {String} - Type of element (tabs,bookmarks or history).
 *************************************************************************************************************************/
 function handleDisplay(toShowDatas){
+	console.log("CONTROL = " + JSON.stringify(toShowDatas));
 	//Tell the main to handle it.
 	emit(exports,'display',toShowDatas);
 }

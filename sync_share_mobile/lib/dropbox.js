@@ -193,7 +193,7 @@ function handleOnlyShow(showData){
 	var toDisplay = new Object();
 	toDisplay.server = 'dropbox';
 	toDisplay.element = title.split('.json')[0];
-	toDisplay.data = downloadedData;
+	toDisplay.data = downloadedData.data;
 	//Tell the serverControl to display dropbox's data.
 	emit(exports,'display',toDisplay);
 	

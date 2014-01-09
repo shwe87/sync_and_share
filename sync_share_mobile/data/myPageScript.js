@@ -6,7 +6,7 @@ self.port.on('show',function(toDisplay){
 	var server = toDisplay.server;
 	var data = toDisplay.data;
 	var element = toDisplay.element;
-
+	
 	if (data == null){
 		showOnlyThis(server,element);
 		clean(server+element+'Content');
@@ -32,8 +32,7 @@ self.port.on('show',function(toDisplay){
 			var textToPut = 'Nothing Saved yet!!'
 		}
 		textToPut = document.createTextNode(textToPut);
-		p.appendChild(textToPut);
-		
+		p.appendChild(textToPut);		
 		mainContent.appendChild(p);
 	}
 	else{
@@ -43,7 +42,6 @@ self.port.on('show',function(toDisplay){
 		try{
 			var all = data[key];
 			if (key == 'msg'){
-				
 				handle_main_content(server,element);
 				var mainContent = document.getElementById(server+element+'Content');
 				var p = document.createElement('p');
@@ -133,6 +131,7 @@ self.port.on('takeAllTabs',function(allTabs){
 			h3.appendChild(text);
 			ul.appendChild(h3);
 			ul.addEventListener('click',function(event){
+				event.stopPropagation();
 			    var n = event.target;
 			    var e = n.nextSibling;
 			    while (e) {
@@ -226,6 +225,7 @@ self.port.on('takeAllBookmarks',function(bookmarksToShow){
 			var bookmarksList = document.getElementById(server+'synced'+element+'Content');
 			bookmarksList.appendChild(aDeviceUL);
 			aDeviceUL.addEventListener('click',function(event){
+				event.stopPropagation();
 				var node = event.target;
 				var children = node.children;
 				for (var k=0;k<children.length;k++){
@@ -296,6 +296,7 @@ self.port.on('takeAllHistory',function(allHistory){
 			h3.appendChild(text);
 			ul.appendChild(h3);
 			ul.addEventListener('click',function(event){
+				event.stopPropagation();
 			    var n = event.target;
 			    var e = n.nextSibling;
 			    while (e) {
@@ -381,6 +382,7 @@ function startUp(){
 	var tabsCell = document.getElementById('tab');
 	if (tabsCell){
 		tabsCell.addEventListener('click',function(event){
+			event.stopPropagation();
 			//When the Tabs is clicked. Hide the options panel and show the tabs panel
 			hideOptions();
 			self.port.emit('showTabs',null);
@@ -389,6 +391,7 @@ function startUp(){
 	var bookmarksCell = document.getElementById('bookmark');
 	if (bookmarksCell){
 		bookmarksCell.addEventListener('click',function(event){
+			event.stopPropagation();
 			//When the Bookmarks is clicked. Hide the options panel and show the tabs panel
 			hideOptions();
 			self.port.emit('showBookmarks',null);
@@ -397,6 +400,7 @@ function startUp(){
 	var historyCell = document.getElementById('history');
 	if (historyCell){
 		historyCell.addEventListener('click',function(event){
+			event.stopPropagation();
 			//When the History is clicked. Hide the options panel and show the tabs panel
 			hideOptions();
 			self.port.emit('showHistory',null);
@@ -405,6 +409,9 @@ function startUp(){
 	var optionCell = document.getElementById('options');
 	if (optionCell){
 		optionCell.addEventListener('click',function(event){
+			event.stopPropagation();
+			//Show only the main options
+			handle_main_content(null,'options');
 			//When the Options is clicked. Show only the Options panel
 			showOptions();
 		});
@@ -412,6 +419,7 @@ function startUp(){
 	var share = document.getElementById('share');
 	if (share){
 		share.addEventListener('click',function(event){
+			event.stopPropagation();
 			//In the options panel, when the Share Options is clicked
 			self.port.emit('share',null);
 		
@@ -420,6 +428,7 @@ function startUp(){
 	var saveTabs = document.getElementById('saveTabs');
 	if (saveTabs){
 		saveTabs.addEventListener('click',function(event){
+			event.stopPropagation();
 			//In the options panel when Save All Tabs is clicked
 			self.port.emit('saveTabs',null);
 		});
@@ -427,6 +436,7 @@ function startUp(){
 	var help = document.getElementById('help');
 	if (help){
 		help.addEventListener('click',function(event){
+			event.stopPropagation();
 			//In the options panel when Help is clicked
 			self.port.emit('help',null);
 		});
@@ -434,6 +444,7 @@ function startUp(){
 	var syncAll = document.getElementById('syncAll');
 	if (syncAll){
 		syncAll.addEventListener('click',function(event){
+			event.stopPropagation();
 			//In the options panel when Sync All Now is clicked
 			self.port.emit('syncAll',null);
 		});
@@ -651,8 +662,18 @@ function makeLiContent(title, url){
 
 /*Depending on what was clicked, show or hide panel*/
 function handle_main_content(server,element){
+		//Show only the indicated content.
 		clean(server+element+'Content');
-		if (element == 'tabs'){
+		if (element == 'options'){
+			var toHide = document.getElementById('bookmarksContent');
+			toHide.setAttribute('class','hidden');
+			var toHide = document.getElementById('historyContent');
+			toHide.setAttribute('class','hidden');
+			var toHide = document.getElementById('tabsContent');
+			toHide.setAttribute('class','hidden');
+			
+		}
+		else if (element == 'tabs'){
 			var toHide = document.getElementById('bookmarksContent');
 			toHide.setAttribute('class','hidden');
 			var toHide = document.getElementById('historyContent');
@@ -688,8 +709,10 @@ function handle_main_content(server,element){
 /*Show only for example:  tabsOfmysite or tabsOfdropbox, only the div that has elements*/
 function showOnlyThis(server,element){
 		var toShow = document.getElementById(element+'Of'+server);
-		toShow.setAttribute('class','shown');
-
+		if (toShow != null){
+			toShow.setAttribute('class','shown');
+		}
+		
 }
 
 

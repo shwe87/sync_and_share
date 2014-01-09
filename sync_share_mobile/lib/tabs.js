@@ -5,6 +5,7 @@
  ************************************************************************************************************************/
 /**********************************************SDK Modules*************************************************************/
 var tabs = require('sdk/tabs');
+const data = require("sdk/self").data;		//This is the addon's relative path to the data folder.
 var { emit, on, once, off } = require("sdk/event/core");
 /**********************************************My Modules*************************************************************/
 var preferences = require('./preferences');
@@ -115,6 +116,44 @@ function listenClose(){
 	});
 
 }
+
+/*
+function closeDuplicate(tab){
+	var myPageURL = data.url('myPage.html');
+	var myPageURLCon = data.url('myPage.html') + '#';
+	if (tab.url == myPageURL || tab.url == myPageURLCon){
+		console.log(tab.id +' opening the same one!');
+		for each(var openTab in tabs){
+			if(openTab.url == myPageURL || openTab.url == myPageURLCon){
+				console.log(openTab.id + ' has the same one');
+				if (openTab != tab){
+						tab.close();
+						openTab.activate();
+				}
+			}
+		}
+	}	
+	
+	
+}
+/************************************************************************************************************************
+@function avoidDuplicates: To avoid opening the same tab more than once with the myPage.html content. Because the 
+* attached files does not work well with two pages open. So close the duplicate one and activate the already open one.
+*************************************************************************************************************************/
+/*function avoidDuplicates(){
+	tabs.on('pageshow',function(tab){	
+		console.log("Page show!!"); 
+		closeDuplicate(tab);
+
+	});
+	tabs.on('open',function(tab){	
+		console.log("Open show!!"); 
+		closeDuplicate(tab);
+
+	});
+}
+exports.avoidDuplicates = avoidDuplicates;
+
 /************************************************************************************************************************
 @function start up function: Listen to the events
 *************************************************************************************************************************/
@@ -127,6 +166,7 @@ function startUp(){
 		listenPageShow();
 		listenClose();
 	}
+	
 }
 
 exports.startUp = startUp;
