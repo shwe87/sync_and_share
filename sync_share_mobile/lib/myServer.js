@@ -472,7 +472,8 @@ function getAll(){
 exports.getAll = getAll;
 
 /*********************************************************************************************************************************
-@function startUp: Called from the main module. Indicated this module to start up. When it starts up, it sets a timer to save and read all bookmarks, history and tabs. It will save and read every 30 minutes.
+@function startUp: Called from the main module. Indicated this module to start up. When it starts up, it sets a timer 
+to save and read all bookmarks, history and tabs. It will save and read every 30 minutes.
 *********************************************************************************************************************************/
 function startUp(){
 	read_interval_id = timer.setInterval(getAll, INTERVAL_MS)
