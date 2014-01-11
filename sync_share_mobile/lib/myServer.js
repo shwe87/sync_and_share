@@ -465,8 +465,7 @@ function getAll(){
 	}
 	if (if_sync_tabs == true){				//If the user chose to syn tabs.
 		readAllTabs();
-	}
-	console.log("MY SERVER: REad all");
+	};
 }
 
 exports.getAll = getAll;
