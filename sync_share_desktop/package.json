@@ -5,7 +5,7 @@
   "description": "Syncing and sharing between devices and friends.",
   "author": "Shweta",
   "license": "GPL 3.0",
-  "version": "1.5",
+  "version": "1.6",
   "fullName": "sync and share",
   "icon64":"skin/myLogo64.png",
   "permissions":{
