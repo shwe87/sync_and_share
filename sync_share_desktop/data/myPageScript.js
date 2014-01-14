@@ -70,28 +70,32 @@ self.port.on('show',function(toDisplay){
 	var server = toDisplay.server;
 	var elementsToShow = toDisplay.data;
 	if (elementsToShow == null){
-		var mainContent = document.getElementById('mainContent');
-		var p = document.createElement('p');
-		if (server == 'mysite'){
-			var textToPut = 'Sync & Share: Nothing saved yet!';
+		var nothing = document.getElementById('nothingsaved'+server);
+		if (nothing == null){
+			var mainContent = document.getElementById('mainContent');
+			var p = document.createElement('p');
+			p.setAttribute('id','nothingsaved'+server);
+			if (server == 'mysite'){
+				var textToPut = 'Sync & Share: Nothing saved yet!';
+			}
+			else if (server == 'dropbox'){
+				var textToPut = 'Dropbox: Nothing saved yet!';
+			}
+			else if (server == 'gapi'){
+				var textToPut = 'Google Drive: Nothing saved yet!';
+			}
+			else{
+				var textToPut = 'Nothing Saved yet!!'
+			}
+			p.innerHTML = textToPut;
+			var img = document.createElement('img');
+			img.setAttribute('class','serverLogo');
+			var image = 'images/'+server+'.png';
+			img.setAttribute('src',image);
+			img.setAttribute('title','Message from' + server);
+			p.appendChild(img);
+			mainContent.appendChild(p);
 		}
-		else if (server == 'dropbox'){
-			var textToPut = 'Dropbox: Nothing saved yet!';
-		}
-		else if (server == 'gapi'){
-			var textToPut = 'Google Drive: Nothing saved yet!';
-		}
-		else{
-			var textToPut = 'Nothing Saved yet!!'
-		}
-		p.innerHTML = textToPut;
-		var img = document.createElement('img');
-		img.setAttribute('class','serverLogo');
-		var image = 'images/'+server+'.png';
-		img.setAttribute('src',image);
-		img.setAttribute('title','Message from' + server);
-		p.appendChild(img);
-		mainContent.appendChild(p);
 	}
 	else{
 		var key = Object.keys(elementsToShow);
@@ -107,28 +111,31 @@ self.port.on('show',function(toDisplay){
 			else{
 				var all = elementsToShow[key];
 				if (all.length == 0){
-					var mainContent = document.getElementById('mainContent');
-					var p = document.createElement('p');
-					if (server == 'mysite'){
-							var textToPut = 'Sync & Share: Nothing saved yet!';
+					var nothing = document.getElementById('nothingsaved'+server);
+					if (nothing == null){
+						var mainContent = document.getElementById('mainContent');
+						var p = document.createElement('p');
+						if (server == 'mysite'){
+								var textToPut = 'Sync & Share: Nothing saved yet!';
+						}
+						else if (server == 'dropbox'){
+								var textToPut = 'Dropbox: Nothing saved yet!';
+						}
+						else if (server == 'gapi'){
+								var textToPut = 'Google Drive: Nothing saved yet!';
+						}
+						else{
+								var textToPut = 'Nothing Saved yet!!'
+						}
+						p.innerHTML = textToPut;
+						var img = document.createElement('img');
+						img.setAttribute('class','serverLogo');
+						var image = 'images/'+server+'.png';
+						img.setAttribute('src',image);
+						img.setAttribute('title','Message from' + server);
+						p.appendChild(img);
+						mainContent.appendChild(p);
 					}
-					else if (server == 'dropbox'){
-							var textToPut = 'Dropbox: Nothing saved yet!';
-					}
-					else if (server == 'gapi'){
-							var textToPut = 'Google Drive: Nothing saved yet!';
-					}
-					else{
-							var textToPut = 'Nothing Saved yet!!'
-					}
-					p.innerHTML = textToPut;
-					var img = document.createElement('img');
-					img.setAttribute('class','serverLogo');
-					var image = 'images/'+server+'.png';
-					img.setAttribute('src',image);
-					img.setAttribute('title','Message from' + server);
-					p.appendChild(img);
-					mainContent.appendChild(p);
 		
 				}else{
 					for each (var element in all){
