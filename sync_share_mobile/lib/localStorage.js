@@ -220,7 +220,7 @@ exports.handleDatas = handleDatas;
 function setDeviceName(deviceName){
 	ss.storage.deviceName = deviceName;
 }
-
+exports.setDeviceName = setDeviceName;
 
 /************************************************************************************************************************
 @function getDeviceId:get the device's Id

@@ -365,6 +365,8 @@ exports.main = function(options, callbacks) {
     UIControl.startup();
     //Tell the local storage to give this device an ID
     localStorage.setId();
+    //Save the device name locally.
+    localStorage.setDeviceName(preferences.getDeviceName());
     //myTabs.avoidDuplicates();
     if (options.loadReason == 'install'){
     	//If it is being installed:

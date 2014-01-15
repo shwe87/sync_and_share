@@ -161,7 +161,7 @@ function read(datas){
         var deviceName = preferences.getDeviceName();
         deviceId = localStorage.getDeviceId();
         var URL = READ_URL + element+'/';
-        console.log('MY SERVER:  '+"Going to send = " + URL);
+        //console.log('MY SERVER:  '+"Going to send = " + URL);
         var readRequest = Request({
         	url: READ_URL + element+'/',
 			headers: {'myName':deviceName,'myId':deviceId,'type':'mobile'},

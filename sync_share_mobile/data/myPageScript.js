@@ -81,7 +81,7 @@ self.port.on('takeAllTabs',function(allTabs){
 	var server = 'mysite';
 	var element = 'tabs';
 	var toClean = server+'synced'+element+'Content';
-	
+	clean(toClean);
 	showOnlyThis(server,element);
 
 	if (allTabs == null){

@@ -114,6 +114,7 @@ self.port.on('show',function(toDisplay){
 					if (nothing == null){
 						var mainContent = document.getElementById('mainContent');
 						var p = document.createElement('p');
+						p.setAttribute('id','nothingsaved'+server);
 						if (server == 'mysite'){
 								var textToPut = 'Sync & Share: Nothing saved yet!';
 						}
@@ -137,9 +138,17 @@ self.port.on('show',function(toDisplay){
 					}
 		
 				}else{
+					var mainContent = document.getElementById('mainContent');
+					var aux = document.getElementById('synced'+server+key);
+					if (aux == null){
+						var aux = document.createElement('div');
+						aux.setAttribute('id','synced'+server+key);
+						mainContent.appendChild(aux);
+					}
+					else{
+						clean(aux);
+					}
 					for each (var element in all){
-
-						var mainContent = document.getElementById('mainContent');
 						var mainDIV = document.createElement('div');
 						mainDIV.setAttribute('id','show'+key);
 						mainDIV.setAttribute('class','mainShow');
@@ -181,7 +190,7 @@ self.port.on('show',function(toDisplay){
 						
 						mainDIV.appendChild(div);
 						mainDIV.appendChild(line);
-						mainContent.appendChild(mainDIV);
+						aux.appendChild(mainDIV);
 						
 					}
 				}
