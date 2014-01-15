@@ -187,6 +187,7 @@ exports.setDeviceId = setDeviceId;
 function save(datas){
         var element = datas.title.split('.json')[0];
         var dataToSave = datas.dataToSave;
+        console.log("MY SERVER = " + JSON.stringify(datas.dataToSave));
         var deviceName = preferences.getDeviceName();
         var saveRequest = Request({
 			url: SAVE_URL + element+'/',

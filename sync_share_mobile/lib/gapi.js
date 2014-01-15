@@ -19,8 +19,8 @@ const CLIENT_ID = '737302378245.apps.googleusercontent.com';
 const CLIENT_SECRET = 'rcWgBDcdt9PuVnrKGXz81Hf7'; 
 const REDIRECT_URI_URN = 'urn:ietf:wg:oauth:2.0:oob';
 const REDIRECT_URI_LOCAL = 'http://localhost';
-const SCOPE = 'https://www.googleapis.com/auth/drive.appdata+';
-var URL = 'https://accounts.google.com/o/oauth2/auth?'+'scope='+SCOPE+'https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&'+'redirect_uri=' + REDIRECT_URI_URN + '&'+ 'client_id=' + CLIENT_ID+'&'+'response_type=code';
+const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+var URL = 'https://accounts.google.com/o/oauth2/auth?'+'scope='+encodeURIComponent(SCOPE)+'+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&'+'redirect_uri=' + encodeURIComponent(REDIRECT_URI_URN) + '&'+ 'client_id=' + encodeURIComponent(CLIENT_ID)+'&'+'response_type='+encodeURIComponent('code');
 /**********************************************CONSTANTS*****************************************************************************/
 /*Files we can work with*/
 const TABS_FILE = 'tabs.json';
@@ -270,7 +270,7 @@ function searchFile(searchDatas){
 	//If dataToSave null then there is nothing to save
 	//ElementToSave: 
         var exists = false;	//Lets assume that it doesn't exist.
-        var request = "https://www.googleapis.com/drive/v2/files?q=title+=+'"+title+"'";
+		var request = "https://www.googleapis.com/drive/v2/files?q=title+=+'"+encodeURIComponent(title)+"'";
         var whoCalled = 'searchFile';
         var searchFor = Request({
                 url: request,
@@ -371,7 +371,7 @@ function startUpload(fileData){
 		var j = {'title': fileName,'parents':parents};
 		var str = JSON.stringify(j);
 		var session = Request({		
-			url: 'https://www.googleapis.com/upload/drive/v2/files?uploadType=resumable',
+			url: 'https://www.googleapis.com/upload/drive/v2/files?uploadType='+encodeURIComponent('resumable'),
 			headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token,'Content-Length':38,'Content-Type':'application/json; charset=UTF-8','X-Upload-Content-Type':'application/json'/*,'X-Upload-Content-Length':2000000*/},
 			content: str,
 			onComplete: function(response){
@@ -396,7 +396,7 @@ function startUpload(fileData){
 		//Try to just add lines, not upload a new file.
 		//First step: Start a resumable session:
 		var session = Request({                
-		        url: 'https://www.googleapis.com/upload/drive/v2/files/'+fileId+'?uploadType=resumable',
+		        url: 'https://www.googleapis.com/upload/drive/v2/files/'+fileId+'?uploadType='+encodeURIComponent('resumable'),
 		        headers: {'Host':'www.googleapis.com','Authorization': 'Bearer '+ token},
 		        onComplete: function(response){
 		               

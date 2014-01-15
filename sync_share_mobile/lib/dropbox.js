@@ -23,7 +23,7 @@ exports.removeListener = function removeListener(type, listener) {
 /*****************************************Dropbox CONSTANTS************************************************************/
 const CLIENT_ID = "b8x0vw45cljfefm";
 const CLIENT_SECRET = "9df8u9c90prjo1o";
-const AUTH_URL = 'https://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id='+CLIENT_ID;
+const AUTH_URL = 'https://www.dropbox.com/1/oauth2/authorize?response_type='+encodeURIComponent('code')+'&client_id='+encodeURIComponent(CLIENT_ID);
 const TOKEN_URL = 'https://www.dropbox.com/1/oauth2/token';
 const GET_URL = 'https://api-content.dropbox.com/1/files/sandbox/';
 const PUT_FILE_URL = 'https://api-content.dropbox.com/1/files_put/sandbox/';
@@ -361,7 +361,7 @@ function write(datas){
 	var URL = PUT_FILE_URL+fileName;
 	var ifContinue = true;
 	if (rev != null ){
-		URL = URL+'?parent_rev='+rev;
+		URL = URL+'?parent_rev='+encodeURIComponent(rev);;
 	}
 	var saveData = Request({
 		url: URL,

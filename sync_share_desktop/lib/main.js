@@ -112,6 +112,7 @@ function saveTabs(tabsToSave){
 	var save = new Object();
 	save.title = TABS_FILE;
 	save.dataToSave = dataToSave;
+	console.log("MAIN= SAVE " + JSON.stringify(save.dataToSave));
 	//Tell the server to save it.
 	server.save(save);
 }

@@ -143,18 +143,22 @@ exports.setServer = setServer;
 function save(writeDatas){
 	var message = 'Loading.... ';
 	if (chosenServer == DROPBOX){
-		writeDatas.token = dropboxDatas.access_token;
-		dropbox.save(writeDatas);
+		var dWrite = JSON.parse(JSON.stringify(writeDatas));
+		dWrite.token = dropboxDatas.access_token;
+		dropbox.save(dWrite);
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
-		writeDatas.token = gapiDatas.access_token;
-		gapi.save(writeDatas);
+		var gWrite = JSON.parse(JSON.stringify(writeDatas));
+		gWrite.token = gapiDatas.access_token;
+		gapi.save(gWrite);
 	}
 	else if (chosenServer == BOTH){
-		writeDatas.token = dropboxDatas.access_token;
-		dropbox.save(writeDatas);
-		writeDatas.token = gapiDatas.access_token;
-		gapi.save(writeDatas);	
+		var dWrite = JSON.parse(JSON.stringify(writeDatas));
+		dWrite.token = dropboxDatas.access_token;
+		dropbox.save(dWrite);
+		var gWrite = JSON.parse(JSON.stringify(writeDatas));
+		gWrite.token = gapiDatas.access_token;
+		gapi.save(gWrite);
 	}
 	else if (chosenServer == NONE){
 		//Do nothing
@@ -172,21 +176,24 @@ exports.save = save;
 function read(readInfo){
 	var message = 'Loading.... ';
 	if (chosenServer == DROPBOX){
-		readInfo.token = dropboxDatas.access_token;
-		dropbox.read(readInfo);
+		var dRead = JSON.parse(JSON.stringify(readInfo));
+		dRead.token = dropboxDatas.access_token;
+		dropbox.read(dRead);
 		
 	}
 	else if (chosenServer == GOOGLE_DRIVE){
-		readInfo.token = gapiDatas.access_token;
-		gapi.read(readInfo);
+		var gRead = JSON.parse(JSON.stringify(readInfo));
+		gRead.token = gapiDatas.access_token;
+		gapi.read(gRead);
 		
 	}
 	else if (chosenServer == BOTH){
-		
-		readInfo.token = dropboxDatas.access_token;
-		dropbox.read(readInfo);
-		readInfo.token = gapiDatas.access_token;
-		gapi.read(readInfo);	
+		var dRead = JSON.parse(JSON.stringify(readInfo));
+		dRead.token = dropboxDatas.access_token;
+		dropbox.read(dRead);
+		var gRead = JSON.parse(JSON.stringify(readInfo));
+		gRead.token = gapiDatas.access_token;
+		gapi.read(gRead);
 	}
 	else if (chosenServer == NONE){
 		//Do nothing

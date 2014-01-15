@@ -216,6 +216,9 @@ function handleBeforeWrite(datas){
 	var downloadedData = {};
 	var title = datas.title;
 	var exists = datas.exists;
+	console.log("DATAS.DATATOSAVE");
+	console.log(datas.dataToSave);
+	
 	
 	//In Dropbox, the datas gets downloaded as JSON object:
 	var downloadedData = datas.downloadedContent;
@@ -224,6 +227,7 @@ function handleBeforeWrite(datas){
 	if (exists){
 		//The file exists:
 		if (datas.del == true){
+			console.log("DELETE");
 			//Have to delete because the user clicked the "Delete This Item!" context menu
 			var key = Object.keys(downloadedData);			//The key of the JSON object: can be tabs, bookmarks or history
 			//Search for the item to delete:
@@ -244,6 +248,7 @@ function handleBeforeWrite(datas){
 		}
 		
 		var dataToSave = datas.dataToSave;
+		
 
     	var key = Object.keys(downloadedData);
 		//If it is update file then have to update the save data:
@@ -260,7 +265,11 @@ function handleBeforeWrite(datas){
     			
     			
 			if (pos == -1){//Doesn't exist
+				//console.log("ONE DATA=");
+				//console.log(oneData);
 				downloadedData[key].push(oneData);		//Save this one. (Not duplicate)
+				//console.log("DOWNLOADED DATA ");
+				//console.log(downloadedData);
 				upload = true;							//There is somthing to upload		
 			}
 			else{
@@ -270,6 +279,8 @@ function handleBeforeWrite(datas){
     	if (upload){
 	    	//Now dataToSave will be:
 			datas.dataToSave = downloadedData;			//Downloaded data is the overwritten datas.
+			//console.log("UPLOAD");
+			//console.log(datas.dataToSave);
 			write(datas);								//Write to file.
 		}
 		if ((alreadySaved.length > 0)){
@@ -453,6 +464,7 @@ exports.read = read;
 * *************************************************************************************************************************/
 function save(saveDatas){
 	saveDatas.save = true;
+	saveDatas.del = false;
 	if (ifAuthenticated()){
 		var message = {'msg':'Dropbox: Saving....','type':'info'};
 		getData(saveDatas);	//If write read and then overwrite.

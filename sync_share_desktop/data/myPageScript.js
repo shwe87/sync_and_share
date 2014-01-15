@@ -66,7 +66,6 @@ self.port.on('initHiddenRow',initHiddenRow);
 //Show the saved tabs. Display the elements in the content.
 self.port.on('show',function(toDisplay){
 	clean('loading');
-	console.log(toDisplay);
 	var server = toDisplay.server;
 	var elementsToShow = toDisplay.data;
 	if (elementsToShow == null){
@@ -155,6 +154,7 @@ self.port.on('show',function(toDisplay){
 						favA.setAttribute('src',favQuery);
 						span.appendChild(favA);
 						p1.appendChild(span);
+
 						var text = document.createTextNode(element.title);
 						var img = document.createElement('img');
 						img.setAttribute('class','serverLogo');
