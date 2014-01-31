@@ -2,7 +2,7 @@ Sync & Share: Mobile & Desktop version.
 ------------------------------------------------------------------------------------------------------------
 Proyecto fin de carrera de Shweta.
 
-Website: <a href="http://shwe87.github.io/sync_and_share/">http://shwe87.github.io/sync_and_share/</a>
+Website: <a href="http://shwe87.github.com/sync_and_share/">http://shwe87.github.io/sync_and_share/</a>
 
 * **mysite:** The server side code.
 * **sync_share_desktop:** The add-on code (desktop version); the client side.
