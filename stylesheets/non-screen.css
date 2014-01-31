@@ -1,4 +1,4 @@
-/*a#forkme_banner {
+a#forkme_banner {
   display: none;
 }
 
@@ -112,11 +112,7 @@ footer span.octocat {
 }
 
 body {
-  background:#E4DBBF;     
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  font-family: Palatino,Georgia,Times;
-  color: #383127;
+  font: normal normal 30px/1.5 Georgia, Palatino,” Palatino Linotype”, Times, “Times New Roman”, serif;
 }
 
 ul li {
@@ -155,4 +151,4 @@ blockquote {
 hr {
   height: 42px;
   background: transparent url('../images/hr-2x.jpg') center center repeat-x;
-}*/
+}
