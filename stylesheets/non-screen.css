@@ -1,4 +1,4 @@
-a#forkme_banner {
+/*a#forkme_banner {
   display: none;
 }
 
@@ -112,7 +112,7 @@ footer span.octocat {
 }
 
 body {
-  background:#E4DBBF;     /*Yellowish background*/
+  background:#E4DBBF;     
   background-repeat: no-repeat;
   background-attachment: fixed;
   font-family: Palatino,Georgia,Times;
@@ -155,4 +155,4 @@ blockquote {
 hr {
   height: 42px;
   background: transparent url('../images/hr-2x.jpg') center center repeat-x;
-}
+}*/
