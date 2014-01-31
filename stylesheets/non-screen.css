@@ -112,7 +112,11 @@ footer span.octocat {
 }
 
 body {
-  font: normal normal 30px/1.5 Georgia, Palatino,” Palatino Linotype”, Times, “Times New Roman”, serif;
+  background:#E4DBBF;     /*Yellowish background*/
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: Palatino,Georgia,Times;
+  color: #383127;
 }
 
 ul li {
