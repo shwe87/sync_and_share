@@ -19,7 +19,8 @@
     {% block head %} {% endblock %}
   </head>
   <body>
-
+    {% browserid_info %}
+    {% block info %} {% endblock %}
 	<div id="container">
    {% if user.is_authenticated %}
 	<div class="info" id="userInfo">
@@ -53,8 +54,7 @@
 	</div>
    </nav-->
    <center>
-    {% browserid_info %}
-    {% block info %} {% endblock %}
+
     
     
     <!--link href="/css/persona-buttons.css" rel="stylesheet" type="text/css"-->
@@ -68,7 +68,7 @@
 	
     </div>
     </center>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     {% browserid_js %}
     {% block script %} {% endblock %}
     

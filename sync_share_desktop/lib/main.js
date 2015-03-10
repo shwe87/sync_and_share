@@ -231,7 +231,7 @@ function getAllTabs(){
 	var tabsList = new Array();
 	//Aux array to save the open tabs of this device.
 	var aux = new Array();
-	tabs = require('sdk/tabs');
+	//tabs = require('sdk/tabs');
 	for each(var tab in tabs){
 		//Contains only the necessary values of the tabs.
 		var auxTab = {'title':tab.title,'url':tab.url};

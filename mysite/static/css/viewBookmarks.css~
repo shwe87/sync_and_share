@@ -1,5 +1,5 @@
 body{
-	background:#E4DBBF;			/*Yellowish background*/
+	background:#f8f5ed;			/*Yellowish background*/
    	background-repeat: no-repeat;
 	background-attachment: fixed;
         font-family: Palatino,Georgia,Times;

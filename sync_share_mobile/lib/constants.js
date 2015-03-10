@@ -6,7 +6,7 @@
  *  */
 /*This file contains all the constants used to connect with my django server*/
 
-const URL = "http://iota20.aulas.gsyc.es:8000";
+const URL = "https://sync-share.herokuapp.com";
 const SHARE_URL = URL + "/share/";
 const VIEW_SHARE = URL + "/view/share/";
 const SAVE_URL = URL+'/save/';

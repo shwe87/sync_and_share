@@ -82,7 +82,9 @@ function loadIntoWindow(aWindow){
 	//mainKeySet.appendChild(anItem.key);
 	menuPopUp.appendChild(anItem);
 	menu.appendChild(menuPopUp);
-	toolBar.appendChild(menu);
+	if (toolBar != null){
+		toolBar.appendChild(menu);
+	}
 	//Add the tabs context menu:
 	addTabMenu();
 	

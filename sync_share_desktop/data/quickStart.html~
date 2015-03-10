@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<head>
+<!--This is the quick start panel!-->
+<meta charset=urf-8>
+<title>
+Quick start	
+</title>
+<link rel="stylesheet" type="text/css" href="quickStartStyle.css">	
+</head>
+
+<html>
+	<body>
+		
+		<div class="logo">
+			<div><img src="images/myLogo.png" title="logo by Shweta"/></div>
+			<div><span class="small">Sync & Share</span></div>
+		  </div>
+		
+		<div id="container">
+			<h3 class="title">Welcome to Sync & Share.</h3>
+		<OL>  
+			<LI><a href="https://sync-share.herokuapp.com/login/">Log in</a> if you haven't already.
+			After you sign in, the syncing starts automatically!</LI>
+			
+			<LI>Go to <a href="about:addons">settings</a>.
+			<p class="small"><EM>Hint: Click Extensions and search for Sync & Share and click preferences.</EM></p>
+			</LI>
+			
+			<LI> You can view your synced items from anywhere and any device, just go
+			<a href="https://sync-share.herokuapp.com/share/">here</a>. You can view them as well as share them.
+			</LI>
+			<LI> If you still have doubts, go to help: <EM>Tools > Sync & Share Menu > Help </EM>
+			</LI>
+			
+			<LI> Now you are ready to Sync & Share!</LI>
+		</OL>
+		</div>
+		<div class="brand" id="footer"><img src="images/shwetaBrand.png" title="by Shweta"/></div>
+	</body>
+	
+</html>

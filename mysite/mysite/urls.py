@@ -11,7 +11,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^login/$','mysite.views.main'),
     (r'^logout/$','mysite.views.logout'),
-	(r'^browserid/', include('django_browserid.urls')),
+	(r'', include('django_browserid.urls')),
 	(r'^change/device/name/$','mysite.views.changeDeviceName'),
 	(r'^add/all/bookmarks/$','mysite.views.addNewBookmarks'),
 	(r'^add/all/history/$','mysite.views.addNewHistory'),

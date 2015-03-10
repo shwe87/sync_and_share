@@ -1,11 +1,25 @@
 @charset "utf-8";
 
+html,body,#container{
+	height: 100%;
+
+}
+
+body #container{
+	height: auto;
+	min-height: 100%;
+}
+
+#content{
+	padding-bottom: 5em;	
+
+}
 body{
-	background:#E4DBBF;			/*Yellowish background*/
+	background:#f8f5ed;			/*Yellowish background*/
    	background-repeat: no-repeat;
 	background-attachment: fixed;
-        font-family: Palatino,Georgia,Times;
-        color: #383127;
+    font-family: Palatino,Georgia,Times;
+    color: #383127;
 }
 
 
@@ -13,30 +27,27 @@ body{
 	border: groove #70AB8F 1px;
 	border-radius:6px 6px 6px 6px;
 }*/
-div#userInfo, div#toShareFrom, div#viewShare{
-	/*margin-left: 1005px;
-	margin-right: 5px;
-	margin-top: 10px;
-	font-size: x-small;
-	border: groove #70AB8F 1px;
+
+
+div#userInfo{
+	float:left top;
+	margin-left:20px;
+	margin-top: 20px;
+	display:inline-block;
+	border: solid #383127 1px;
 	border-radius:6px 6px 6px 6px;
-	padding: 5px 0px 5px 5px;
-	text-align: center;
-	color: #DC5B21;*/
-	float:left;
-	width:25%;
 }
 
-div#toShareFrom,div#viewShare{
-	margin-right: 100px;
+div.info{
+	padding: 10px 10px 10px 10px;
 }
-span.highlight{
 
+.highlight{
 	color:#60a282;
 }
 
 span.small, div.helpText,li.small,div.small{
-     	font-size: x-small;
+    font-size: x-small;
 }
 
 /*.menu div{
@@ -53,14 +64,17 @@ span.small, div.helpText,li.small,div.small{
 }
 */
 
-div.logo, div.brand{
+div.logo, div.brand,div#aboutContainer{
 	display:block;
-	margin-top: 60px;
+	/*margin-top: 60px;*/
 	margin-bottom: 50px;
 	margin-left: auto;
 	margin-right:auto;
 	text-align:center;
 	/*float:center;*/	
+}
+div.brand{
+	margin-top: 60px;
 }
 
 div.authentication{
@@ -72,6 +86,20 @@ div.authentication{
 	margin-bottom:100px;
 	
 }
+div#aboutContainer{
+	border: groove #60a282 1px;
+	border-radius:10px 10px 10px 10px;
+	width:80%;
+	padding: 50px;
+}
+
+div#aboutContainer h3{
+	color: #DC5B21;
+	text-decoration: underline;
+}
+div#aboutContainer ul{
+	list-style-type:none;
+}
  
 div.authentication div.message{
 	padding-bottom: 20px; 
@@ -80,6 +108,7 @@ div.authentication div.message{
 
 div.error,ul.errorlist li{
 	color: red;	
+	margin-bottom: 5px;
 }
 
 ul.errorlist{
@@ -87,8 +116,22 @@ ul.errorlist{
 }
 
 span.small{
-     	font-size: x-small;
+    font-size: x-small;
 }
+
+#footer{
+	clear:both;
+	position:relative;
+	z-index:10
+	height:5em;
+	margin-top: -3em;
+
+}
+
+div.dateInfo{
+	margin-left: 10px;
+}
+
 
 
 

@@ -4,6 +4,7 @@
 <html>
   <title>{% block title%}  {% endblock %}</title>
   <head>
+	  {% browserid_css %}
   	<meta charset="UTF-8">
 	  {% if flavour == "mobile" %}
 	<link href={% static "css/mobile/pageStyle.css" %} rel="stylesheet" type="text/css">
@@ -13,17 +14,25 @@
 	{% endif %}
     
     
-    <link rel="SHORTCUT ICON" href={% static "images/logo.png" %}>
-    {% browserid_css %}
+    <link rel="SHORTCUT ICON" href={% static "images/favicon.png" %}>
+    
     {% block head %} {% endblock %}
   </head>
   <body>
-  <center>
+    {% browserid_info %}
+    {% block info %} {% endblock %}
+	<div id="container">
+   {% if user.is_authenticated %}
+	<div class="info" id="userInfo">
+		<span class="small highlight">{{ user.email }}</span>
+	</div>	
+   {% endif %}
+  
   <div class="logo">
   	<div><img src={% static "images/logo.png" %} title="logo by Shweta"/></div>
   	<div><span class="small">Sync & Share</span></div>
   </div>
-  </center>
+  
   <!--nav class="menu">
   	<div class="menuBar">
 		  {% if user.is_authenticated %}
@@ -44,25 +53,26 @@
 		   </div>
 	</div>
    </nav-->
-  <center> 
-    {% browserid_info %}
-    {% block info %} {% endblock %}
+   <center>
+
     
-    <header>
+    
     <!--link href="/css/persona-buttons.css" rel="stylesheet" type="text/css"-->
-      
-   
+      <div id="content">
+    
       {% block content %}
       
       
       {% endblock %}
-	</center>
-    </header>
+   </div>
+	
+    </div>
+    </center>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     {% browserid_js %}
     {% block script %} {% endblock %}
-    <footer>
-     <div class="brand"><img src={% static "images/shwetaBrand.png" %} title="by Shweta"/></div>
-    </footer>
+    
+    <div class="brand" id="footer"><img src={% static "images/shwetaBrand.png" %} title="by Shweta"/></div>
+ 
   </body>
 </html>

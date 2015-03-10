@@ -1,0 +1,16 @@
+Django==1.7.5
+argparse==1.2.1
+dj-database-url==0.3.0
+dj-static==0.0.6
+django-browserid==0.9
+django-mobile==0.4.0
+django-mptt==0.6.1
+django-toolbelt==0.0.1
+fancy-tag==0.2.0
+gunicorn==19.3.0
+pandokia==1.3.10
+psycopg2==2.6
+requests==2.5.3
+six==1.9.0
+static3==0.5.1
+wsgiref==0.1.2

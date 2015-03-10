@@ -2,30 +2,39 @@
 import os.path
 
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+
+DEBUG = False
+#TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
      ('Shweta ', 'shweta.universidad@gmail.com'),
 )
 
+SESSION_COOKIE_SECURE = False
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}
+
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 		# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'SyncShare.sqlite',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', 		# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'SyncShare',                      			# Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'USER': 'shweta',
+        'PASSWORD': 'shweta',
+ #       'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+ #       'PORT': '5432',                      # Set to empty string for default.
     }
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".herokuapp.com"]
 
 # Path to redirect to on successful login.
 LOGIN_REDIRECT_URL = '/login/'
@@ -76,9 +85,10 @@ MEDIA_URL = ''
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
 #STATIC_ROOT = '/static/'
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/' 
 
 # Additional locations of static files
@@ -89,6 +99,13 @@ STATICFILES_DIRS = (
     #os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
     'static',
 )
+
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -163,14 +180,16 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
    # ...
    'django.contrib.auth.context_processors.auth',
-   'django_browserid.context_processors.browserid',
+   #'django_browserid.context_processors.browserid',
    'django_mobile.context_processors.flavour',
    # ...
 )
 
 # Set your site url for security
 #SITE_URL = 'http://192.168.1.16:8000'
-SITE_URL = 'http://192.168.1.13:8000'
+BROWSERID_AUDIENCES = ['https://sync-share.herokuapp.com']
+#BROWSERID_AUDIENCES = ['https://localhost:5000/']
+
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
@@ -179,26 +198,30 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+
+
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+
+DATABASES = { 'default' : dj_database_url.config()}
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
+   'version': 1,
+   'handlers': {
+       'console':{
+           'level': 'DEBUG',
+           'class': 'logging.StreamHandler'
+       },
+   },
+   'loggers': {
+       'django_browserid': {
+           'handlers': ['console'],
+           'level': 'DEBUG',
+       }
+   },
 }
+

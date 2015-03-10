@@ -7,7 +7,7 @@
  ************************************************************************************************************************/
 var panel = require("sdk/panel");
 var data = require("sdk/self").data;
-var widget = require("sdk/widget");
+var {ToggleButton} = require("sdk/ui/button/toggle");
 const timer = require('sdk/timers');
 const { myId } = require("sdk/self");
 
@@ -19,16 +19,33 @@ function startUp(){
 		  width: 600,
 		  height: 550,
 		  contentURL : data.url('quickStart.html'),
-		  contentScriptFile: [data.url("jquery-1.4.4.min.js"),data.url('quickStartScript.js')]
+		  contentScriptFile: [data.url("jquery-1.4.4.min.js"),data.url('quickStartScript.js')],
+		  onHide: handleHide
 		});
 
-		var helpWidget = widget.Widget({
+		var button = ToggleButton({
 		  id: myId+"help",
 		  label: "Quick Start",
-		  contentURL: data.url('images/myLogo64.png'),
-		  panel: helpPanel
+		  icon: data.url('images/myLogo64.png'),
+		  onChange: handleChange
+		  //panel: helpPanel
 		});
+		
+		//When the button changes:
+		function handleChange(state){
+			if(state.checked){
+				helpPanel.show({
+					position:button
+				});
+			}
+		}
+
+		//Tell the panel to hide:
+		function handleHide(){
+			button.state("window",{checked: false});
+		}
 		helpPanel.port.on("click", function(url) {
+			console.log("Show tab!");
 			require("sdk/tabs").open(url);
 		});
 

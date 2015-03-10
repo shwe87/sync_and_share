@@ -1,56 +1,57 @@
-var { Class } = require("sdk/core/heritage");
-
+/***********************************************************************************************************************
+ * Author: Shweta, Telecommunication Engineering student of UNIVERSIDAD REY JUAN CARLOS, Madrid, Spain.					|
+ * Still in development. This add-on is my career's final project work.													|
+ * This module was created to show a panel with the quickStart.html content. When a usr clicks the widget located		|
+ * in the add-on bar, this panel opens. Learnt from:																	|
+ * https://addons.mozilla.org/en-US/developers/docs/sdk/latest/modules/sdk/panel.html									|																					
+ ************************************************************************************************************************/
 var panel = require("sdk/panel");
 var data = require("sdk/self").data;
-var widget = require("sdk/widget");
-
-var { emit, on, once, off } = require("sdk/event/core");
-exports.on = on.bind(null, exports);
-exports.once = once.bind(null, exports);
-exports.removeListener = function removeListener(type, listener) {
-  off(exports, type, listener);
-};
+var {ToggleButton} = require("sdk/ui/button/toggle");
+const timer = require('sdk/timers');
+const { myId } = require("sdk/self");
 
 
+const images = require('./imagesHandler');
 
-var Panel = Class({
-  initialize: function initialize() {
-  	this.panelWithMessage = panel.Panel({
-  		position: {
-  			top: 150
-  		},
-  		width: 400,
-  		height: 60,
-  		focus: true,
-    		contentURL: data.url('panel.html'),
-    		contentScriptFile: data.url('panelScript.js')
-    	});
-    	this.widget = widget.Widget({
-		  id: "sync-share-icon",
-		  label: "Sync & Share widget",
-		  width: 30,
-		  contentURL: "http://i43.tinypic.com/2lka2s2.jpg",
-		  panel: this.panelWithMessage
-	});
-  },
-  type: 'Panel',
-  write: function write(message) {
-  	this.panelWithMessage.port.emit('write',message);
-  	//this.panelWithMessage.show();
-  },
-  hide: function hide(){
-  	if (this.panelWithMessage.isShowing){
-  		this.panelWithMessage.hide();
-  	}
-  },
-  show: function show(){
-  	this.panelWithMessage.show();
-  }
-  
-});
+function startUp(){
+		var helpPanel = panel.Panel({
+		  width: 600,
+		  height: 550,
+		  contentURL : data.url('quickStart.html'),
+		  contentScriptFile: [data.url("jquery-1.4.4.min.js"),data.url('quickStartScript.js')],
+		  onHide: handleHide
+		});
 
-exports.Panel = Panel;
+		var button = ToggleButton({
+		  id: myId+"help",
+		  label: "Quick Start",
+		  icon: data.url('images/myLogo64.png'),
+		  onChange: handleChange
+		  //panel: helpPanel
+		});
+		
+		//When the button changes:
+		function handleChange(state){
+			if(state.checked){
+				console.log("CLICKED");
+				helpPanel.show({
+					position:button
+				});
+			}
+		}
 
+		//Tell the panel to hide:
+		function handleHide(){
+			button.state("window",{checked: false});
+		}
+		helpPanel.port.on("click", function(url) {
+			console.log("Show tab!");
+			require("sdk/tabs").open(url);
+		});
 
+	
+	
+}
 
-
+exports.startUp = startUp;

@@ -5,7 +5,7 @@
   "description": "Syncing and sharing between devices and friends.",
   "author": "Shweta",
   "license": "GPL 3.0",
-  "version": "1.8",
+  "version": "2.0",
   "fullName": "sync and share",
   "icon64":"skin/myLogo64.png",
   "permissions":{
@@ -41,7 +41,7 @@
             "title": "Name this device as: "
         },
         {
-		   "description": "Press this button to save your device name.",
+	   "description": "Press this button to save your device name.",
            "type": "control",
            "label": "Save device name",
            "name": "saveDeviceName",

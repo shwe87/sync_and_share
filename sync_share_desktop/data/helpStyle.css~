@@ -1,0 +1,206 @@
+html,body{
+	height: 100%;
+	margin:0;
+	padding:0;
+
+}
+
+
+div.logo{
+	display:block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	text-align:center;
+	
+	
+}
+ 
+ div#viewsContent{
+	padding-bottom: 50px;
+ }
+/* CSS for the content of page. */
+
+div#footer { 
+
+	line-height:60px; 
+	text-align:center;
+	 
+}
+
+body
+{ 
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 0;
+	padding-right: 0;
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+    font-family: Palatino,Georgia,Times;
+
+}
+
+
+#sideMenu, #content, .menu div, div.fotoTitle,div.fotoWrapper{
+	padding-top: 20px;
+	padding-bottom: 20px;
+
+}
+#sideMenu {
+	text-align: center;
+	border:dashed #383127 1px; 	
+	border-radius:6px 6px 6px 6px;
+	background: #E4DBBF;
+	position: absolute;
+	margin-left: 3px;
+	margin-top: 20px;
+	width:20%;
+	padding-left: 10px;
+	padding-right:10px;
+
+}
+
+#content {
+	width:65%;
+    margin-left: 25%;
+    margin-right: 5%;
+    position:absolute;
+    display:block;
+	overflow:auto;
+	color: #383127;
+
+}
+
+nav.menu div{
+	
+    font-size: small;
+   	color: #DC5B21;				/*Orange*/
+	text-align: center;
+    display:block;
+
+
+}
+
+
+nav.menu div:hover,
+nav.menu div:active
+{
+    background:#eae3cd;	/*When an item is hovered, a personal background is shown.*/
+    border:1px solid #70AB8F;	/*Greenish border*/
+	cursor:pointer;
+}
+.menu div{
+	text-align: center;
+	border:groove #383127 1px; 	
+	border-radius:6px 6px 6px 6px;
+	background: #E4DBBF;
+	margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+	margin-top:10px;    
+}
+
+
+.contentTitle, a{
+	color: #DC5B21;			/*Orange color*/
+
+}
+
+a{
+   text-decoration:none;
+}
+
+
+
+ul, li { 
+	margin-top: 20px; 
+
+}
+dt { 
+	clear: both; 
+}
+
+.small,div.fotoTitle{
+   font-size: small;
+}
+
+
+dt.stepsContainer dd
+{
+counter-reset:section;
+}
+
+dt.stepsContainer dd:before{
+content: counter(section) ". ";
+counter-increment:section;
+}
+
+span.counter{
+	padding-right:5px;
+}
+
+div.subSectionContent{
+	margin-left: 15px;
+
+}
+a.reference{
+	color: #70AB8F;
+
+}
+
+div.fotoWrapper{
+
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+	
+
+}
+
+div.fotoWrapper div.foto{
+	padding-left: 20px;
+}
+
+hr{
+	color: #383127;
+}
+div.returnMenu{
+	float:right;
+	
+}
+
+div.fotoWrapper img{
+	max-width: 100%;
+	height: auto;
+	border: groove #383127 1px;
+}
+.picture:hover{
+	cursor:pointer;
+	max-width: 100%;
+	height: auto;
+	transform:scale(1.3);
+    -moz-transform:scale(1.3); /* Firefox */
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

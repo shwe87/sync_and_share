@@ -9,7 +9,8 @@ from django.views.decorators.cache import never_cache
 admin.autodiscover()
 
 urlpatterns = patterns('',
-        (r'^login/$','mysite.views.main'),
+    (r'^login/$','mysite.views.main'),
+    (r'^logout/$','mysite.views.logout'),
 	(r'^browserid/', include('django_browserid.urls')),
 	(r'^change/device/name/$','mysite.views.changeDeviceName'),
 	(r'^add/all/bookmarks/$','mysite.views.addNewBookmarks'),
@@ -25,12 +26,15 @@ urlpatterns = patterns('',
 	(r'^delete/share/from/content/$','mysite.views.deleteShareFromContent'),
 	(r'^bookmarks/$','mysite.views.viewBookmarks'),
 	(r'^delete/from/group/$','mysite.views.deleteFromGroup'),
+	(r'^delete/share/with/$','mysite.views.deleteSharedWith'),
 	(r'^share/$','mysite.views.share'),
 	(r'^view/share/$','mysite.views.viewShared'),
-	(r'^register/$','mysite.views.register')
+	(r'^register/$','mysite.views.register_device'),
+	(r'^deleteAll/$','mysite.views.delete_all'),
 	#(r'^save/bookmarks/','browseridTest.views.saveBookmarks'),
 	#(r'^save/history','browseridTest.views.saveHistory'),
 	(r'^$', 'mysite.views.welcome'),
+	(r'^about/$','mysite.views.about'),
 	(r'^static/(?P<path>.*)$', never_cache(serve_static)),
 	
 	
@@ -43,4 +47,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
      url(r'^admin/', include(admin.site.urls)),
+     (r'^','mysite.views.help'),
 )

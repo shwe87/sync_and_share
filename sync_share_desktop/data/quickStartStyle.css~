@@ -1,0 +1,76 @@
+html,body{
+	height: 100%;
+
+}
+body{
+	background:#E4DBBF;			/*Yellowish background*/
+   	background-repeat: no-repeat;
+	background-attachment: fixed;
+    font-family: Palatino,Georgia,Times;
+    width: 95%;
+    font-size:small;
+}
+
+div#container{
+	border:groove #383127 1px; 	
+	border-radius:6px 6px 6px 6px;
+	margin-left: 50px;
+	margin-right:20px;
+	margin-top: 20px;
+	padding-left:20px;
+	padding-right:20px;
+	padding-bottom:20px;
+}
+a{
+	text-decoration: none;
+	color: #70AB8F;
+}
+
+.small{
+	font-size: x-small;
+}
+
+li,div.fotoWrapper{
+	padding-top: 20px;
+}
+
+ li:first-child{
+    padding-top:0px;
+}
+
+div.logo{
+	display:block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	text-align:center;
+	
+	
+}
+
+div.fotoWrapper{
+	margin:auto;
+	text-align: center;
+}
+
+h3.title{
+	text-align:center;
+	text-decoration:underline;
+	color:#DC5B21;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

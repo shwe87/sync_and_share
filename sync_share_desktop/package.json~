@@ -4,8 +4,8 @@
   "id": "jid1-Yvw9LU0J6vLQkA",
   "description": "Syncing and sharing between devices and friends.",
   "author": "Shweta",
-  "license": "MPL 2.0",
-  "version": "0.1",
+  "license": "GPL 3.0",
+  "version": "1.8",
   "fullName": "sync and share",
   "icon64":"skin/myLogo64.png",
   "permissions":{
@@ -41,6 +41,7 @@
             "title": "Name this device as: "
         },
         {
+	   "description": "Press this button to save your device name.",
            "type": "control",
            "label": "Save device name",
            "name": "saveDeviceName",
@@ -55,7 +56,7 @@
 	    "options": [
 		{
 		    "value": "none",
-		    "label": "Don't user extra server"
+		    "label": "Don't use extra server"
 		},
 		{
 		    "value": "dropbox",
@@ -63,7 +64,7 @@
 		},
 		{
 		    "value": "gapi",
-		    "label": "User Google-Drive"
+		    "label": "Use Google-Drive"
 		},
 		{
 		    "value": "both",
